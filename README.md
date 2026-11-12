@@ -1,75 +1,34 @@
-# React + TypeScript + Vite
+# Frontend del Sistema de Hallazgos y Deuda Técnica
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19, TypeScript, Vite, TailwindCSS, React Router, Zustand, axios y SweetAlert2.
 
-Currently, two official plugins are available:
+## Arrancar
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. `npm install`
+2. Arranca el backend en `http://localhost:8080`.
+3. `npm run dev` y abre `http://localhost:5173`. El puerto es fijo porque el backend solo acepta CORS desde él.
 
-## React Compiler
+Las variables están en `.env.development`:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Variable | Para qué |
+|---|---|
+| `VITE_API_URL` | URL del backend |
+| `VITE_USUARIO_SIMULADO_ID` | Usuario que se envía en `X-Usuario-Id` hasta tener el selector (FE-03) y el login (FE-02) |
 
-## Expanding the ESLint configuration
+Para cambiar un valor solo en tu equipo, cópialo en `.env.development.local`, que git no sube.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Scripts
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Script | Qué hace |
+|---|---|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Revisa los tipos y genera `dist/` |
+| `npm run lint` | ESLint |
+| `npm run format` | Formatea con Prettier |
+| `npm run format:check` | Revisa el formato sin cambiar nada |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Reglas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+- Las páginas usan los componentes de `src/components/ui/` para botones, campos, tablas y modales, nunca Tailwind directo.
+- Los colores y la fuente se definen solo en el `@theme` de `src/styles/globals.css`.
+- El detalle de la estructura y las convenciones está en `FICHA_TECNICA_FRONTEND.md`.

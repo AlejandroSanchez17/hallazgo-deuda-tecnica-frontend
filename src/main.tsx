@@ -1,10 +1,16 @@
+import '@fontsource-variable/nunito-sans'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { App } from './App'
+import './styles/globals.css'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+const raiz = document.getElementById('root')
+if (!raiz) {
+    throw new Error('No existe el elemento #root en index.html')
+}
+
+createRoot(raiz).render(
+    <StrictMode>
+        <App />
+    </StrictMode>,
 )

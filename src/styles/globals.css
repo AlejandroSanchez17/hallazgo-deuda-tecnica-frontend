@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+@theme {
+    /* Sin la paleta por defecto: todos los colores salen de aqui */
+    --color-*: initial;
+    --color-blanco: #ffffff;
+    --color-transparente: transparent;
+    --color-primario: #d9272e;
+    --color-primario-hover: #b81f25;
+    --color-primario-claro: #ffebec;
+    --color-texto: #343434;
+    --color-texto-secundario: #707070;
+    --color-borde: #d6d6d6;
+    --color-borde-suave: #efefef;
+    --color-fondo: #f8f8f8;
+    --color-error: #a31d22;
+    --color-semaforo-vencido: #c62828;
+    --color-semaforo-riesgo: #f2a900;
+    --color-semaforo-tiempo: #2e7d32;
+
+    --font-sans: 'Nunito Sans Variable', 'Nunito Sans', Arial, sans-serif;
+}
+
+@layer base {
+    body {
+        @apply bg-fondo font-sans text-texto antialiased;
+    }
+}
