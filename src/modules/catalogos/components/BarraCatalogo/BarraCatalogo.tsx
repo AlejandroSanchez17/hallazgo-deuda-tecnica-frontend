@@ -1,7 +1,9 @@
+import { spacing } from '@hnba/design-tokens'
+import { Button, Select } from '@hnba/react-ui'
 import type { ReactNode } from 'react'
-import { Boton } from '../../../../components/ui/Boton/Boton'
-import { Buscador } from '../../../../components/ui/Buscador/Buscador'
-import { Selector } from '../../../../components/ui/Selector/Selector'
+import { Buscador } from '../../../../components/common/Buscador/Buscador'
+import { fila, filaEntreExtremos } from '../../../../styles/disposicion'
+import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { conGenero } from '../../textos'
 import type { FiltroEstado, TextosCatalogo } from '../../types'
 
@@ -26,34 +28,37 @@ export const BarraCatalogo = ({
     onNuevo,
     filtrosExtra,
 }: BarraCatalogoProps) => {
-    const filtros = [
+    const filtros: Opcion[] = [
         { valor: 'activos', texto: `${conGenero(textos, 'Activ')}s` },
         { valor: 'inactivos', texto: `${conGenero(textos, 'Inactiv')}s` },
         { valor: 'todos', texto: `${conGenero(textos, 'Tod')}s` },
     ]
 
     return (
-        <div className="flex flex-wrap items-end justify-between gap-3">
-            <div className="flex flex-wrap items-end gap-3">
-                <div className="w-72">
-                    <Buscador valor={busqueda} onCambiar={onBuscar} placeholder={placeholderBusqueda} />
-                </div>
-                <div className="w-40">
-                    <Selector
-                        etiqueta="Estado"
-                        ocultarEtiqueta
-                        opciones={filtros}
-                        textoVacio={null}
-                        value={filtro}
-                        onChange={(evento) => onFiltrar(evento.target.value as FiltroEstado)}
+        <div style={filaEntreExtremos}>
+            <div style={fila(spacing.md)}>
+                <Buscador
+                    valor={busqueda}
+                    onCambiar={onBuscar}
+                    etiqueta="Buscar"
+                    placeholder={placeholderBusqueda}
+                    ancho={288}
+                />
+                <div style={{ width: 160 }}>
+                    <Select
+                        options={filtros}
+                        value={opcionDe(filtros, filtro)}
+                        getLabel={textoDeOpcion}
+                        getValue={valorDeOpcion}
+                        onChange={(opcion) => onFiltrar(opcion.valor as FiltroEstado)}
                     />
                 </div>
                 {filtrosExtra}
             </div>
             {onNuevo && (
-                <Boton variante="primario" onClick={onNuevo}>
+                <Button variant="primary" iconName="plus" onClick={onNuevo}>
                     {`${conGenero(textos, 'Nuev')} ${textos.sustantivo}`}
-                </Boton>
+                </Button>
             )}
         </div>
     )

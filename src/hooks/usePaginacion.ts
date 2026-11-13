@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export const TAMANOS_PAGINA = [10, 25, 50]
+export const TAMANOS_PAGINA = [10, 50, 100]
 
 // claveReinicio cambia con la busqueda o el filtro; al cambiar se vuelve a la primera pagina
 export const usePaginacion = <T>(filas: T[], claveReinicio: string) => {

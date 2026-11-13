@@ -1,7 +1,8 @@
+import { spacing } from '@hnba/design-tokens'
+import { Alert, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { MensajeError } from '../../../../components/ui/MensajeError/MensajeError'
-import type { ColumnaTabla } from '../../../../components/ui/Tabla/Tabla'
-import { TablaPaginada } from '../../../../components/ui/TablaPaginada/TablaPaginada'
+import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { columna } from '../../../../styles/disposicion'
 import { coincide, normalizar } from '../../../../utils/texto'
 import { aplicacionesApi } from '../../api'
 import { columnaAcciones, columnaEstado } from '../../columnas'
@@ -18,7 +19,7 @@ export const AplicacionesPage = () => {
     const [busqueda, setBusqueda] = useState('')
     const [edicion, setEdicion] = useState<Edicion<AplicacionResponse>>(undefined)
     const { registros, cargando, error, recargar } = useListaCatalogo(aplicacionesApi.listar, filtro)
-    const { cambiarEstado } = useCambiarEstado(aplicacionesApi.cambiarEstado, TEXTOS.aplicacion, recargar)
+    const { cambiarEstado, dialogo } = useCambiarEstado(aplicacionesApi.cambiarEstado, TEXTOS.aplicacion, recargar)
     const { puedeCrear, puedeActualizar, puedeDesactivar } = usePermisosCatalogo()
 
     const termino = normalizar(busqueda)
@@ -26,16 +27,13 @@ export const AplicacionesPage = () => {
         coincide(termino, aplicacion.nombre, aplicacion.areaNombre, aplicacion.descripcion),
     )
 
-    const columnas: ColumnaTabla<AplicacionResponse>[] = [
-        { clave: 'nombre', titulo: 'Nombre' },
-        { clave: 'areaNombre', titulo: 'Área' },
-        { clave: 'descripcion', titulo: 'Descripción', render: (aplicacion) => aplicacion.descripcion ?? '—' },
-        columnaEstado(TEXTOS.aplicacion),
+    const columnas: TableColumn<AplicacionResponse>[] = [
+        { id: 'nombre', header: 'Nombre', accessor: (aplicacion) => aplicacion.nombre },
+        { id: 'areaNombre', header: 'Área', accessor: (aplicacion) => aplicacion.areaNombre },
+        { id: 'descripcion', header: 'Descripción', render: (aplicacion) => aplicacion.descripcion ?? '—' },
+        columnaEstado<AplicacionResponse>(TEXTOS.aplicacion, puedeDesactivar ? cambiarEstado : undefined),
     ]
-    const acciones = columnaAcciones<AplicacionResponse>({
-        onEditar: puedeActualizar ? setEdicion : undefined,
-        onCambiarEstado: puedeDesactivar ? (aplicacion) => void cambiarEstado(aplicacion) : undefined,
-    })
+    const acciones = columnaAcciones<AplicacionResponse>(puedeActualizar ? setEdicion : undefined)
     if (acciones) {
         columnas.push(acciones)
     }
@@ -46,7 +44,7 @@ export const AplicacionesPage = () => {
     }
 
     return (
-        <div className="space-y-4">
+        <div style={columna(spacing.md)}>
             <BarraCatalogo
                 textos={TEXTOS.aplicacion}
                 busqueda={busqueda}
@@ -58,7 +56,7 @@ export const AplicacionesPage = () => {
             />
 
             {error ? (
-                <MensajeError mensaje={error.mensaje} />
+                <Alert variant="error" description={error.mensaje} />
             ) : (
                 <TablaPaginada
                     columnas={columnas}
@@ -77,6 +75,7 @@ export const AplicacionesPage = () => {
             {edicion !== undefined && (
                 <AplicacionForm aplicacion={edicion} onCerrar={() => setEdicion(undefined)} onGuardado={alGuardar} />
             )}
+            {dialogo}
         </div>
     )
 }

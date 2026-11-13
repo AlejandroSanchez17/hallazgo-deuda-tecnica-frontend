@@ -1,28 +1,27 @@
-@import 'tailwindcss';
+/* Los tokens definen las variables --atl-* que usan los componentes de @hnba/react-ui */
+@import '@hnba/design-tokens/tokens.css';
 
-@theme {
-    /* Sin la paleta por defecto: todos los colores salen de aqui */
-    --color-*: initial;
-    --color-blanco: #ffffff;
-    --color-transparente: transparent;
-    --color-primario: #d9272e;
-    --color-primario-hover: #b81f25;
-    --color-primario-claro: #ffebec;
-    --color-texto: #343434;
-    --color-texto-secundario: #707070;
-    --color-borde: #d6d6d6;
-    --color-borde-suave: #efefef;
-    --color-fondo: #f8f8f8;
-    --color-error: #a31d22;
-    --color-semaforo-vencido: #c62828;
-    --color-semaforo-riesgo: #f2a900;
-    --color-semaforo-tiempo: #2e7d32;
-
-    --font-sans: 'Nunito Sans Variable', 'Nunito Sans', Arial, sans-serif;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
-@layer base {
-    body {
-        @apply bg-fondo font-sans text-texto antialiased;
-    }
+body {
+    margin: 0;
+    background: #f8f8f8;
+    color: var(--atl-color-brand-gray-900);
+    font-family: var(--atl-font-family-base);
+    -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * NavBar de la libreria: los botones de accion y el cuadro de iniciales traen 60 px fijos en
+ * estilos en linea y no hay prop de tamaño, por eso aqui hace falta !important.
+ * Es un ajuste fragil: revisar al actualizar @hnba/react-ui.
+ */
+.navbar-compacto > div:last-child > button,
+.navbar-compacto [aria-label^='Iniciales'] {
+    width: 48px !important;
+    height: 48px !important;
 }

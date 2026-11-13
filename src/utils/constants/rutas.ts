@@ -7,5 +7,4 @@ export const RUTAS = {
     catalogosAplicaciones: '/catalogos/aplicaciones',
     catalogosCriticidades: '/catalogos/criticidades',
     parametros: '/parametros',
-    componentes: '/componentes',
 } as const

@@ -1,7 +1,8 @@
+import { spacing } from '@hnba/design-tokens'
+import { Alert, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { MensajeError } from '../../../../components/ui/MensajeError/MensajeError'
-import type { ColumnaTabla } from '../../../../components/ui/Tabla/Tabla'
-import { TablaPaginada } from '../../../../components/ui/TablaPaginada/TablaPaginada'
+import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { columna } from '../../../../styles/disposicion'
 import { coincide, normalizar } from '../../../../utils/texto'
 import { origenesApi } from '../../api'
 import { columnaAcciones, columnaEstado } from '../../columnas'
@@ -18,21 +19,18 @@ export const OrigenesPage = () => {
     const [busqueda, setBusqueda] = useState('')
     const [edicion, setEdicion] = useState<Edicion<OrigenResponse>>(undefined)
     const { registros, cargando, error, recargar } = useListaCatalogo(origenesApi.listar, filtro)
-    const { cambiarEstado } = useCambiarEstado(origenesApi.cambiarEstado, TEXTOS.origen, recargar)
+    const { cambiarEstado, dialogo } = useCambiarEstado(origenesApi.cambiarEstado, TEXTOS.origen, recargar)
     const { puedeCrear, puedeActualizar, puedeDesactivar } = usePermisosCatalogo()
 
     const termino = normalizar(busqueda)
     const filas = registros.filter((origen) => coincide(termino, origen.nombre, origen.descripcion))
 
-    const columnas: ColumnaTabla<OrigenResponse>[] = [
-        { clave: 'nombre', titulo: 'Nombre' },
-        { clave: 'descripcion', titulo: 'Descripción', render: (origen) => origen.descripcion ?? '—' },
-        columnaEstado(TEXTOS.origen),
+    const columnas: TableColumn<OrigenResponse>[] = [
+        { id: 'nombre', header: 'Nombre', accessor: (origen) => origen.nombre },
+        { id: 'descripcion', header: 'Descripción', render: (origen) => origen.descripcion ?? '—' },
+        columnaEstado<OrigenResponse>(TEXTOS.origen, puedeDesactivar ? cambiarEstado : undefined),
     ]
-    const acciones = columnaAcciones<OrigenResponse>({
-        onEditar: puedeActualizar ? setEdicion : undefined,
-        onCambiarEstado: puedeDesactivar ? (origen) => void cambiarEstado(origen) : undefined,
-    })
+    const acciones = columnaAcciones<OrigenResponse>(puedeActualizar ? setEdicion : undefined)
     if (acciones) {
         columnas.push(acciones)
     }
@@ -43,7 +41,7 @@ export const OrigenesPage = () => {
     }
 
     return (
-        <div className="space-y-4">
+        <div style={columna(spacing.md)}>
             <BarraCatalogo
                 textos={TEXTOS.origen}
                 busqueda={busqueda}
@@ -55,7 +53,7 @@ export const OrigenesPage = () => {
             />
 
             {error ? (
-                <MensajeError mensaje={error.mensaje} />
+                <Alert variant="error" description={error.mensaje} />
             ) : (
                 <TablaPaginada
                     columnas={columnas}
@@ -72,6 +70,7 @@ export const OrigenesPage = () => {
             {edicion !== undefined && (
                 <OrigenForm origen={edicion} onCerrar={() => setEdicion(undefined)} onGuardado={alGuardar} />
             )}
+            {dialogo}
         </div>
     )
 }

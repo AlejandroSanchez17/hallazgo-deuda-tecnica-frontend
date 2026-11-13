@@ -1,8 +1,9 @@
+import { spacing } from '@hnba/design-tokens'
+import { Alert, Select, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { MensajeError } from '../../../../components/ui/MensajeError/MensajeError'
-import { Selector } from '../../../../components/ui/Selector/Selector'
-import type { ColumnaTabla } from '../../../../components/ui/Tabla/Tabla'
-import { TablaPaginada } from '../../../../components/ui/TablaPaginada/TablaPaginada'
+import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { columna } from '../../../../styles/disposicion'
+import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { coincide, normalizar } from '../../../../utils/texto'
 import { areasApi } from '../../api'
 import { columnaAcciones, columnaEstado } from '../../columnas'
@@ -16,7 +17,7 @@ import type { AreaResponse, Edicion, FiltroEstado } from '../../types'
 
 type FiltroJerarquia = 'todas' | 'padres' | 'subareas'
 
-const filtrosJerarquia = [
+const filtrosJerarquia: Opcion[] = [
     { valor: 'todas', texto: 'Todas las jerarquías' },
     { valor: 'padres', texto: 'Solo áreas padre' },
     { valor: 'subareas', texto: 'Solo subáreas' },
@@ -40,7 +41,7 @@ export const AreasPage = () => {
     const [busqueda, setBusqueda] = useState('')
     const [edicion, setEdicion] = useState<Edicion<AreaResponse>>(undefined)
     const { registros, cargando, error, recargar } = useListaCatalogo(areasApi.listar, filtro)
-    const { cambiarEstado } = useCambiarEstado(areasApi.cambiarEstado, TEXTOS.area, recargar)
+    const { cambiarEstado, dialogo } = useCambiarEstado(areasApi.cambiarEstado, TEXTOS.area, recargar)
     const { puedeCrear, puedeActualizar, puedeDesactivar } = usePermisosCatalogo()
 
     const termino = normalizar(busqueda)
@@ -48,15 +49,12 @@ export const AreasPage = () => {
         coincide(termino, area.nombre, area.areaPadreNombre),
     )
 
-    const columnas: ColumnaTabla<AreaResponse>[] = [
-        { clave: 'nombre', titulo: 'Nombre' },
-        { clave: 'areaPadreNombre', titulo: 'Área padre', render: (area) => area.areaPadreNombre ?? '—' },
-        columnaEstado(TEXTOS.area),
+    const columnas: TableColumn<AreaResponse>[] = [
+        { id: 'nombre', header: 'Nombre', accessor: (area) => area.nombre },
+        { id: 'areaPadreNombre', header: 'Área padre', render: (area) => area.areaPadreNombre ?? '—' },
+        columnaEstado<AreaResponse>(TEXTOS.area, puedeDesactivar ? cambiarEstado : undefined),
     ]
-    const acciones = columnaAcciones<AreaResponse>({
-        onEditar: puedeActualizar ? setEdicion : undefined,
-        onCambiarEstado: puedeDesactivar ? (area) => void cambiarEstado(area) : undefined,
-    })
+    const acciones = columnaAcciones<AreaResponse>(puedeActualizar ? setEdicion : undefined)
     if (acciones) {
         columnas.push(acciones)
     }
@@ -67,7 +65,7 @@ export const AreasPage = () => {
     }
 
     return (
-        <div className="space-y-4">
+        <div style={columna(spacing.md)}>
             <BarraCatalogo
                 textos={TEXTOS.area}
                 busqueda={busqueda}
@@ -77,21 +75,20 @@ export const AreasPage = () => {
                 onFiltrar={setFiltro}
                 onNuevo={puedeCrear ? () => setEdicion(null) : undefined}
                 filtrosExtra={
-                    <div className="w-52">
-                        <Selector
-                            etiqueta="Jerarquía"
-                            ocultarEtiqueta
-                            opciones={filtrosJerarquia}
-                            textoVacio={null}
-                            value={jerarquia}
-                            onChange={(evento) => setJerarquia(evento.target.value as FiltroJerarquia)}
+                    <div style={{ width: 208 }}>
+                        <Select
+                            options={filtrosJerarquia}
+                            value={opcionDe(filtrosJerarquia, jerarquia)}
+                            getLabel={textoDeOpcion}
+                            getValue={valorDeOpcion}
+                            onChange={(opcion) => setJerarquia(opcion.valor as FiltroJerarquia)}
                         />
                     </div>
                 }
             />
 
             {error ? (
-                <MensajeError mensaje={error.mensaje} />
+                <Alert variant="error" description={error.mensaje} />
             ) : (
                 <TablaPaginada
                     columnas={columnas}
@@ -110,6 +107,7 @@ export const AreasPage = () => {
             {edicion !== undefined && (
                 <AreaForm area={edicion} onCerrar={() => setEdicion(undefined)} onGuardado={alGuardar} />
             )}
+            {dialogo}
         </div>
     )
 }

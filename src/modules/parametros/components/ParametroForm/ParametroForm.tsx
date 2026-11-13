@@ -1,9 +1,7 @@
+import { colors, spacing } from '@hnba/design-tokens'
+import { Badge, FieldInput, FormModal, LargeTextArea, Text, TextInput, Toggle } from '@hnba/react-ui'
 import { useState } from 'react'
-import { AreaTexto } from '../../../../components/ui/AreaTexto/AreaTexto'
-import { Campo } from '../../../../components/ui/Campo/Campo'
-import { Etiqueta } from '../../../../components/ui/Etiqueta/Etiqueta'
-import { Interruptor } from '../../../../components/ui/Interruptor/Interruptor'
-import { ModalFormulario } from '../../../../components/ui/ModalFormulario/ModalFormulario'
+import { columna, fila, textoSecundario } from '../../../../styles/disposicion'
 import { useGuardarParametro } from '../../hooks/useGuardarParametro'
 import type { ParametroResponse } from '../../types'
 import { separarLista } from '../../valores'
@@ -25,86 +23,74 @@ export const ParametroForm = ({ parametro, onCerrar, onGuardado }: ParametroForm
         switch (parametro.tipoDato) {
             case 'BOOLEANO':
                 return (
-                    <Interruptor
-                        etiqueta={valor === 'true' ? 'Activado' : 'Desactivado'}
-                        activo={valor === 'true'}
-                        onCambiar={(activo) => setValor(String(activo))}
+                    <Toggle
+                        label={valor === 'true' ? 'Activado' : 'Desactivado'}
+                        checked={valor === 'true'}
+                        onChange={(activo) => setValor(String(activo))}
                     />
                 )
             case 'ENTERO':
                 return (
-                    <Campo
-                        etiqueta="Valor"
-                        obligatorio
-                        type="number"
-                        min={0}
-                        step={1}
-                        value={valor}
-                        onChange={(evento) => setValor(evento.target.value)}
-                        error={error}
-                        ayuda="Número entero sin signo"
-                    />
+                    <FieldInput label="Valor" errorText={error} helperText="Número entero sin signo">
+                        <TextInput type="number" min={0} step={1} value={valor} onChange={setValor} />
+                    </FieldInput>
                 )
             case 'DECIMAL':
                 return (
-                    <Campo
-                        etiqueta="Valor"
-                        obligatorio
-                        inputMode="decimal"
-                        value={valor}
-                        onChange={(evento) => setValor(evento.target.value)}
-                        error={error}
-                        ayuda="Número sin signo; use punto para los decimales, por ejemplo 2.5"
-                    />
+                    <FieldInput
+                        label="Valor"
+                        errorText={error}
+                        helperText="Número sin signo; use punto para los decimales, por ejemplo 2.5"
+                    >
+                        <TextInput inputMode="decimal" value={valor} onChange={setValor} />
+                    </FieldInput>
                 )
             case 'LISTA':
                 return (
-                    <div className="space-y-2">
-                        <AreaTexto
-                            etiqueta="Valores"
-                            obligatorio
-                            rows={2}
-                            value={valor}
-                            onChange={(evento) => setValor(evento.target.value)}
-                            error={error}
-                            ayuda="Separados por coma"
-                        />
-                        <div className="flex flex-wrap gap-1">
+                    <div style={columna(spacing.sm)}>
+                        <FieldInput label="Valores" errorText={error} helperText="Separados por coma">
+                            <LargeTextArea rows={2} value={valor} onChange={setValor} />
+                        </FieldInput>
+                        <div style={fila(spacing.xs)}>
                             {separarLista(valor).map((elemento, indice) => (
-                                <Etiqueta key={`${elemento}-${indice}`} variante="apagada">
-                                    {elemento}
-                                </Etiqueta>
+                                <Badge key={`${elemento}-${indice}`} status="neutral" label={elemento} />
                             ))}
                         </div>
                     </div>
                 )
             default:
                 return (
-                    <Campo
-                        etiqueta="Valor"
-                        obligatorio
-                        maxLength={500}
-                        value={valor}
-                        onChange={(evento) => setValor(evento.target.value)}
-                        error={error}
-                    />
+                    <FieldInput label="Valor" errorText={error}>
+                        <TextInput maxLength={500} value={valor} onChange={setValor} />
+                    </FieldInput>
                 )
         }
     }
 
     return (
-        <ModalFormulario
-            titulo="Editar parámetro"
-            guardando={guardando}
-            onCerrar={onCerrar}
-            onEnviar={() => void guardar(parametro.clave, valorAEnviar)}
+        <FormModal
+            open
+            position="right"
+            size="sm"
+            title="Editar parámetro"
+            loading={guardando}
+            onClose={onCerrar}
+            onSubmit={() => void guardar(parametro.clave, valorAEnviar)}
         >
             <div>
-                <p className="text-sm">{parametro.descripcion}</p>
-                <p className="mt-1 font-mono text-xs text-texto-secundario">{parametro.clave}</p>
+                <Text variant="body-regular-medium" as="p" style={{ margin: 0 }}>
+                    {parametro.descripcion}
+                </Text>
+                <Text variant="body-regular-small" as="p" style={{ ...textoSecundario, fontFamily: 'monospace' }}>
+                    {parametro.clave}
+                </Text>
             </div>
             {control()}
-            {parametro.tipoDato === 'BOOLEANO' && error && <p className="text-xs text-error">{error}</p>}
-        </ModalFormulario>
+            {parametro.tipoDato === 'BOOLEANO' && error && (
+                <Text variant="body-regular-small" as="p" style={{ margin: 0, color: colors.brand.red[700] }}>
+                    {error}
+                </Text>
+            )}
+        </FormModal>
     )
 }

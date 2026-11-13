@@ -1,6 +1,7 @@
+import { spacing } from '@hnba/design-tokens'
+import { Alert, Table, Text, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { MensajeError } from '../../../../components/ui/MensajeError/MensajeError'
-import { Tabla, type ColumnaTabla } from '../../../../components/ui/Tabla/Tabla'
+import { columna, textoSecundario } from '../../../../styles/disposicion'
 import { criticidadesApi } from '../../api'
 import { columnaAcciones } from '../../columnas'
 import { CriticidadForm } from '../../components/CriticidadForm/CriticidadForm'
@@ -24,23 +25,28 @@ export const CriticidadesPage = () => {
     const { puedeActualizar } = usePermisosCatalogo()
     const criticidades = [...registros].sort((a, b) => a.nivel - b.nivel)
 
-    const columnas: ColumnaTabla<CriticidadResponse>[] = [
-        { clave: 'nivel', titulo: 'Nivel', alineacion: 'centro' },
-        { clave: 'nombre', titulo: 'Nombre' },
-        { clave: 'plazoMeses', titulo: 'Plazo (meses)', alineacion: 'centro' },
-        { clave: 'maxProrrogas', titulo: 'Prórrogas máximas', alineacion: 'centro' },
+    const columnas: TableColumn<CriticidadResponse>[] = [
+        { id: 'nivel', header: 'Nivel', align: 'center', accessor: (criticidad) => criticidad.nivel },
+        { id: 'nombre', header: 'Nombre', accessor: (criticidad) => criticidad.nombre },
+        { id: 'plazoMeses', header: 'Plazo (meses)', align: 'center', accessor: (criticidad) => criticidad.plazoMeses },
         {
-            clave: 'rolApruebaPlan',
-            titulo: 'Aprueba el plan',
+            id: 'maxProrrogas',
+            header: 'Prórrogas máximas',
+            align: 'center',
+            accessor: (criticidad) => criticidad.maxProrrogas,
+        },
+        {
+            id: 'rolApruebaPlan',
+            header: 'Aprueba el plan',
             render: (criticidad) => criticidad.rolApruebaPlan.nombre,
         },
         {
-            clave: 'rolValidaCierre',
-            titulo: 'Valida el cierre',
+            id: 'rolValidaCierre',
+            header: 'Valida el cierre',
             render: (criticidad) => criticidad.rolValidaCierre.nombre,
         },
     ]
-    const acciones = columnaAcciones<CriticidadResponse>({ onEditar: puedeActualizar ? setEdicion : undefined })
+    const acciones = columnaAcciones<CriticidadResponse>(puedeActualizar ? setEdicion : undefined)
     if (acciones) {
         columnas.push(acciones)
     }
@@ -51,20 +57,20 @@ export const CriticidadesPage = () => {
     }
 
     return (
-        <div className="space-y-4">
-            <p className="text-sm text-texto-secundario">
+        <div style={columna(spacing.md)}>
+            <Text variant="body-regular-medium" as="p" style={textoSecundario}>
                 El plazo define la fecha compromiso sugerida de cada hallazgo o deuda. Las criticidades no se crean ni
                 se desactivan.
-            </p>
+            </Text>
 
             {error ? (
-                <MensajeError mensaje={error.mensaje} />
+                <Alert variant="error" description={error.mensaje} />
             ) : (
-                <Tabla
-                    columnas={columnas}
-                    filas={criticidades}
-                    claveFila={(criticidad) => criticidad.id}
-                    cargando={cargando}
+                <Table
+                    columns={columnas}
+                    rows={criticidades}
+                    getRowKey={(criticidad) => String(criticidad.id)}
+                    loading={cargando}
                 />
             )}
 

@@ -1,4 +1,6 @@
-import { Etiqueta } from '../../../../components/ui/Etiqueta/Etiqueta'
+import { spacing } from '@hnba/design-tokens'
+import { Badge, Text } from '@hnba/react-ui'
+import { fila } from '../../../../styles/disposicion'
 import type { ParametroResponse } from '../../types'
 import { separarLista } from '../../valores'
 
@@ -8,18 +10,21 @@ interface ValorParametroProps {
 
 export const ValorParametro = ({ parametro }: ValorParametroProps) => {
     if (parametro.tipoDato === 'BOOLEANO') {
-        return parametro.valor === 'true' ? <Etiqueta>Sí</Etiqueta> : <Etiqueta variante="apagada">No</Etiqueta>
+        return (
+            <Badge
+                status={parametro.valor === 'true' ? 'success' : 'neutral'}
+                label={parametro.valor === 'true' ? 'Sí' : 'No'}
+            />
+        )
     }
     if (parametro.tipoDato === 'LISTA') {
         return (
-            <div className="flex max-w-sm flex-wrap gap-1">
+            <div style={{ ...fila(spacing.xs), maxWidth: 384 }}>
                 {separarLista(parametro.valor).map((elemento) => (
-                    <Etiqueta key={elemento} variante="apagada">
-                        {elemento}
-                    </Etiqueta>
+                    <Badge key={elemento} status="neutral" label={elemento} />
                 ))}
             </div>
         )
     }
-    return <span className="font-semibold">{parametro.valor}</span>
+    return <Text variant="body-bold-medium">{parametro.valor}</Text>
 }

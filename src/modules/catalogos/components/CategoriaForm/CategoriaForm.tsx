@@ -1,12 +1,10 @@
-import { AreaTexto } from '../../../../components/ui/AreaTexto/AreaTexto'
-import { Campo } from '../../../../components/ui/Campo/Campo'
-import { Interruptor } from '../../../../components/ui/Interruptor/Interruptor'
+import { FieldInput, FormModal, LargeTextArea, Text, TextInput, Toggle } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
+import { columna, textoSecundario } from '../../../../styles/disposicion'
 import { categoriasApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
 import { TEXTOS } from '../../textos'
 import type { CategoriaFormulario, CategoriaRequest, CategoriaResponse } from '../../types'
-import { ModalFormulario } from '../../../../components/ui/ModalFormulario/ModalFormulario'
 
 const aSolicitud = (formulario: CategoriaFormulario): CategoriaRequest => ({
     nombre: formulario.nombre.trim(),
@@ -35,38 +33,31 @@ export const CategoriaForm = ({ categoria, onCerrar, onGuardado }: CategoriaForm
     })
 
     return (
-        <ModalFormulario
-            titulo={categoria ? 'Editar categoría de deuda' : 'Nueva categoría de deuda'}
-            guardando={guardando}
-            onCerrar={onCerrar}
-            onEnviar={() => void guardar(formulario, categoria?.id)}
+        <FormModal
+            open
+            position="right"
+            size="sm"
+            title={categoria ? 'Editar categoría de deuda' : 'Nueva categoría de deuda'}
+            loading={guardando}
+            onClose={onCerrar}
+            onSubmit={() => void guardar(formulario, categoria?.id)}
         >
-            <Campo
-                etiqueta="Nombre"
-                obligatorio
-                maxLength={80}
-                value={formulario.nombre}
-                onChange={cambiar('nombre')}
-                error={errores.nombre}
-            />
-            <AreaTexto
-                etiqueta="Descripción"
-                maxLength={300}
-                value={formulario.descripcion}
-                onChange={cambiar('descripcion')}
-                error={errores.descripcion}
-                ayuda="Opcional"
-            />
-            <div className="space-y-1">
-                <Interruptor
-                    etiqueta="Restringida"
-                    activo={formulario.restringida}
-                    onCambiar={(restringida) => asignar('restringida', restringida)}
+            <FieldInput label="Nombre" errorText={errores.nombre}>
+                <TextInput maxLength={80} value={formulario.nombre} onChange={cambiar('nombre')} />
+            </FieldInput>
+            <FieldInput label="Descripción" optional errorText={errores.descripcion}>
+                <LargeTextArea maxLength={300} value={formulario.descripcion} onChange={cambiar('descripcion')} />
+            </FieldInput>
+            <div style={columna(4)}>
+                <Toggle
+                    label="Restringida"
+                    checked={formulario.restringida}
+                    onChange={(restringida) => asignar('restringida', restringida)}
                 />
-                <p className="text-xs text-texto-secundario">
+                <Text variant="body-regular-small" as="p" style={textoSecundario}>
                     La deuda de una categoría restringida solo la ven los roles con permiso para ello.
-                </p>
+                </Text>
             </div>
-        </ModalFormulario>
+        </FormModal>
     )
 }

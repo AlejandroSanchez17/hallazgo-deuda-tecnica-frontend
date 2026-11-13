@@ -1,7 +1,7 @@
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom'
+import { Loader } from '@hnba/react-ui'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LayoutPrincipal } from '../components/common/LayoutPrincipal/LayoutPrincipal'
 import { RutaProtegida } from '../components/common/RutaProtegida/RutaProtegida'
-import { Cargando } from '../components/ui/Cargando/Cargando'
 import { ErrorServidorPage } from '../pages/Error/ErrorServidorPage/ErrorServidorPage'
 import { NoEncontradoPage } from '../pages/Error/NoEncontradoPage/NoEncontradoPage'
 import { AplicacionesPage } from '../modules/catalogos/pages/AplicacionesPage/AplicacionesPage'
@@ -15,25 +15,13 @@ import { InicioPage } from '../pages/InicioPage/InicioPage'
 import { PERMISOS } from '../utils/constants/permisos'
 import { RUTAS } from '../utils/constants/rutas'
 
-// Carga diferida para que el catalogo de componentes no llegue al build de produccion
-const rutasDesarrollo: RouteObject[] = import.meta.env.DEV
-    ? [
-          {
-              path: RUTAS.componentes,
-              lazy: async () => ({
-                  Component: (await import('../pages/ComponentesPage/ComponentesPage')).ComponentesPage,
-              }),
-          },
-      ]
-    : []
-
 export const router = createBrowserRouter([
     {
         path: RUTAS.inicio,
         element: <LayoutPrincipal />,
         errorElement: <ErrorServidorPage />,
         // Se ve si la primera ruta que se abre es diferida
-        hydrateFallbackElement: <Cargando />,
+        hydrateFallbackElement: <Loader />,
         children: [
             { index: true, element: <InicioPage /> },
             {
@@ -60,7 +48,6 @@ export const router = createBrowserRouter([
                     </RutaProtegida>
                 ),
             },
-            ...rutasDesarrollo,
             { path: '*', element: <NoEncontradoPage /> },
         ],
     },

@@ -1,8 +1,8 @@
+import { spacing } from '@hnba/design-tokens'
+import { Alert, Badge, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { Etiqueta } from '../../../../components/ui/Etiqueta/Etiqueta'
-import { MensajeError } from '../../../../components/ui/MensajeError/MensajeError'
-import type { ColumnaTabla } from '../../../../components/ui/Tabla/Tabla'
-import { TablaPaginada } from '../../../../components/ui/TablaPaginada/TablaPaginada'
+import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { columna } from '../../../../styles/disposicion'
 import { coincide, normalizar } from '../../../../utils/texto'
 import { categoriasApi } from '../../api'
 import { columnaAcciones, columnaEstado } from '../../columnas'
@@ -19,31 +19,28 @@ export const CategoriasPage = () => {
     const [busqueda, setBusqueda] = useState('')
     const [edicion, setEdicion] = useState<Edicion<CategoriaResponse>>(undefined)
     const { registros, cargando, error, recargar } = useListaCatalogo(categoriasApi.listar, filtro)
-    const { cambiarEstado } = useCambiarEstado(categoriasApi.cambiarEstado, TEXTOS.categoria, recargar)
+    const { cambiarEstado, dialogo } = useCambiarEstado(categoriasApi.cambiarEstado, TEXTOS.categoria, recargar)
     const { puedeCrear, puedeActualizar, puedeDesactivar } = usePermisosCatalogo()
 
     const termino = normalizar(busqueda)
     const filas = registros.filter((categoria) => coincide(termino, categoria.nombre, categoria.descripcion))
 
-    const columnas: ColumnaTabla<CategoriaResponse>[] = [
-        { clave: 'nombre', titulo: 'Nombre' },
-        { clave: 'descripcion', titulo: 'Descripción', render: (categoria) => categoria.descripcion ?? '—' },
+    const columnas: TableColumn<CategoriaResponse>[] = [
+        { id: 'nombre', header: 'Nombre', accessor: (categoria) => categoria.nombre },
+        { id: 'descripcion', header: 'Descripción', render: (categoria) => categoria.descripcion ?? '—' },
         {
-            clave: 'restringida',
-            titulo: 'Acceso',
-            render: (categoria) =>
-                categoria.restringida ? (
-                    <Etiqueta>Restringida</Etiqueta>
-                ) : (
-                    <Etiqueta variante="apagada">Libre</Etiqueta>
-                ),
+            id: 'restringida',
+            header: 'Acceso',
+            render: (categoria) => (
+                <Badge
+                    status={categoria.restringida ? 'warning' : 'neutral'}
+                    label={categoria.restringida ? 'Restringida' : 'Libre'}
+                />
+            ),
         },
-        columnaEstado(TEXTOS.categoria),
+        columnaEstado<CategoriaResponse>(TEXTOS.categoria, puedeDesactivar ? cambiarEstado : undefined),
     ]
-    const acciones = columnaAcciones<CategoriaResponse>({
-        onEditar: puedeActualizar ? setEdicion : undefined,
-        onCambiarEstado: puedeDesactivar ? (categoria) => void cambiarEstado(categoria) : undefined,
-    })
+    const acciones = columnaAcciones<CategoriaResponse>(puedeActualizar ? setEdicion : undefined)
     if (acciones) {
         columnas.push(acciones)
     }
@@ -54,7 +51,7 @@ export const CategoriasPage = () => {
     }
 
     return (
-        <div className="space-y-4">
+        <div style={columna(spacing.md)}>
             <BarraCatalogo
                 textos={TEXTOS.categoria}
                 busqueda={busqueda}
@@ -66,7 +63,7 @@ export const CategoriasPage = () => {
             />
 
             {error ? (
-                <MensajeError mensaje={error.mensaje} />
+                <Alert variant="error" description={error.mensaje} />
             ) : (
                 <TablaPaginada
                     columnas={columnas}
@@ -85,6 +82,7 @@ export const CategoriasPage = () => {
             {edicion !== undefined && (
                 <CategoriaForm categoria={edicion} onCerrar={() => setEdicion(undefined)} onGuardado={alGuardar} />
             )}
+            {dialogo}
         </div>
     )
 }

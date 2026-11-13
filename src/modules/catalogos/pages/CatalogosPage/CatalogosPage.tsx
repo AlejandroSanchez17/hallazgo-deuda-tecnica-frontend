@@ -1,24 +1,33 @@
-import { Outlet } from 'react-router-dom'
-import { Pestanas } from '../../../../components/ui/Pestanas/Pestanas'
+import { Tabs, Text } from '@hnba/react-ui'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { columna, paginaAncha, textoSecundario } from '../../../../styles/disposicion'
 import { RUTAS } from '../../../../utils/constants/rutas'
 
+// El id de cada pestaña es su ruta
 const pestanas = [
-    { ruta: RUTAS.catalogosAreas, texto: 'Áreas' },
-    { ruta: RUTAS.catalogosOrigenes, texto: 'Orígenes' },
-    { ruta: RUTAS.catalogosCategorias, texto: 'Categorías de deuda' },
-    { ruta: RUTAS.catalogosAplicaciones, texto: 'Aplicaciones' },
-    { ruta: RUTAS.catalogosCriticidades, texto: 'Criticidades' },
+    { id: RUTAS.catalogosAreas, label: 'Áreas' },
+    { id: RUTAS.catalogosOrigenes, label: 'Orígenes' },
+    { id: RUTAS.catalogosCategorias, label: 'Categorías de deuda' },
+    { id: RUTAS.catalogosAplicaciones, label: 'Aplicaciones' },
+    { id: RUTAS.catalogosCriticidades, label: 'Criticidades' },
 ]
 
-export const CatalogosPage = () => (
-    <section className="max-w-6xl space-y-6">
-        <div>
-            <h1 className="text-xl font-bold">Catálogos</h1>
-            <p className="mt-1 text-sm text-texto-secundario">
-                Listas que se usan al registrar hallazgos y deuda técnica.
-            </p>
-        </div>
-        <Pestanas pestanas={pestanas} etiqueta="Catálogos" />
-        <Outlet />
-    </section>
-)
+export const CatalogosPage = () => {
+    const { pathname } = useLocation()
+    const navegar = useNavigate()
+
+    return (
+        <section style={paginaAncha}>
+            <div style={columna(4)}>
+                <Text variant="h3" as="h1" style={{ margin: 0 }}>
+                    Catálogos
+                </Text>
+                <Text variant="body-regular-medium" as="p" style={textoSecundario}>
+                    Listas que se usan al registrar hallazgos y deuda técnica.
+                </Text>
+            </div>
+            <Tabs tabs={pestanas} value={pathname} onChange={(ruta) => void navegar(ruta)} />
+            <Outlet />
+        </section>
+    )
+}

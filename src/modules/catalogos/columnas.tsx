@@ -1,54 +1,49 @@
-import { BotonIcono } from '../../components/ui/BotonIcono/BotonIcono'
-import { Etiqueta } from '../../components/ui/Etiqueta/Etiqueta'
-import { IconoEditar } from '../../components/ui/Iconos/IconoEditar'
-import { IconoInterruptor } from '../../components/ui/Iconos/IconoInterruptor'
-import type { ColumnaTabla } from '../../components/ui/Tabla/Tabla'
+import { Badge, Button, Toggle, type TableColumn } from '@hnba/react-ui'
 import { conGenero } from './textos'
 import type { RegistroCatalogo, TextosCatalogo } from './types'
 
-export const columnaEstado = <T extends RegistroCatalogo>(textos: TextosCatalogo): ColumnaTabla<T> => ({
-    clave: 'activo',
-    titulo: 'Estado',
-    render: (registro) => (
-        <Etiqueta variante={registro.activo ? 'normal' : 'apagada'}>
-            {conGenero(textos, registro.activo ? 'Activ' : 'Inactiv')}
-        </Etiqueta>
-    ),
+// Con onCambiarEstado el estado se muestra y se cambia con un interruptor; sin el, solo se muestra
+export const columnaEstado = <T extends RegistroCatalogo>(
+    textos: TextosCatalogo,
+    onCambiarEstado?: (registro: T) => void,
+): TableColumn<T> => ({
+    id: 'activo',
+    header: 'Estado',
+    render: (registro) => {
+        const etiqueta = conGenero(textos, registro.activo ? 'Activ' : 'Inactiv')
+        if (!onCambiarEstado) {
+            return <Badge status={registro.activo ? 'success' : 'neutral'} label={etiqueta} />
+        }
+        // Controlado: el interruptor solo cambia cuando el registro cambia, despues de confirmar.
+        // Sin texto visible; el grupo le da nombre a los lectores de pantalla porque Toggle no acepta aria-label
+        return (
+            <div role="group" aria-label={`Estado: ${etiqueta}`} title={etiqueta}>
+                <Toggle checked={registro.activo} onChange={() => onCambiarEstado(registro)} />
+            </div>
+        )
+    },
 })
 
-interface AccionesFila<T> {
-    onEditar?: (registro: T) => void
-    onCambiarEstado?: (registro: T) => void
-}
-
-// Devuelve null si el usuario no tiene ninguna accion, para no mostrar la columna vacia
-export const columnaAcciones = <T extends RegistroCatalogo>({
-    onEditar,
-    onCambiarEstado,
-}: AccionesFila<T>): ColumnaTabla<T> | null => {
-    if (!onEditar && !onCambiarEstado) {
+// Devuelve null si el usuario no puede editar, para no mostrar la columna vacia
+export const columnaAcciones = <T extends RegistroCatalogo>(
+    onEditar?: (registro: T) => void,
+): TableColumn<T> | null => {
+    if (!onEditar) {
         return null
     }
     return {
-        clave: 'acciones',
-        titulo: 'Acciones',
-        alineacion: 'centro',
+        id: 'acciones',
+        header: 'Acciones',
+        align: 'center',
         render: (registro) => (
-            <div className="inline-flex gap-1">
-                {onEditar && (
-                    <BotonIcono etiqueta="Editar" onClick={() => onEditar(registro)}>
-                        <IconoEditar />
-                    </BotonIcono>
-                )}
-                {onCambiarEstado && (
-                    <BotonIcono
-                        etiqueta={registro.activo ? 'Desactivar' : 'Activar'}
-                        onClick={() => onCambiarEstado(registro)}
-                    >
-                        <IconoInterruptor encendido={registro.activo} />
-                    </BotonIcono>
-                )}
-            </div>
+            <Button
+                variant="ghost"
+                size="sm"
+                iconName="edit"
+                aria-label="Editar"
+                title="Editar"
+                onClick={() => onEditar(registro)}
+            />
         ),
     }
 }

@@ -1,11 +1,9 @@
+import { spacing } from '@hnba/design-tokens'
+import { Alert, Button, Loader, Table, Text, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { BotonIcono } from '../../../../components/ui/BotonIcono/BotonIcono'
-import { Buscador } from '../../../../components/ui/Buscador/Buscador'
-import { Cargando } from '../../../../components/ui/Cargando/Cargando'
-import { IconoEditar } from '../../../../components/ui/Iconos/IconoEditar'
-import { MensajeError } from '../../../../components/ui/MensajeError/MensajeError'
-import { Tabla, type ColumnaTabla } from '../../../../components/ui/Tabla/Tabla'
+import { Buscador } from '../../../../components/common/Buscador/Buscador'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
+import { columna, paginaAncha, textoSecundario } from '../../../../styles/disposicion'
 import { PERMISOS } from '../../../../utils/constants/permisos'
 import { formatearFechaHora } from '../../../../utils/formato'
 import { coincide, normalizar } from '../../../../utils/texto'
@@ -26,40 +24,45 @@ export const ParametrosPage = () => {
         parametros.filter((parametro) => coincide(termino, parametro.clave, parametro.descripcion, parametro.valor)),
     )
 
-    const columnas: ColumnaTabla<ParametroResponse>[] = [
+    const columnas: TableColumn<ParametroResponse>[] = [
         {
-            clave: 'descripcion',
-            titulo: 'Parámetro',
+            id: 'descripcion',
+            header: 'Parámetro',
             render: (parametro) => (
                 <div>
-                    <p>{parametro.descripcion}</p>
-                    <p className="mt-0.5 font-mono text-xs text-texto-secundario">{parametro.clave}</p>
+                    <Text variant="body-regular-medium" as="p" style={{ margin: 0 }}>
+                        {parametro.descripcion}
+                    </Text>
+                    <Text variant="body-regular-small" as="p" style={{ ...textoSecundario, fontFamily: 'monospace' }}>
+                        {parametro.clave}
+                    </Text>
                 </div>
             ),
         },
-        { clave: 'valor', titulo: 'Valor', render: (parametro) => <ValorParametro parametro={parametro} /> },
+        { id: 'valor', header: 'Valor', render: (parametro) => <ValorParametro parametro={parametro} /> },
         {
-            clave: 'fechaModificacion',
-            titulo: 'Última modificación',
+            id: 'fechaModificacion',
+            header: 'Última modificación',
             render: (parametro) =>
-                parametro.modificadoPorNombre ? (
-                    <span className="text-texto-secundario">
-                        {parametro.modificadoPorNombre} · {formatearFechaHora(parametro.fechaModificacion)}
-                    </span>
-                ) : (
-                    '—'
-                ),
+                parametro.modificadoPorNombre
+                    ? `${parametro.modificadoPorNombre} · ${formatearFechaHora(parametro.fechaModificacion)}`
+                    : '—',
         },
     ]
     if (puedeActualizar) {
         columnas.push({
-            clave: 'acciones',
-            titulo: 'Acciones',
-            alineacion: 'centro',
+            id: 'acciones',
+            header: 'Acciones',
+            align: 'center',
             render: (parametro) => (
-                <BotonIcono etiqueta="Editar" onClick={() => setEdicion(parametro)}>
-                    <IconoEditar />
-                </BotonIcono>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    iconName="edit"
+                    aria-label="Editar"
+                    title="Editar"
+                    onClick={() => setEdicion(parametro)}
+                />
             ),
         })
     }
@@ -70,33 +73,38 @@ export const ParametrosPage = () => {
     }
 
     return (
-        <section className="max-w-6xl space-y-6">
-            <div>
-                <h1 className="text-xl font-bold">Parámetros</h1>
-                <p className="mt-1 text-sm text-texto-secundario">
+        <section style={paginaAncha}>
+            <div style={columna(4)}>
+                <Text variant="h3" as="h1" style={{ margin: 0 }}>
+                    Parámetros
+                </Text>
+                <Text variant="body-regular-medium" as="p" style={textoSecundario}>
                     Valores que ajustan el comportamiento del sistema sin cambiar el código.
-                </p>
+                </Text>
             </div>
 
-            <div className="w-80">
-                <Buscador
-                    valor={busqueda}
-                    onCambiar={setBusqueda}
-                    etiqueta="Buscar parámetros"
-                    placeholder="Buscar por descripción, clave o valor…"
-                />
-            </div>
+            <Buscador
+                valor={busqueda}
+                onCambiar={setBusqueda}
+                etiqueta="Buscar parámetros"
+                placeholder="Buscar por descripción, clave o valor…"
+                ancho={320}
+            />
 
-            {cargando && <Cargando />}
-            {error && <MensajeError mensaje={error.mensaje} />}
+            {cargando && <Loader label="Cargando…" />}
+            {error && <Alert variant="error" description={error.mensaje} />}
             {!cargando && !error && grupos.length === 0 && (
-                <p className="text-sm text-texto-secundario">Ningún parámetro coincide con la búsqueda.</p>
+                <Text variant="body-regular-medium" as="p" style={textoSecundario}>
+                    Ningún parámetro coincide con la búsqueda.
+                </Text>
             )}
 
             {grupos.map((grupo) => (
-                <div key={grupo.titulo} className="space-y-2">
-                    <h2 className="text-base font-semibold">{grupo.titulo}</h2>
-                    <Tabla columnas={columnas} filas={grupo.parametros} claveFila={(parametro) => parametro.clave} />
+                <div key={grupo.titulo} style={columna(spacing.sm)}>
+                    <Text variant="h5" as="h2" style={{ margin: 0 }}>
+                        {grupo.titulo}
+                    </Text>
+                    <Table columns={columnas} rows={grupo.parametros} getRowKey={(parametro) => parametro.clave} />
                 </div>
             ))}
 

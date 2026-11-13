@@ -1,11 +1,11 @@
-import { Campo } from '../../../../components/ui/Campo/Campo'
-import { Selector } from '../../../../components/ui/Selector/Selector'
+import { spacing } from '@hnba/design-tokens'
+import { FieldInput, FormModal, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
+import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { criticidadesApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
 import { TEXTOS } from '../../textos'
 import type { CriticidadFormulario, CriticidadRequest, CriticidadResponse, RolResumen } from '../../types'
-import { ModalFormulario } from '../../../../components/ui/ModalFormulario/ModalFormulario'
 
 const aNumero = (texto: string) => (texto.trim() === '' ? null : Number(texto))
 
@@ -26,7 +26,7 @@ interface CriticidadFormProps {
 
 // Las criticidades no se crean ni se desactivan, y su nivel no se edita
 export const CriticidadForm = ({ criticidad, roles, onCerrar, onGuardado }: CriticidadFormProps) => {
-    const { formulario, cambiar } = useFormulario<CriticidadFormulario>({
+    const { formulario, cambiar, asignar } = useFormulario<CriticidadFormulario>({
         nombre: criticidad.nombre,
         plazoMeses: criticidad.plazoMeses.toString(),
         maxProrrogas: criticidad.maxProrrogas.toString(),
@@ -39,61 +39,54 @@ export const CriticidadForm = ({ criticidad, roles, onCerrar, onGuardado }: Crit
         textos: TEXTOS.criticidad,
         onGuardado,
     })
-    const opcionesRol = roles.map((rol) => ({ valor: rol.id, texto: rol.nombre }))
+    const opcionesRol: Opcion[] = roles.map((rol) => ({ valor: String(rol.id), texto: rol.nombre }))
 
     return (
-        <ModalFormulario
-            titulo={`Editar criticidad (nivel ${criticidad.nivel})`}
-            guardando={guardando}
-            onCerrar={onCerrar}
-            onEnviar={() => void guardar(formulario, criticidad.id)}
+        <FormModal
+            open
+            position="right"
+            size="sm"
+            title={`Editar criticidad (nivel ${criticidad.nivel})`}
+            loading={guardando}
+            onClose={onCerrar}
+            onSubmit={() => void guardar(formulario, criticidad.id)}
         >
-            <Campo
-                etiqueta="Nombre"
-                obligatorio
-                maxLength={30}
-                value={formulario.nombre}
-                onChange={cambiar('nombre')}
-                error={errores.nombre}
-            />
-            <div className="grid grid-cols-2 gap-4">
-                <Campo
-                    etiqueta="Plazo (meses)"
-                    obligatorio
-                    type="number"
-                    min={1}
-                    value={formulario.plazoMeses}
-                    onChange={cambiar('plazoMeses')}
-                    error={errores.plazoMeses}
-                    ayuda="Mínimo 1"
-                />
-                <Campo
-                    etiqueta="Prórrogas máximas"
-                    obligatorio
-                    type="number"
-                    min={0}
-                    value={formulario.maxProrrogas}
-                    onChange={cambiar('maxProrrogas')}
-                    error={errores.maxProrrogas}
-                    ayuda="Mínimo 0"
-                />
+            <FieldInput label="Nombre" errorText={errores.nombre}>
+                <TextInput maxLength={30} value={formulario.nombre} onChange={cambiar('nombre')} />
+            </FieldInput>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing.md }}>
+                <FieldInput label="Plazo (meses)" errorText={errores.plazoMeses} helperText="Mínimo 1">
+                    <TextInput type="number" min={1} value={formulario.plazoMeses} onChange={cambiar('plazoMeses')} />
+                </FieldInput>
+                <FieldInput label="Prórrogas máximas" errorText={errores.maxProrrogas} helperText="Mínimo 0">
+                    <TextInput
+                        type="number"
+                        min={0}
+                        value={formulario.maxProrrogas}
+                        onChange={cambiar('maxProrrogas')}
+                    />
+                </FieldInput>
             </div>
-            <Selector
-                etiqueta="Rol que aprueba el plan"
-                obligatorio
-                opciones={opcionesRol}
-                value={formulario.rolApruebaPlanId}
-                onChange={cambiar('rolApruebaPlanId')}
-                error={errores.rolApruebaPlanId}
-            />
-            <Selector
-                etiqueta="Rol que valida el cierre"
-                obligatorio
-                opciones={opcionesRol}
-                value={formulario.rolValidaCierreId}
-                onChange={cambiar('rolValidaCierreId')}
-                error={errores.rolValidaCierreId}
-            />
-        </ModalFormulario>
+            <FieldInput label="Rol que aprueba el plan" errorText={errores.rolApruebaPlanId}>
+                <Select
+                    options={opcionesRol}
+                    value={opcionDe(opcionesRol, formulario.rolApruebaPlanId)}
+                    getLabel={textoDeOpcion}
+                    getValue={valorDeOpcion}
+                    placeholder="Seleccione…"
+                    onChange={(opcion) => asignar('rolApruebaPlanId', opcion.valor)}
+                />
+            </FieldInput>
+            <FieldInput label="Rol que valida el cierre" errorText={errores.rolValidaCierreId}>
+                <Select
+                    options={opcionesRol}
+                    value={opcionDe(opcionesRol, formulario.rolValidaCierreId)}
+                    getLabel={textoDeOpcion}
+                    getValue={valorDeOpcion}
+                    placeholder="Seleccione…"
+                    onChange={(opcion) => asignar('rolValidaCierreId', opcion.valor)}
+                />
+            </FieldInput>
+        </FormModal>
     )
 }

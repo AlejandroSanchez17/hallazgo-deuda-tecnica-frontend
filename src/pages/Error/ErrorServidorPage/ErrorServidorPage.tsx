@@ -1,19 +1,20 @@
-import { Boton } from '../../../components/ui/Boton/Boton'
+import { Button, EmptyState } from '@hnba/react-ui'
+import type { CSSProperties } from 'react'
 
 // Recarga completa porque el estado de la aplicacion pudo quedar inconsistente
 const recargarInicio = () => window.location.assign('/')
 
+const estiloPagina: CSSProperties = { minHeight: '100svh', display: 'grid', placeItems: 'center', padding: 24 }
+
 export const ErrorServidorPage = () => (
-    <main className="flex min-h-svh items-center justify-center p-6">
-        <section className="max-w-md text-center">
-            <p className="text-sm font-semibold text-texto-secundario">Error inesperado</p>
-            <h1 className="mt-2 text-xl font-bold">Algo salió mal</h1>
-            <p className="mt-2 text-sm text-texto-secundario">
-                Ocurrió un problema al mostrar esta página. Intente de nuevo.
-            </p>
-            <Boton variante="primario" className="mt-6" onClick={recargarInicio}>
-                Volver al inicio
-            </Boton>
-        </section>
+    <main style={estiloPagina}>
+        <EmptyState
+            iconName="x_circle"
+            title="Algo salió mal"
+            description="Ocurrió un problema al mostrar esta página. Intente de nuevo."
+        />
+        <Button variant="primary" onClick={recargarInicio}>
+            Volver al inicio
+        </Button>
     </main>
 )
