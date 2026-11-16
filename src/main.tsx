@@ -13,7 +13,7 @@ if (!raiz) {
 
 createRoot(raiz).render(
     <StrictMode>
-        <ToastProvider position="top-right">
+        <ToastProvider position="bottom-center">
             <PuenteAvisos />
             <App />
         </ToastProvider>

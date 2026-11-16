@@ -2,7 +2,7 @@ import { ConfirmDialog } from '@hnba/react-ui'
 import { useState } from 'react'
 import { aErrorApi, avisarSiNoSeAviso } from '../../../services/api'
 import { avisarExito } from '../../../utils/alertas'
-import { mensajeExito } from '../textos'
+import { conGenero, mensajeExito } from '../textos'
 import type { RegistroCatalogo, TextosCatalogo } from '../types'
 
 // Pide confirmacion con el ConfirmDialog de la libreria: la pantalla debe dibujar `dialogo`
@@ -38,9 +38,14 @@ export const useCambiarEstado = (
     const dialogo = (
         <ConfirmDialog
             open={pendiente !== null}
-            kind="confirm"
-            variant="warning"
+            kind="alert"
+            variant={pendiente?.activo ? 'error' : 'warning'}
             title={`¿${accion} ${textos.articulo} ${textos.sustantivo} ${pendiente?.nombre ?? ''}?`}
+            description={
+                pendiente?.activo
+                    ? `Mientras esté ${conGenero(textos, 'inactiv')} no se ofrecerá en los formularios.`
+                    : 'Volverá a ofrecerse en los formularios.'
+            }
             confirmLabel={accion}
             cancelLabel="Cancelar"
             confirmLoading={cambiando}

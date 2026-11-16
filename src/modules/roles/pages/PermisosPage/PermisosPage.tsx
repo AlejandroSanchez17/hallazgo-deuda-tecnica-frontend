@@ -125,9 +125,10 @@ export const PermisosPage = () => {
 
             <ConfirmDialog
                 open={rolPendiente !== null}
-                kind="confirm"
-                variant="warning"
+                kind="alert"
+                variant="error"
                 title="¿Descartar los cambios sin guardar?"
+                description="Se perderán los permisos que cambió en este rol."
                 confirmLabel="Descartar"
                 cancelLabel="Seguir editando"
                 onConfirm={() => {

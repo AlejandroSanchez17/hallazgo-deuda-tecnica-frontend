@@ -23,8 +23,10 @@ export const useCambiarEstado = (
         const activar = !pendiente.activo
         setCambiando(true)
         try {
-            await cambiar(pendiente.id, activar)
-            void avisarExito(mensajeExito(textos, activar ? 'activad' : 'desactivad'))
+            const respuesta = await cambiar(pendiente.id, activar)
+            // Si la API devuelve su mensaje se muestra ese (por ejemplo, "... y retirado del equipo 'X'")
+            const mensaje = typeof respuesta === 'string' && respuesta !== '' ? respuesta : null
+            void avisarExito(mensaje ?? mensajeExito(textos, activar ? 'activad' : 'desactivad'))
             onCambiado()
         } catch (error) {
             avisarSiNoSeAviso(aErrorApi(error))
@@ -38,9 +40,14 @@ export const useCambiarEstado = (
     const dialogo = (
         <ConfirmDialog
             open={pendiente !== null}
-            kind="confirm"
-            variant="warning"
+            kind="alert"
+            variant={pendiente?.activo ? 'error' : 'warning'}
             title={`¿${accion} ${textos.articulo} ${textos.sustantivo} ${pendiente?.nombre ?? ''}?`}
+            description={
+                pendiente?.activo
+                    ? 'Ya no podrá entrar al sistema y, si es miembro de un equipo, se le retirará.'
+                    : 'Podrá volver a entrar al sistema con sus roles. No regresa a su equipo anterior.'
+            }
             confirmLabel={accion}
             cancelLabel="Cancelar"
             confirmLoading={cambiando}

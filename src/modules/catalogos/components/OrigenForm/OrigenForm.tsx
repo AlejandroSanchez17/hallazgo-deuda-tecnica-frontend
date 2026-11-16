@@ -33,7 +33,6 @@ export const OrigenForm = ({ origen, onCerrar, onGuardado }: OrigenFormProps) =>
         <FormModal
             open
             position="right"
-            size="sm"
             title={origen ? 'Editar origen' : 'Nuevo origen'}
             loading={guardando}
             onClose={onCerrar}

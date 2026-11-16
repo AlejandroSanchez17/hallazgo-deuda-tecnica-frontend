@@ -1,6 +1,6 @@
-import { spacing } from '@hnba/design-tokens'
 import { FieldInput, FormModal, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
+import { anchoCompleto, rejillaFormulario } from '../../../../styles/disposicion'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { criticidadesApi, rolesApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
@@ -50,16 +50,17 @@ export const CriticidadForm = ({ criticidad, onCerrar, onGuardado }: CriticidadF
         <FormModal
             open
             position="right"
-            size="sm"
             title={`Editar criticidad (nivel ${criticidad.nivel})`}
             loading={guardando}
             onClose={onCerrar}
             onSubmit={() => void guardar(formulario, criticidad.id)}
         >
-            <FieldInput label="Nombre" errorText={errores.nombre}>
-                <TextInput maxLength={30} value={formulario.nombre} onChange={cambiar('nombre')} />
-            </FieldInput>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing.md }}>
+            <div style={rejillaFormulario}>
+                <div style={anchoCompleto}>
+                    <FieldInput label="Nombre" errorText={errores.nombre}>
+                        <TextInput maxLength={30} value={formulario.nombre} onChange={cambiar('nombre')} />
+                    </FieldInput>
+                </div>
                 <FieldInput label="Plazo (meses)" errorText={errores.plazoMeses} helperText="Mínimo 1">
                     <TextInput type="number" min={1} value={formulario.plazoMeses} onChange={cambiar('plazoMeses')} />
                 </FieldInput>
@@ -71,27 +72,27 @@ export const CriticidadForm = ({ criticidad, onCerrar, onGuardado }: CriticidadF
                         onChange={cambiar('maxProrrogas')}
                     />
                 </FieldInput>
+                <FieldInput label="Rol que aprueba el plan" errorText={errores.rolApruebaPlanId}>
+                    <Select
+                        options={opcionesRol}
+                        value={opcionDe(opcionesRol, formulario.rolApruebaPlanId)}
+                        getLabel={textoDeOpcion}
+                        getValue={valorDeOpcion}
+                        placeholder="Seleccione…"
+                        onChange={(opcion) => asignar('rolApruebaPlanId', opcion.valor)}
+                    />
+                </FieldInput>
+                <FieldInput label="Rol que valida el cierre" errorText={errores.rolValidaCierreId}>
+                    <Select
+                        options={opcionesRol}
+                        value={opcionDe(opcionesRol, formulario.rolValidaCierreId)}
+                        getLabel={textoDeOpcion}
+                        getValue={valorDeOpcion}
+                        placeholder="Seleccione…"
+                        onChange={(opcion) => asignar('rolValidaCierreId', opcion.valor)}
+                    />
+                </FieldInput>
             </div>
-            <FieldInput label="Rol que aprueba el plan" errorText={errores.rolApruebaPlanId}>
-                <Select
-                    options={opcionesRol}
-                    value={opcionDe(opcionesRol, formulario.rolApruebaPlanId)}
-                    getLabel={textoDeOpcion}
-                    getValue={valorDeOpcion}
-                    placeholder="Seleccione…"
-                    onChange={(opcion) => asignar('rolApruebaPlanId', opcion.valor)}
-                />
-            </FieldInput>
-            <FieldInput label="Rol que valida el cierre" errorText={errores.rolValidaCierreId}>
-                <Select
-                    options={opcionesRol}
-                    value={opcionDe(opcionesRol, formulario.rolValidaCierreId)}
-                    getLabel={textoDeOpcion}
-                    getValue={valorDeOpcion}
-                    placeholder="Seleccione…"
-                    onChange={(opcion) => asignar('rolValidaCierreId', opcion.valor)}
-                />
-            </FieldInput>
         </FormModal>
     )
 }

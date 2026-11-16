@@ -38,9 +38,14 @@ export const useCambiarEstado = (
     const dialogo = (
         <ConfirmDialog
             open={pendiente !== null}
-            kind="confirm"
-            variant="warning"
+            kind="alert"
+            variant={pendiente?.activo ? 'error' : 'warning'}
             title={`¿${accion} ${textos.articulo} ${textos.sustantivo} ${pendiente?.nombre ?? ''}?`}
+            description={
+                pendiente?.activo
+                    ? 'Mientras esté inactivo no se podrá asignar a otros usuarios.'
+                    : 'Se podrá volver a asignar a los usuarios.'
+            }
             confirmLabel={accion}
             cancelLabel="Cancelar"
             confirmLoading={cambiando}

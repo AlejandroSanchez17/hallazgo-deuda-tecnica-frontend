@@ -1,5 +1,6 @@
 import { FieldInput, FormModal, LargeTextArea, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
+import { anchoCompleto, rejillaFormulario } from '../../../../styles/disposicion'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { aplicacionesApi, areasApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
@@ -44,33 +45,40 @@ export const AplicacionForm = ({ aplicacion, onCerrar, onGuardado }: AplicacionF
         <FormModal
             open
             position="right"
-            size="sm"
             title={aplicacion ? 'Editar aplicación' : 'Nueva aplicación'}
             loading={guardando}
             onClose={onCerrar}
             onSubmit={() => void guardar(formulario, aplicacion?.id)}
         >
-            <FieldInput label="Nombre" errorText={errores.nombre}>
-                <TextInput maxLength={120} value={formulario.nombre} onChange={cambiar('nombre')} />
-            </FieldInput>
-            <FieldInput
-                label="Área"
-                errorText={errores.areaId}
-                helperText="Área responsable de la aplicación. Solo se listan las áreas activas."
-            >
-                <Select
-                    options={opcionesArea}
-                    value={opcionDe(opcionesArea, formulario.areaId)}
-                    getLabel={textoDeOpcion}
-                    getValue={valorDeOpcion}
-                    searchable
-                    placeholder="Seleccione…"
-                    onChange={(opcion) => asignar('areaId', opcion.valor)}
-                />
-            </FieldInput>
-            <FieldInput label="Descripción" optional errorText={errores.descripcion}>
-                <LargeTextArea maxLength={300} value={formulario.descripcion} onChange={cambiar('descripcion')} />
-            </FieldInput>
+            <div style={rejillaFormulario}>
+                <FieldInput label="Nombre" errorText={errores.nombre}>
+                    <TextInput maxLength={120} value={formulario.nombre} onChange={cambiar('nombre')} />
+                </FieldInput>
+                <FieldInput
+                    label="Área"
+                    errorText={errores.areaId}
+                    helperText="Área responsable de la aplicación. Solo se listan las áreas activas."
+                >
+                    <Select
+                        options={opcionesArea}
+                        value={opcionDe(opcionesArea, formulario.areaId)}
+                        getLabel={textoDeOpcion}
+                        getValue={valorDeOpcion}
+                        searchable
+                        placeholder="Seleccione…"
+                        onChange={(opcion) => asignar('areaId', opcion.valor)}
+                    />
+                </FieldInput>
+                <div style={anchoCompleto}>
+                    <FieldInput label="Descripción" optional errorText={errores.descripcion}>
+                        <LargeTextArea
+                            maxLength={300}
+                            value={formulario.descripcion}
+                            onChange={cambiar('descripcion')}
+                        />
+                    </FieldInput>
+                </div>
+            </div>
         </FormModal>
     )
 }

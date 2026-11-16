@@ -8,6 +8,8 @@ import { AplicacionesPage } from '../modules/catalogos/pages/AplicacionesPage/Ap
 import { AreasPage } from '../modules/catalogos/pages/AreasPage/AreasPage'
 import { CategoriasPage } from '../modules/catalogos/pages/CategoriasPage/CategoriasPage'
 import { CriticidadesPage } from '../modules/catalogos/pages/CriticidadesPage/CriticidadesPage'
+import { EquipoDetallePage } from '../modules/equipos/pages/EquipoDetallePage/EquipoDetallePage'
+import { EquiposPage } from '../modules/equipos/pages/EquiposPage/EquiposPage'
 import { OrigenesPage } from '../modules/catalogos/pages/OrigenesPage/OrigenesPage'
 import { ParametrosPage } from '../modules/parametros/pages/ParametrosPage/ParametrosPage'
 import { PermisosPage } from '../modules/roles/pages/PermisosPage/PermisosPage'
@@ -62,6 +64,18 @@ export const router = createBrowserRouter([
                     { index: true, element: <Navigate to={RUTAS.rolesListado} replace /> },
                     { path: RUTAS.rolesListado, element: <RolesPage /> },
                     { path: RUTAS.rolesPermisos, element: <PermisosPage /> },
+                ],
+            },
+            {
+                path: RUTAS.equipos,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.equipoLeer}>
+                        <Outlet />
+                    </RutaProtegida>
+                ),
+                children: [
+                    { index: true, element: <EquiposPage /> },
+                    { path: RUTAS.equipoDetalle, element: <EquipoDetallePage /> },
                 ],
             },
             {

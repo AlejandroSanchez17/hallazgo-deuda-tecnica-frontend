@@ -33,5 +33,6 @@ export const OPCIONES_MENU: OpcionMenu[] = [
             { ruta: RUTAS.rolesPermisos, texto: 'Permisos' },
         ],
     },
+    { ruta: RUTAS.equipos, texto: 'Equipos técnicos', permiso: PERMISOS.equipoLeer },
     { ruta: RUTAS.parametros, texto: 'Parámetros', permiso: PERMISOS.parametroLeer },
 ]

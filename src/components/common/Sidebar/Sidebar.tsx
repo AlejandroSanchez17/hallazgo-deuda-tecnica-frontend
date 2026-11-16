@@ -8,8 +8,9 @@ import { RUTAS } from '../../../utils/constants/rutas'
 const ICONOS: Record<string, IconName> = {
     [RUTAS.inicio]: 'house',
     [RUTAS.catalogos]: 'book_open_lines',
-    [RUTAS.usuarios]: 'groups',
+    [RUTAS.usuarios]: 'users',
     [RUTAS.roles]: 'key',
+    [RUTAS.equipos]: 'groups',
     [RUTAS.parametros]: 'gears',
 }
 

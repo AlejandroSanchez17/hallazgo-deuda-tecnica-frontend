@@ -9,8 +9,10 @@ export interface Miga {
 const inicio: Miga = { texto: 'Inicio', ruta: RUTAS.inicio }
 const catalogos: Miga = { texto: 'Catálogos', ruta: RUTAS.catalogos }
 const rolesYPermisos: Miga = { texto: 'Roles y permisos', ruta: RUTAS.roles }
+const equipos: Miga = { texto: 'Equipos técnicos', ruta: RUTAS.equipos }
 
-// Migas de cada pantalla; Inicio y la pagina 404 no tienen. Al agregar una pantalla se agrega su linea aqui
+// Migas de cada pantalla por su ruta (admite parametros, como /equipos/:id); Inicio y la pagina 404 no tienen.
+// Al agregar una pantalla se agrega su linea aqui
 export const MIGAS: Record<string, Miga[]> = {
     [RUTAS.catalogosAreas]: [inicio, catalogos, { texto: 'Áreas' }],
     [RUTAS.catalogosOrigenes]: [inicio, catalogos, { texto: 'Orígenes' }],
@@ -20,5 +22,7 @@ export const MIGAS: Record<string, Miga[]> = {
     [RUTAS.usuarios]: [inicio, { texto: 'Usuarios' }],
     [RUTAS.rolesListado]: [inicio, rolesYPermisos, { texto: 'Roles' }],
     [RUTAS.rolesPermisos]: [inicio, rolesYPermisos, { texto: 'Permisos' }],
+    [RUTAS.equipos]: [inicio, { texto: 'Equipos técnicos' }],
+    [RUTAS.equipoDetalle]: [inicio, equipos, { texto: 'Detalle del equipo' }],
     [RUTAS.parametros]: [inicio, { texto: 'Parámetros' }],
 }

@@ -11,7 +11,11 @@ export const RUTAS = {
     roles: '/roles',
     rolesListado: '/roles/listado',
     rolesPermisos: '/roles/permisos',
+    equipos: '/equipos',
+    equipoDetalle: '/equipos/:id',
 } as const
 
 // La pestaña de permisos abre con el rol ya elegido
 export const rutaPermisosDeRol = (rolId: number) => `${RUTAS.rolesPermisos}?rol=${rolId}`
+
+export const rutaEquipo = (equipoId: number) => `${RUTAS.equipos}/${equipoId}`

@@ -25,6 +25,21 @@ export const filaEntreExtremos: CSSProperties = {
     gap: spacing.md,
 }
 
+// Formularios en dos columnas, como el ejemplo de FormModal de la libreria (panel derecho de 560 px).
+// Si el panel es angosto (por ejemplo, en un celular) las columnas bajan a una
+export const rejillaFormulario: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+    gap: spacing.md,
+    alignItems: 'start',
+}
+
+// Un campo de la rejilla que ocupa las dos columnas (descripciones, ayudas largas)
+export const anchoCompleto: CSSProperties = { gridColumn: '1 / -1' }
+
+// Un interruptor junto a un campo con etiqueta: queda centrado con el cuadro de texto
+export const junto: CSSProperties = { alignSelf: 'center' }
+
 export const textoSecundario: CSSProperties = { color: colors.brand.gray[700], margin: 0 }
 
 export const centrado: CSSProperties = { textAlign: 'center', maxWidth: 448, margin: '0 auto', padding: '64px 0' }

@@ -1,5 +1,6 @@
 import { FieldInput, FormModal, MultiSelect, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
+import { rejillaFormulario } from '../../../../styles/disposicion'
 import { textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { rolesApi, usuariosApi } from '../../api'
 import { useGuardar } from '../../hooks/useGuardar'
@@ -49,45 +50,46 @@ export const UsuarioForm = ({ usuario, onCerrar, onGuardado }: UsuarioFormProps)
         <FormModal
             open
             position="right"
-            size="sm"
             title={usuario ? 'Editar usuario' : 'Nuevo usuario'}
             loading={guardando}
             onClose={onCerrar}
             onSubmit={() => void guardar(formulario, usuario?.id)}
         >
-            <FieldInput label="Nombre" errorText={errores.nombre}>
-                <TextInput maxLength={150} value={formulario.nombre} onChange={cambiar('nombre')} />
-            </FieldInput>
-            <FieldInput label="Correo" errorText={errores.correo}>
-                <TextInput type="email" maxLength={150} value={formulario.correo} onChange={cambiar('correo')} />
-            </FieldInput>
-            <FieldInput
-                label="Usuario de red"
-                errorText={errores.usuarioRed}
-                helperText="Letras, números, punto, guion y guion bajo."
-            >
-                <TextInput maxLength={60} value={formulario.usuarioRed} onChange={cambiar('usuarioRed')} />
-            </FieldInput>
-            <FieldInput
-                label="Roles"
-                errorText={errores.rolIds}
-                helperText="Al menos uno. Solo se listan los roles activos."
-            >
-                <MultiSelect
-                    options={opciones}
-                    value={seleccionadas}
-                    getLabel={textoDeOpcion}
-                    getValue={valorDeOpcion}
-                    searchable
-                    placeholder="Seleccione…"
-                    onChange={(lista) =>
-                        asignar(
-                            'rolIds',
-                            lista.map((opcion) => opcion.valor),
-                        )
-                    }
-                />
-            </FieldInput>
+            <div style={rejillaFormulario}>
+                <FieldInput label="Nombre" errorText={errores.nombre}>
+                    <TextInput maxLength={150} value={formulario.nombre} onChange={cambiar('nombre')} />
+                </FieldInput>
+                <FieldInput label="Correo" errorText={errores.correo}>
+                    <TextInput type="email" maxLength={150} value={formulario.correo} onChange={cambiar('correo')} />
+                </FieldInput>
+                <FieldInput
+                    label="Usuario de red"
+                    errorText={errores.usuarioRed}
+                    helperText="Letras, números, punto, guion y guion bajo."
+                >
+                    <TextInput maxLength={60} value={formulario.usuarioRed} onChange={cambiar('usuarioRed')} />
+                </FieldInput>
+                <FieldInput
+                    label="Roles"
+                    errorText={errores.rolIds}
+                    helperText="Al menos uno. Solo se listan los roles activos."
+                >
+                    <MultiSelect
+                        options={opciones}
+                        value={seleccionadas}
+                        getLabel={textoDeOpcion}
+                        getValue={valorDeOpcion}
+                        searchable
+                        placeholder="Seleccione…"
+                        onChange={(lista) =>
+                            asignar(
+                                'rolIds',
+                                lista.map((opcion) => opcion.valor),
+                            )
+                        }
+                    />
+                </FieldInput>
+            </div>
         </FormModal>
     )
 }

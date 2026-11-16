@@ -26,8 +26,9 @@ const convertirError = (error: AxiosError<ApiResponse<unknown>>): ErrorApi => {
         return new ErrorApi(0, 'No se pudo conectar con el servidor')
     }
     const { status, data } = error.response
+    // Algunos 403 explican el motivo (por ejemplo, un equipo ajeno con alcance PROPIO)
     if (status === 403) {
-        return new ErrorApi(status, 'No tiene permiso para esta acción')
+        return new ErrorApi(status, data?.mensaje ?? 'No tiene permiso para esta acción')
     }
     if (status >= 500) {
         return new ErrorApi(status, 'Ocurrió un error en el servidor. Intente de nuevo')

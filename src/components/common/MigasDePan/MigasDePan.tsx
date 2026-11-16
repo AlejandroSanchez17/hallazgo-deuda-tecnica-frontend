@@ -1,7 +1,7 @@
 import { colors, spacing } from '@hnba/design-tokens'
 import { Breadcrumb } from '@hnba/react-ui'
 import type { CSSProperties } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { matchPath, useLocation, useNavigate } from 'react-router-dom'
 import { MIGAS } from '../../../utils/constants/migas'
 
 const estiloFranja: CSSProperties = {
@@ -14,7 +14,8 @@ const estiloFranja: CSSProperties = {
 export const MigasDePan = () => {
     const { pathname } = useLocation()
     const navegar = useNavigate()
-    const migas = MIGAS[pathname]
+    const patron = Object.keys(MIGAS).find((ruta) => matchPath(ruta, pathname))
+    const migas = patron ? MIGAS[patron] : undefined
 
     if (!migas) {
         return null

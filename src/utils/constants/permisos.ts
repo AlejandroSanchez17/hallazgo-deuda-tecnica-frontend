@@ -10,4 +10,8 @@ export const PERMISOS = {
     usuarioCrear: 'USUARIO:CREAR',
     usuarioActualizar: 'USUARIO:ACTUALIZAR',
     usuarioDesactivar: 'USUARIO:DESACTIVAR',
+    equipoLeer: 'EQUIPO:LEER',
+    equipoCrear: 'EQUIPO:CREAR',
+    equipoActualizar: 'EQUIPO:ACTUALIZAR',
+    equipoDesactivar: 'EQUIPO:DESACTIVAR',
 } as const

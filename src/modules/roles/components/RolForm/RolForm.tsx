@@ -1,6 +1,6 @@
 import { FieldInput, FormModal, LargeTextArea, Text, TextInput, Toggle } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
-import { columna, textoSecundario } from '../../../../styles/disposicion'
+import { anchoCompleto, columna, junto, rejillaFormulario, textoSecundario } from '../../../../styles/disposicion'
 import { rolesApi } from '../../api'
 import { useGuardar } from '../../hooks/useGuardar'
 import { TEXTOS } from '../../textos'
@@ -36,27 +36,34 @@ export const RolForm = ({ rol, onCerrar, onGuardado }: RolFormProps) => {
         <FormModal
             open
             position="right"
-            size="sm"
             title={`Editar rol (${rol.codigo})`}
             loading={guardando}
             onClose={onCerrar}
             onSubmit={() => void guardar(formulario, rol.id)}
         >
-            <FieldInput label="Nombre" errorText={errores.nombre}>
-                <TextInput maxLength={60} value={formulario.nombre} onChange={cambiar('nombre')} />
-            </FieldInput>
-            <FieldInput label="Descripción" optional errorText={errores.descripcion}>
-                <LargeTextArea maxLength={300} value={formulario.descripcion} onChange={cambiar('descripcion')} />
-            </FieldInput>
-            <div style={columna(4)}>
-                <Toggle
-                    label="Visibilidad global"
-                    checked={formulario.visibilidadGlobal}
-                    onChange={(global) => asignar('visibilidadGlobal', global)}
-                />
-                <Text variant="body-regular-small" as="p" style={textoSecundario}>
-                    Con visibilidad global el rol ve los elementos de todos los equipos.
-                </Text>
+            <div style={rejillaFormulario}>
+                <FieldInput label="Nombre" errorText={errores.nombre}>
+                    <TextInput maxLength={60} value={formulario.nombre} onChange={cambiar('nombre')} />
+                </FieldInput>
+                <div style={{ ...columna(4), ...junto }}>
+                    <Toggle
+                        label="Visibilidad global"
+                        checked={formulario.visibilidadGlobal}
+                        onChange={(global) => asignar('visibilidadGlobal', global)}
+                    />
+                    <Text variant="body-regular-small" as="p" style={textoSecundario}>
+                        Con visibilidad global el rol ve los elementos de todos los equipos.
+                    </Text>
+                </div>
+                <div style={anchoCompleto}>
+                    <FieldInput label="Descripción" optional errorText={errores.descripcion}>
+                        <LargeTextArea
+                            maxLength={300}
+                            value={formulario.descripcion}
+                            onChange={cambiar('descripcion')}
+                        />
+                    </FieldInput>
+                </div>
             </div>
         </FormModal>
     )

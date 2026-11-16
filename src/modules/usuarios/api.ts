@@ -17,9 +17,10 @@ export const usuariosApi = {
         const { data } = await api.put<ApiResponse<UsuarioResponse>>(`${RUTA_USUARIOS}/${id}`, solicitud)
         return data.datos
     },
-    cambiarEstado: async (id: number, activo: boolean): Promise<UsuarioResponse> => {
+    // Devuelve el mensaje del backend: al desactivar a un miembro dice de que equipo se le retiro
+    cambiarEstado: async (id: number, activo: boolean): Promise<string> => {
         const { data } = await api.patch<ApiResponse<UsuarioResponse>>(`${RUTA_USUARIOS}/${id}/estado`, { activo })
-        return data.datos
+        return data.mensaje
     },
 }
 
