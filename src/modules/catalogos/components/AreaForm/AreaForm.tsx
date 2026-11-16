@@ -1,6 +1,5 @@
 import { FieldInput, FormModal, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
-import { anchoCompleto, rejillaFormulario } from '../../../../styles/disposicion'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { areasApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
@@ -54,45 +53,42 @@ export const AreaForm = ({ area, onCerrar, onGuardado }: AreaFormProps) => {
     return (
         <FormModal
             open
-            position="right"
+            position="center"
+            size="sm"
             title={area ? 'Editar área' : 'Nueva área'}
             loading={guardando}
             onClose={onCerrar}
             onSubmit={() => void guardar(formulario, area?.id)}
         >
-            <div style={rejillaFormulario}>
-                <FieldInput label="Nombre" errorText={errores.nombre}>
-                    <TextInput maxLength={120} value={formulario.nombre} onChange={cambiar('nombre')} />
-                </FieldInput>
-                <FieldInput label="Tipo" errorText={errores.tipo}>
-                    <Select
-                        options={tiposArea}
-                        value={opcionDe(tiposArea, formulario.tipo)}
-                        getLabel={textoDeOpcion}
-                        getValue={valorDeOpcion}
-                        placeholder="Seleccione…"
-                        onChange={(opcion) => asignar('tipo', opcion.valor)}
-                    />
-                </FieldInput>
-                <div style={anchoCompleto}>
-                    <FieldInput
-                        label="Área padre"
-                        optional
-                        errorText={errores.areaPadreId}
-                        helperText="Opcional. Solo se listan las áreas activas."
-                    >
-                        <Select
-                            options={opcionesPadre}
-                            value={opcionDe(opcionesPadre, formulario.areaPadreId)}
-                            getLabel={textoDeOpcion}
-                            getValue={valorDeOpcion}
-                            searchable
-                            placeholder="Sin área padre"
-                            onChange={(opcion) => asignar('areaPadreId', opcion.valor)}
-                        />
-                    </FieldInput>
-                </div>
-            </div>
+            <FieldInput label="Nombre" errorText={errores.nombre}>
+                <TextInput maxLength={120} value={formulario.nombre} onChange={cambiar('nombre')} />
+            </FieldInput>
+            <FieldInput label="Tipo" errorText={errores.tipo}>
+                <Select
+                    options={tiposArea}
+                    value={opcionDe(tiposArea, formulario.tipo)}
+                    getLabel={textoDeOpcion}
+                    getValue={valorDeOpcion}
+                    placeholder="Seleccione…"
+                    onChange={(opcion) => asignar('tipo', opcion.valor)}
+                />
+            </FieldInput>
+            <FieldInput
+                label="Área padre"
+                optional
+                errorText={errores.areaPadreId}
+                helperText="Opcional. Solo se listan las áreas activas."
+            >
+                <Select
+                    options={opcionesPadre}
+                    value={opcionDe(opcionesPadre, formulario.areaPadreId)}
+                    getLabel={textoDeOpcion}
+                    getValue={valorDeOpcion}
+                    searchable
+                    placeholder="Sin área padre"
+                    onChange={(opcion) => asignar('areaPadreId', opcion.valor)}
+                />
+            </FieldInput>
         </FormModal>
     )
 }

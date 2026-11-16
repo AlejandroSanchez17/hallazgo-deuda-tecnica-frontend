@@ -70,7 +70,8 @@ export const ParametroForm = ({ parametro, onCerrar, onGuardado }: ParametroForm
     return (
         <FormModal
             open
-            position="right"
+            position="center"
+            size="sm"
             title="Editar parámetro"
             loading={guardando}
             onClose={onCerrar}

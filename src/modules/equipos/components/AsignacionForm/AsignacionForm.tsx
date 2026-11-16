@@ -1,6 +1,5 @@
 import { DatePicker, FieldInput, FormModal, Select } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
-import { rejillaFormulario } from '../../../../styles/disposicion'
 import type { ErroresCampo } from '../../../../utils/erroresCampo'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import type { UsuarioFechaFormulario } from '../../types'
@@ -35,38 +34,37 @@ export const AsignacionForm = ({
     return (
         <FormModal
             open
-            position="right"
+            position="center"
+            size="sm"
             title={titulo}
             loading={enviando}
             onClose={onCerrar}
             onSubmit={() => onEnviar(formulario)}
         >
-            <div style={rejillaFormulario}>
-                <FieldInput label={etiquetaUsuario} errorText={errores.usuario} helperText={ayudaUsuario}>
-                    <Select
-                        options={opciones}
-                        value={opcionDe(opciones, formulario.usuarioId)}
-                        getLabel={textoDeOpcion}
-                        getValue={valorDeOpcion}
-                        searchable
-                        placeholder="Seleccione…"
-                        onChange={(opcion) => asignar('usuarioId', opcion.valor)}
-                    />
-                </FieldInput>
-                <FieldInput
-                    label={etiquetaFecha}
-                    optional
-                    errorText={errores.fecha}
-                    helperText="Si no se elige, se usa la fecha de hoy. No puede ser futura."
-                >
-                    <DatePicker
-                        value={formulario.fecha}
-                        maxDate={new Date()}
-                        placeholder="DD/MM/AAAA"
-                        onChange={(fecha) => asignar('fecha', fecha)}
-                    />
-                </FieldInput>
-            </div>
+            <FieldInput label={etiquetaUsuario} errorText={errores.usuario} helperText={ayudaUsuario}>
+                <Select
+                    options={opciones}
+                    value={opcionDe(opciones, formulario.usuarioId)}
+                    getLabel={textoDeOpcion}
+                    getValue={valorDeOpcion}
+                    searchable
+                    placeholder="Seleccione…"
+                    onChange={(opcion) => asignar('usuarioId', opcion.valor)}
+                />
+            </FieldInput>
+            <FieldInput
+                label={etiquetaFecha}
+                optional
+                errorText={errores.fecha}
+                helperText="Si no se elige, se usa la fecha de hoy. No puede ser futura."
+            >
+                <DatePicker
+                    value={formulario.fecha}
+                    maxDate={new Date()}
+                    placeholder="DD/MM/AAAA"
+                    onChange={(fecha) => asignar('fecha', fecha)}
+                />
+            </FieldInput>
         </FormModal>
     )
 }

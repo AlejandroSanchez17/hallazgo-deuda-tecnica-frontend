@@ -35,3 +35,14 @@ table tbody td {
     width: 50px !important;
     height: 50px !important;
 }
+
+/*
+ * Campos dentro de un FormModal (la libreria marca el panel con data-rui-modal-panel): FieldInput arma su contenido con
+ * una rejilla propia que crece con el texto, y un Select con un valor largo se salia de su columna o del borde de la
+ * ventana. Con min-width 0 en los hijos de cada rejilla (la de FieldInput y la de rejillaFormulario) el campo se queda
+ * en su lugar y el Select recorta su texto con puntos suspensivos. Depende del estilo en linea de la libreria:
+ * es un ajuste fragil, revisar al actualizar @hnba/react-ui.
+ */
+[data-rui-modal-panel] [style*='display: grid'] > * {
+    min-width: 0;
+}
