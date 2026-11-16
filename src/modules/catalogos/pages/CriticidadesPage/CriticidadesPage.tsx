@@ -1,23 +1,14 @@
 import { spacing } from '@hnba/design-tokens'
-import { Alert, Table, Text, type TableColumn } from '@hnba/react-ui'
+import { Alert, Table, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { columna, textoSecundario } from '../../../../styles/disposicion'
+import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
+import { columna } from '../../../../styles/disposicion'
 import { criticidadesApi } from '../../api'
-import { columnaAcciones } from '../../columnas'
+import { accionesEditar } from '../../columnas'
 import { CriticidadForm } from '../../components/CriticidadForm/CriticidadForm'
 import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { usePermisosCatalogo } from '../../hooks/usePermisosCatalogo'
-import type { CriticidadResponse, RolResumen } from '../../types'
-
-// Hasta que exista el endpoint de roles (BE-06) se ofrecen los roles que ya usan las criticidades
-const rolesUsados = (criticidades: CriticidadResponse[]): RolResumen[] => {
-    const porId = new Map<number, RolResumen>()
-    criticidades.forEach((criticidad) => {
-        porId.set(criticidad.rolApruebaPlan.id, criticidad.rolApruebaPlan)
-        porId.set(criticidad.rolValidaCierre.id, criticidad.rolValidaCierre)
-    })
-    return [...porId.values()]
-}
+import type { CriticidadResponse } from '../../types'
 
 export const CriticidadesPage = () => {
     const [edicion, setEdicion] = useState<CriticidadResponse | null>(null)
@@ -46,10 +37,7 @@ export const CriticidadesPage = () => {
             render: (criticidad) => criticidad.rolValidaCierre.nombre,
         },
     ]
-    const acciones = columnaAcciones<CriticidadResponse>(puedeActualizar ? setEdicion : undefined)
-    if (acciones) {
-        columnas.push(acciones)
-    }
+    const acciones = accionesEditar<CriticidadResponse>(puedeActualizar ? setEdicion : undefined)
 
     const alGuardar = () => {
         setEdicion(null)
@@ -57,31 +45,30 @@ export const CriticidadesPage = () => {
     }
 
     return (
-        <div style={columna(spacing.md)}>
-            <Text variant="body-regular-medium" as="p" style={textoSecundario}>
-                El plazo define la fecha compromiso sugerida de cada hallazgo o deuda. Las criticidades no se crean ni
-                se desactivan.
-            </Text>
-
-            {error ? (
-                <Alert variant="error" description={error.mensaje} />
-            ) : (
-                <Table
-                    columns={columnas}
-                    rows={criticidades}
-                    getRowKey={(criticidad) => String(criticidad.id)}
-                    loading={cargando}
-                />
-            )}
+        <>
+            <Pantalla
+                titulo="Criticidades"
+                descripcion="El plazo define la fecha compromiso sugerida de cada hallazgo o deuda. Las criticidades no se crean ni se desactivan."
+            >
+                <div style={columna(spacing.md)}>
+                    {error ? (
+                        <Alert variant="error" description={error.mensaje} />
+                    ) : (
+                        <Table
+                            columns={columnas}
+                            rowActions={acciones}
+                            getRowLabel={(criticidad) => criticidad.nombre}
+                            rows={criticidades}
+                            getRowKey={(criticidad) => String(criticidad.id)}
+                            loading={cargando}
+                        />
+                    )}
+                </div>
+            </Pantalla>
 
             {edicion && (
-                <CriticidadForm
-                    criticidad={edicion}
-                    roles={rolesUsados(registros)}
-                    onCerrar={() => setEdicion(null)}
-                    onGuardado={alGuardar}
-                />
+                <CriticidadForm criticidad={edicion} onCerrar={() => setEdicion(null)} onGuardado={alGuardar} />
             )}
-        </div>
+        </>
     )
 }

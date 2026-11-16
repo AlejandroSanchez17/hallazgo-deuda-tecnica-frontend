@@ -1,49 +1,45 @@
-import { Badge, Button, Toggle, type TableColumn } from '@hnba/react-ui'
+import { Badge, Toggle, type TableColumn, type TableRowAction } from '@hnba/react-ui'
 import { conGenero } from './textos'
 import type { RegistroCatalogo, TextosCatalogo } from './types'
 
-// Con onCambiarEstado el estado se muestra y se cambia con un interruptor; sin el, solo se muestra
-export const columnaEstado = <T extends RegistroCatalogo>(
-    textos: TextosCatalogo,
-    onCambiarEstado?: (registro: T) => void,
-): TableColumn<T> => ({
+// Columna "Estado": muestra si el registro esta activo o inactivo
+export const columnaEstado = <T extends RegistroCatalogo>(textos: TextosCatalogo): TableColumn<T> => ({
     id: 'activo',
     header: 'Estado',
-    render: (registro) => {
-        const etiqueta = conGenero(textos, registro.activo ? 'Activ' : 'Inactiv')
-        if (!onCambiarEstado) {
-            return <Badge status={registro.activo ? 'success' : 'neutral'} label={etiqueta} />
-        }
-        // Controlado: el interruptor solo cambia cuando el registro cambia, despues de confirmar.
-        // Sin texto visible; el grupo le da nombre a los lectores de pantalla porque Toggle no acepta aria-label
-        return (
-            <div role="group" aria-label={`Estado: ${etiqueta}`} title={etiqueta}>
-                <Toggle checked={registro.activo} onChange={() => onCambiarEstado(registro)} />
-            </div>
-        )
-    },
+    align: 'center',
+    render: (registro) => (
+        <Badge
+            status={registro.activo ? 'success' : 'neutral'}
+            label={conGenero(textos, registro.activo ? 'Activ' : 'Inactiv')}
+        />
+    ),
 })
 
-// Devuelve null si el usuario no puede editar, para no mostrar la columna vacia
-export const columnaAcciones = <T extends RegistroCatalogo>(
-    onEditar?: (registro: T) => void,
-): TableColumn<T> | null => {
-    if (!onEditar) {
-        return null
-    }
-    return {
-        id: 'acciones',
-        header: 'Acciones',
-        align: 'center',
-        render: (registro) => (
-            <Button
-                variant="ghost"
-                size="sm"
-                iconName="edit"
-                aria-label="Editar"
-                title="Editar"
-                onClick={() => onEditar(registro)}
-            />
-        ),
-    }
-}
+// Columna "Activar/Desactivar" con el interruptor; sin onCambiarEstado (el usuario no puede cambiarlo) no hay columna
+export const columnasActivar = <T extends RegistroCatalogo>(
+    textos: TextosCatalogo,
+    onCambiarEstado?: (registro: T) => void,
+): TableColumn<T>[] =>
+    onCambiarEstado
+        ? [
+              {
+                  id: 'activar',
+                  header: 'Activar/Desactivar',
+                  align: 'center',
+                  // Controlado: el interruptor solo cambia cuando el registro cambia, despues de confirmar.
+                  // Sin texto visible; el grupo le da nombre a los lectores de pantalla porque Toggle no acepta aria-label
+                  render: (registro) => {
+                      const etiqueta = conGenero(textos, registro.activo ? 'Activ' : 'Inactiv')
+                      return (
+                          <div role="group" aria-label={`Activar o desactivar: ${etiqueta}`} title={etiqueta}>
+                              <Toggle checked={registro.activo} onChange={() => onCambiarEstado(registro)} />
+                          </div>
+                      )
+                  },
+              },
+          ]
+        : []
+
+// Con onEditar devuelve la accion Editar (rowActions de la libreria); sin el, ninguna y no se dibuja la columna
+export const accionesEditar = <T,>(onEditar?: (registro: T) => void): TableRowAction<T>[] =>
+    onEditar ? [{ id: 'editar', header: 'Editar', iconName: 'edit', variant: 'ghost', onClick: onEditar }] : []

@@ -6,4 +6,8 @@ export const PERMISOS = {
     catalogoDesactivar: 'CATALOGO:DESACTIVAR',
     parametroLeer: 'PARAMETRO:LEER',
     parametroActualizar: 'PARAMETRO:ACTUALIZAR',
+    usuarioLeer: 'USUARIO:LEER',
+    usuarioCrear: 'USUARIO:CREAR',
+    usuarioActualizar: 'USUARIO:ACTUALIZAR',
+    usuarioDesactivar: 'USUARIO:DESACTIVAR',
 } as const

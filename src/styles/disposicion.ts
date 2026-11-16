@@ -25,8 +25,6 @@ export const filaEntreExtremos: CSSProperties = {
     gap: spacing.md,
 }
 
-export const paginaAncha: CSSProperties = { ...columna(spacing.lg), maxWidth: 1152 }
-
 export const textoSecundario: CSSProperties = { color: colors.brand.gray[700], margin: 0 }
 
 export const centrado: CSSProperties = { textAlign: 'center', maxWidth: 448, margin: '0 auto', padding: '64px 0' }

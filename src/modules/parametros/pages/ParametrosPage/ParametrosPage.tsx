@@ -1,9 +1,10 @@
 import { spacing } from '@hnba/design-tokens'
-import { Alert, Button, Loader, Table, Text, type TableColumn } from '@hnba/react-ui'
+import { Alert, Loader, Table, Text, type TableColumn, type TableRowAction } from '@hnba/react-ui'
 import { useState } from 'react'
 import { Buscador } from '../../../../components/common/Buscador/Buscador'
+import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
-import { columna, paginaAncha, textoSecundario } from '../../../../styles/disposicion'
+import { columna, textoSecundario } from '../../../../styles/disposicion'
 import { PERMISOS } from '../../../../utils/constants/permisos'
 import { formatearFechaHora } from '../../../../utils/formato'
 import { coincide, normalizar } from '../../../../utils/texto'
@@ -49,23 +50,9 @@ export const ParametrosPage = () => {
                     : '—',
         },
     ]
-    if (puedeActualizar) {
-        columnas.push({
-            id: 'acciones',
-            header: 'Acciones',
-            align: 'center',
-            render: (parametro) => (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    iconName="edit"
-                    aria-label="Editar"
-                    title="Editar"
-                    onClick={() => setEdicion(parametro)}
-                />
-            ),
-        })
-    }
+    const acciones: TableRowAction<ParametroResponse>[] = puedeActualizar
+        ? [{ id: 'editar', header: 'Editar', iconName: 'edit', variant: 'ghost', onClick: setEdicion }]
+        : []
 
     const alGuardar = () => {
         setEdicion(null)
@@ -73,42 +60,46 @@ export const ParametrosPage = () => {
     }
 
     return (
-        <section style={paginaAncha}>
-            <div style={columna(4)}>
-                <Text variant="h3" as="h1" style={{ margin: 0 }}>
-                    Parámetros
-                </Text>
-                <Text variant="body-regular-medium" as="p" style={textoSecundario}>
-                    Valores que ajustan el comportamiento del sistema sin cambiar el código.
-                </Text>
-            </div>
+        <>
+            <Pantalla
+                titulo="Parámetros"
+                descripcion="Valores que ajustan el comportamiento del sistema sin cambiar el código."
+            >
+                <div style={columna(spacing.lg)}>
+                    <Buscador
+                        valor={busqueda}
+                        onCambiar={setBusqueda}
+                        etiqueta="Buscar parámetros"
+                        placeholder="Buscar por descripción, clave o valor…"
+                        ancho={320}
+                    />
 
-            <Buscador
-                valor={busqueda}
-                onCambiar={setBusqueda}
-                etiqueta="Buscar parámetros"
-                placeholder="Buscar por descripción, clave o valor…"
-                ancho={320}
-            />
+                    {cargando && <Loader label="Cargando…" />}
+                    {error && <Alert variant="error" description={error.mensaje} />}
+                    {!cargando && !error && grupos.length === 0 && (
+                        <Text variant="body-regular-medium" as="p" style={textoSecundario}>
+                            Ningún parámetro coincide con la búsqueda.
+                        </Text>
+                    )}
 
-            {cargando && <Loader label="Cargando…" />}
-            {error && <Alert variant="error" description={error.mensaje} />}
-            {!cargando && !error && grupos.length === 0 && (
-                <Text variant="body-regular-medium" as="p" style={textoSecundario}>
-                    Ningún parámetro coincide con la búsqueda.
-                </Text>
-            )}
-
-            {grupos.map((grupo) => (
-                <div key={grupo.titulo} style={columna(spacing.sm)}>
-                    <Text variant="h5" as="h2" style={{ margin: 0 }}>
-                        {grupo.titulo}
-                    </Text>
-                    <Table columns={columnas} rows={grupo.parametros} getRowKey={(parametro) => parametro.clave} />
+                    {grupos.map((grupo) => (
+                        <div key={grupo.titulo} style={columna(spacing.sm)}>
+                            <Text variant="label-semibold-medium" as="h2" style={{ margin: 0 }}>
+                                {grupo.titulo}
+                            </Text>
+                            <Table
+                                columns={columnas}
+                                rowActions={acciones}
+                                getRowLabel={(parametro) => parametro.descripcion}
+                                rows={grupo.parametros}
+                                getRowKey={(parametro) => parametro.clave}
+                            />
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </Pantalla>
 
             {edicion && <ParametroForm parametro={edicion} onCerrar={() => setEdicion(null)} onGuardado={alGuardar} />}
-        </section>
+        </>
     )
 }

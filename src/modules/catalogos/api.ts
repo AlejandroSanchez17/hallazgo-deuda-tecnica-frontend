@@ -11,6 +11,7 @@ import type {
     CriticidadResponse,
     OrigenRequest,
     OrigenResponse,
+    RolResumen,
 } from './types'
 
 // Los catalogos con CRUD + estado comparten las mismas cuatro operaciones
@@ -40,6 +41,14 @@ export const origenesApi = apiCatalogo<OrigenResponse, OrigenRequest>('/catalogo
 export const categoriasApi = apiCatalogo<CategoriaResponse, CategoriaRequest>('/catalogos/categorias-deuda')
 
 export const aplicacionesApi = apiCatalogo<AplicacionResponse, AplicacionRequest>('/aplicaciones')
+
+// Roles para los combos de criticidades (GET /roles?activo=true acepta CATALOGO:ACTUALIZAR)
+export const rolesApi = {
+    listar: async (activo?: boolean): Promise<RolResumen[]> => {
+        const { data } = await api.get<ApiResponse<RolResumen[]>>('/roles', { params: { activo } })
+        return data.datos
+    },
+}
 
 const RUTA_CRITICIDADES = '/catalogos/criticidades'
 

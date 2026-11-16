@@ -1,16 +1,18 @@
 import { Loader } from '@hnba/react-ui'
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import { LayoutPrincipal } from '../components/common/LayoutPrincipal/LayoutPrincipal'
 import { RutaProtegida } from '../components/common/RutaProtegida/RutaProtegida'
 import { ErrorServidorPage } from '../pages/Error/ErrorServidorPage/ErrorServidorPage'
 import { NoEncontradoPage } from '../pages/Error/NoEncontradoPage/NoEncontradoPage'
 import { AplicacionesPage } from '../modules/catalogos/pages/AplicacionesPage/AplicacionesPage'
 import { AreasPage } from '../modules/catalogos/pages/AreasPage/AreasPage'
-import { CatalogosPage } from '../modules/catalogos/pages/CatalogosPage/CatalogosPage'
 import { CategoriasPage } from '../modules/catalogos/pages/CategoriasPage/CategoriasPage'
 import { CriticidadesPage } from '../modules/catalogos/pages/CriticidadesPage/CriticidadesPage'
 import { OrigenesPage } from '../modules/catalogos/pages/OrigenesPage/OrigenesPage'
 import { ParametrosPage } from '../modules/parametros/pages/ParametrosPage/ParametrosPage'
+import { PermisosPage } from '../modules/roles/pages/PermisosPage/PermisosPage'
+import { RolesPage } from '../modules/roles/pages/RolesPage/RolesPage'
+import { UsuariosPage } from '../modules/usuarios/pages/UsuariosPage/UsuariosPage'
 import { InicioPage } from '../pages/InicioPage/InicioPage'
 import { PERMISOS } from '../utils/constants/permisos'
 import { RUTAS } from '../utils/constants/rutas'
@@ -25,10 +27,11 @@ export const router = createBrowserRouter([
         children: [
             { index: true, element: <InicioPage /> },
             {
+                // Cada catalogo es su propia pantalla; la ruta del grupo solo redirige a la primera (la usa el breadcrumb)
                 path: RUTAS.catalogos,
                 element: (
                     <RutaProtegida permiso={PERMISOS.catalogoLeer}>
-                        <CatalogosPage />
+                        <Outlet />
                     </RutaProtegida>
                 ),
                 children: [
@@ -38,6 +41,27 @@ export const router = createBrowserRouter([
                     { path: RUTAS.catalogosCategorias, element: <CategoriasPage /> },
                     { path: RUTAS.catalogosAplicaciones, element: <AplicacionesPage /> },
                     { path: RUTAS.catalogosCriticidades, element: <CriticidadesPage /> },
+                ],
+            },
+            {
+                path: RUTAS.usuarios,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.usuarioLeer}>
+                        <UsuariosPage />
+                    </RutaProtegida>
+                ),
+            },
+            {
+                path: RUTAS.roles,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.usuarioLeer}>
+                        <Outlet />
+                    </RutaProtegida>
+                ),
+                children: [
+                    { index: true, element: <Navigate to={RUTAS.rolesListado} replace /> },
+                    { path: RUTAS.rolesListado, element: <RolesPage /> },
+                    { path: RUTAS.rolesPermisos, element: <PermisosPage /> },
                 ],
             },
             {

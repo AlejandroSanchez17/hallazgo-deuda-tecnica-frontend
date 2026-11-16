@@ -2,16 +2,20 @@ import { spacing } from '@hnba/design-tokens'
 import { useState, type CSSProperties } from 'react'
 import { useEsCompacto } from '../../../hooks/useEsCompacto'
 import { ContenidoPrincipal } from '../ContenidoPrincipal/ContenidoPrincipal'
+import { Footer } from '../Footer/Footer'
 import { Header } from '../Header/Header'
 import { MenuMovil } from '../MenuMovil/MenuMovil'
+import { MigasDePan } from '../MigasDePan/MigasDePan'
 import { Sidebar } from '../Sidebar/Sidebar'
 
 // La libreria trae 320 px; con las pocas opciones que hay sobra espacio
-const ANCHO_SIDEBAR = 256
+const ANCHO_SIDEBAR = 288
 
 const estiloPagina: CSSProperties = { display: 'flex', flexDirection: 'column', minHeight: '100svh' }
 const estiloCuerpo: CSSProperties = { display: 'flex', flex: 1 }
-const estiloContenido: CSSProperties = { flex: 1, minWidth: 0, padding: spacing.lg }
+// Migas arriba, contenido en medio y Footer siempre al fondo de la ventana
+const estiloColumna: CSSProperties = { display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }
+const estiloContenido: CSSProperties = { flex: 1, padding: spacing.lg }
 
 export const LayoutPrincipal = () => {
     const esCompacto = useEsCompacto()
@@ -22,9 +26,13 @@ export const LayoutPrincipal = () => {
             <Header onAbrirMenu={() => setMenuAbierto(true)} />
             <div style={estiloCuerpo}>
                 {!esCompacto && <Sidebar ancho={ANCHO_SIDEBAR} />}
-                <main style={estiloContenido}>
-                    <ContenidoPrincipal />
-                </main>
+                <div style={estiloColumna}>
+                    <MigasDePan />
+                    <main style={estiloContenido}>
+                        <ContenidoPrincipal />
+                    </main>
+                    <Footer />
+                </div>
             </div>
             {esCompacto && <MenuMovil abierto={menuAbierto} onCerrar={() => setMenuAbierto(false)} />}
         </div>

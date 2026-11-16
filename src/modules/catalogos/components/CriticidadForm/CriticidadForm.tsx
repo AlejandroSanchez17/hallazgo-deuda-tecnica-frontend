@@ -2,8 +2,9 @@ import { spacing } from '@hnba/design-tokens'
 import { FieldInput, FormModal, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
-import { criticidadesApi } from '../../api'
+import { criticidadesApi, rolesApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
+import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { TEXTOS } from '../../textos'
 import type { CriticidadFormulario, CriticidadRequest, CriticidadResponse, RolResumen } from '../../types'
 
@@ -19,13 +20,12 @@ const aSolicitud = (formulario: CriticidadFormulario): CriticidadRequest => ({
 
 interface CriticidadFormProps {
     criticidad: CriticidadResponse
-    roles: RolResumen[]
     onCerrar: () => void
     onGuardado: () => void
 }
 
 // Las criticidades no se crean ni se desactivan, y su nivel no se edita
-export const CriticidadForm = ({ criticidad, roles, onCerrar, onGuardado }: CriticidadFormProps) => {
+export const CriticidadForm = ({ criticidad, onCerrar, onGuardado }: CriticidadFormProps) => {
     const { formulario, cambiar, asignar } = useFormulario<CriticidadFormulario>({
         nombre: criticidad.nombre,
         plazoMeses: criticidad.plazoMeses.toString(),
@@ -39,7 +39,12 @@ export const CriticidadForm = ({ criticidad, roles, onCerrar, onGuardado }: Crit
         textos: TEXTOS.criticidad,
         onGuardado,
     })
-    const opcionesRol: Opcion[] = roles.map((rol) => ({ valor: String(rol.id), texto: rol.nombre }))
+    const { registros: rolesActivos } = useListaCatalogo(rolesApi.listar, 'activos')
+    // Los roles actuales van siempre en la lista, aunque los roles aun no hayan cargado
+    const roles = new Map<number, RolResumen>(
+        [...rolesActivos, criticidad.rolApruebaPlan, criticidad.rolValidaCierre].map((rol) => [rol.id, rol]),
+    )
+    const opcionesRol: Opcion[] = [...roles.values()].map((rol) => ({ valor: String(rol.id), texto: rol.nombre }))
 
     return (
         <FormModal

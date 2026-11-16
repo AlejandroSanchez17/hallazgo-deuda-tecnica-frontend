@@ -7,6 +7,7 @@ const leerVariable = (nombre: string): string => {
 }
 
 export const env = {
+    version: VERSION_APP,
     apiUrl: leerVariable('VITE_API_URL'),
     usuarioSimuladoInicial: Number(leerVariable('VITE_USUARIO_SIMULADO_ID')),
 }

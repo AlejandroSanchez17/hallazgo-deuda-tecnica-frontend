@@ -16,12 +16,22 @@ body {
 }
 
 /*
+ * Celdas de las tablas de la libreria: el texto puede saltar de linea para que la tabla se adapte al ancho de la
+ * pantalla en lugar de desplazarse y cortar las columnas de la derecha. El nowrap viene en linea, por eso !important.
+ * Es un ajuste fragil: revisar al actualizar @hnba/react-ui.
+ */
+table tbody td {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+}
+
+/*
  * NavBar de la libreria: los botones de accion y el cuadro de iniciales traen 60 px fijos en
  * estilos en linea y no hay prop de tamaño, por eso aqui hace falta !important.
  * Es un ajuste fragil: revisar al actualizar @hnba/react-ui.
  */
 .navbar-compacto > div:last-child > button,
 .navbar-compacto [aria-label^='Iniciales'] {
-    width: 48px !important;
-    height: 48px !important;
+    width: 50px !important;
+    height: 50px !important;
 }

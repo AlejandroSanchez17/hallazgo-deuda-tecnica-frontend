@@ -37,12 +37,8 @@ export const useGuardarCatalogo = <F, S>({
             onGuardado()
         } catch (error) {
             const errorApi = aErrorApi(error)
-            const erroresCampo = aErroresCampo(errorApi.errores)
-            // El duplicado puede llegar sin campo, pero siempre es por el nombre
-            if (errorApi.estado === 409 && errorApi.errores.length === 0) {
-                erroresCampo.nombre = errorApi.mensaje
-            }
-            setErrores(erroresCampo)
+            // 409 y 422 traen el campo en errores: se marca en el formulario y ademas se avisa
+            setErrores(aErroresCampo(errorApi.errores))
             // Un 400 con campos ya se ve debajo de cada campo
             if (errorApi.estado !== 400 || errorApi.errores.length === 0) {
                 avisarSiNoSeAviso(errorApi)

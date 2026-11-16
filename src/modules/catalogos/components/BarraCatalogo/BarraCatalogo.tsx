@@ -1,5 +1,5 @@
 import { spacing } from '@hnba/design-tokens'
-import { Button, Select } from '@hnba/react-ui'
+import { Select } from '@hnba/react-ui'
 import type { ReactNode } from 'react'
 import { Buscador } from '../../../../components/common/Buscador/Buscador'
 import { fila, filaEntreExtremos } from '../../../../styles/disposicion'
@@ -14,10 +14,12 @@ interface BarraCatalogoProps {
     placeholderBusqueda: string
     filtro: FiltroEstado
     onFiltrar: (filtro: FiltroEstado) => void
-    onNuevo?: () => void
     filtrosExtra?: ReactNode
+    // Boton principal de la pantalla (BotonNuevo); queda a la derecha, pegado a la tabla
+    accion?: ReactNode
 }
 
+// Buscador y filtros de la pantalla, y a la derecha su boton principal (BotonNuevo)
 export const BarraCatalogo = ({
     textos,
     busqueda,
@@ -25,8 +27,8 @@ export const BarraCatalogo = ({
     placeholderBusqueda,
     filtro,
     onFiltrar,
-    onNuevo,
     filtrosExtra,
+    accion,
 }: BarraCatalogoProps) => {
     const filtros: Opcion[] = [
         { valor: 'activos', texto: `${conGenero(textos, 'Activ')}s` },
@@ -55,11 +57,7 @@ export const BarraCatalogo = ({
                 </div>
                 {filtrosExtra}
             </div>
-            {onNuevo && (
-                <Button variant="primary" iconName="plus" onClick={onNuevo}>
-                    {`${conGenero(textos, 'Nuev')} ${textos.sustantivo}`}
-                </Button>
-            )}
+            {accion}
         </div>
     )
 }
