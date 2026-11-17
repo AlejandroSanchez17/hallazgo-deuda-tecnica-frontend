@@ -8,6 +8,7 @@ import { AplicacionesPage } from '../modules/catalogos/pages/AplicacionesPage/Ap
 import { AreasPage } from '../modules/catalogos/pages/AreasPage/AreasPage'
 import { CategoriasPage } from '../modules/catalogos/pages/CategoriasPage/CategoriasPage'
 import { CriticidadesPage } from '../modules/catalogos/pages/CriticidadesPage/CriticidadesPage'
+import { ElementosPage } from '../modules/elementos/pages/ElementosPage/ElementosPage'
 import { EquipoDetallePage } from '../modules/equipos/pages/EquipoDetallePage/EquipoDetallePage'
 import { EquiposPage } from '../modules/equipos/pages/EquiposPage/EquiposPage'
 import { OrigenesPage } from '../modules/catalogos/pages/OrigenesPage/OrigenesPage'
@@ -65,6 +66,14 @@ export const router = createBrowserRouter([
                     { path: RUTAS.rolesListado, element: <RolesPage /> },
                     { path: RUTAS.rolesPermisos, element: <PermisosPage /> },
                 ],
+            },
+            {
+                path: RUTAS.elementos,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.elementoLeer}>
+                        <ElementosPage />
+                    </RutaProtegida>
+                ),
             },
             {
                 path: RUTAS.equipos,

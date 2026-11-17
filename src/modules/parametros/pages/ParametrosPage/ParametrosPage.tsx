@@ -10,7 +10,9 @@ import { formatearFechaHora } from '../../../../utils/formato'
 import { coincide, normalizar } from '../../../../utils/texto'
 import { ParametroForm } from '../../components/ParametroForm/ParametroForm'
 import { ValorParametro } from '../../components/ValorParametro/ValorParametro'
+import { NombreParametro } from '../../components/NombreParametro/NombreParametro'
 import { agruparParametros } from '../../grupos'
+import { lectorDe, textoDe } from '../../textos'
 import { useParametros } from '../../hooks/useParametros'
 import type { ParametroResponse } from '../../types'
 
@@ -21,24 +23,27 @@ export const ParametrosPage = () => {
     const puedeActualizar = usePermiso(PERMISOS.parametroActualizar)
 
     const termino = normalizar(busqueda)
+    const valor = lectorDe(parametros)
+    // Tambien se busca por el nombre y la explicacion que se ven en pantalla
     const grupos = agruparParametros(
-        parametros.filter((parametro) => coincide(termino, parametro.clave, parametro.descripcion, parametro.valor)),
+        parametros.filter((parametro) => {
+            const texto = textoDe(parametro.clave)
+            return coincide(
+                termino,
+                parametro.clave,
+                parametro.descripcion,
+                parametro.valor,
+                texto?.nombre,
+                texto?.explicacion(valor),
+            )
+        }),
     )
 
     const columnas: TableColumn<ParametroResponse>[] = [
         {
             id: 'descripcion',
             header: 'Parámetro',
-            render: (parametro) => (
-                <div>
-                    <Text variant="body-regular-medium" as="p" style={{ margin: 0 }}>
-                        {parametro.descripcion}
-                    </Text>
-                    <Text variant="body-regular-small" as="p" style={{ ...textoSecundario, fontFamily: 'monospace' }}>
-                        {parametro.clave}
-                    </Text>
-                </div>
-            ),
+            render: (parametro) => <NombreParametro parametro={parametro} valor={valor} />,
         },
         { id: 'valor', header: 'Valor', render: (parametro) => <ValorParametro parametro={parametro} /> },
         {
@@ -90,7 +95,7 @@ export const ParametrosPage = () => {
                             <Table
                                 columns={columnas}
                                 rowActions={acciones}
-                                getRowLabel={(parametro) => parametro.descripcion}
+                                getRowLabel={(parametro) => textoDe(parametro.clave)?.nombre ?? parametro.descripcion}
                                 rows={grupo.parametros}
                                 getRowKey={(parametro) => parametro.clave}
                             />
@@ -99,7 +104,14 @@ export const ParametrosPage = () => {
                 </div>
             </Pantalla>
 
-            {edicion && <ParametroForm parametro={edicion} onCerrar={() => setEdicion(null)} onGuardado={alGuardar} />}
+            {edicion && (
+                <ParametroForm
+                    parametro={edicion}
+                    parametros={parametros}
+                    onCerrar={() => setEdicion(null)}
+                    onGuardado={alGuardar}
+                />
+            )}
         </>
     )
 }

@@ -8,8 +8,8 @@ import { MenuMovil } from '../MenuMovil/MenuMovil'
 import { MigasDePan } from '../MigasDePan/MigasDePan'
 import { Sidebar } from '../Sidebar/Sidebar'
 
-// La libreria trae 320 px; con las pocas opciones que hay sobra espacio
-const ANCHO_SIDEBAR = 288
+// La libreria trae 320 px; 304 deja caber "Categorías de deuda" en el tercer nivel (Administración › Catálogos)
+const ANCHO_SIDEBAR = 304
 
 const estiloPagina: CSSProperties = { display: 'flex', flexDirection: 'column', minHeight: '100svh' }
 const estiloCuerpo: CSSProperties = { display: 'flex', flex: 1 }

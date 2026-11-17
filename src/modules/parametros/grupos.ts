@@ -1,3 +1,4 @@
+import { ordenDe } from './textos'
 import type { GrupoParametros, ParametroResponse } from './types'
 
 const GRUPOS = [
@@ -13,10 +14,13 @@ const GRUPOS = [
 export const agruparParametros = (parametros: ParametroResponse[]): GrupoParametros[] => {
     const usados = new Set<string>()
     const grupos = GRUPOS.map((grupo) => {
-        const delGrupo = parametros.filter(
-            (parametro) =>
-                !usados.has(parametro.clave) && grupo.prefijos.some((prefijo) => parametro.clave.startsWith(prefijo)),
-        )
+        const delGrupo = parametros
+            .filter(
+                (parametro) =>
+                    !usados.has(parametro.clave) &&
+                    grupo.prefijos.some((prefijo) => parametro.clave.startsWith(prefijo)),
+            )
+            .sort((a, b) => ordenDe(a.clave) - ordenDe(b.clave))
         delGrupo.forEach((parametro) => usados.add(parametro.clave))
         return { titulo: grupo.titulo, parametros: delGrupo }
     })

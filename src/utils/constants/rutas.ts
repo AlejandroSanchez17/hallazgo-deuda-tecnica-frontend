@@ -13,6 +13,9 @@ export const RUTAS = {
     rolesPermisos: '/roles/permisos',
     equipos: '/equipos',
     equipoDetalle: '/equipos/:id',
+    elementos: '/elementos',
+    // Solo identifica el grupo del menu; no es una pantalla
+    administracion: '/administracion',
 } as const
 
 // La pestaña de permisos abre con el rol ya elegido
