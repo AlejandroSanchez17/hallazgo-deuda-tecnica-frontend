@@ -52,6 +52,20 @@ const gruposDe = (opciones: OpcionMenu[], pathname: string): string[] =>
         return contiene ? [opcion.ruta, ...internos] : []
     })
 
+// Ruta de la opcion del menu de la pantalla actual: en /elementos/5 se marca Hallazgos y deuda
+const rutaDeOpcion = (opciones: OpcionMenu[], pathname: string): string | undefined => {
+    for (const opcion of opciones) {
+        const ruta = opcion.hijos ? rutaDeOpcion(opcion.hijos, pathname) : undefined
+        if (ruta) {
+            return ruta
+        }
+        if (!opcion.hijos && esPantallaActual(opcion, pathname)) {
+            return opcion.ruta
+        }
+    }
+    return undefined
+}
+
 export const Sidebar = ({ alNavegar, ancho }: SidebarProps) => {
     const usuario = useSesionStore((estado) => estado.usuario)
     const { pathname } = useLocation()
@@ -70,7 +84,7 @@ export const Sidebar = ({ alNavegar, ancho }: SidebarProps) => {
     return (
         <SidebarBase
             items={opciones.map(aItem)}
-            currentPath={pathname}
+            currentPath={rutaDeOpcion(OPCIONES_MENU, pathname) ?? pathname}
             onNavigate={irA}
             defaultExpandedIds={desplegados}
             navAriaLabel="Menú principal"

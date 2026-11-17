@@ -22,6 +22,8 @@ export interface EquipoResponse extends RegistroActivable {
     liderId: number | null
     liderNombre: string | null
     cantidadMiembros: number
+    // Elementos del equipo que no estan cerrados ni anulados
+    elementosAbiertos: number
 }
 
 export interface MiembroResponse {
@@ -47,15 +49,15 @@ export interface EquipoCrearRequest {
     descripcion: string | null
     areaId: number | null
     liderId: number | null
-    asignarRolLider?: boolean
 }
 
-export type EquipoActualizarRequest = Omit<EquipoCrearRequest, 'liderId' | 'asignarRolLider'>
+export type EquipoActualizarRequest = Omit<EquipoCrearRequest, 'liderId'>
 
 export interface LiderRequest {
     usuarioId: number | null
     fecha?: string
-    asignarRolLider?: boolean
+    // RF-EQP-05: pasar al nuevo lider los elementos abiertos del anterior (se pregunta, no es automatico)
+    reasignarElementos?: boolean
 }
 
 export interface MiembroRequest {
@@ -69,15 +71,13 @@ export interface EquipoFormulario {
     descripcion: string
     areaId: string
     liderId: string
-    // Se fija al confirmar que se le asignara el rol Lider tecnico al lider elegido
-    asignarRolLider?: boolean
 }
 
 // Sirve para cambiar el lider y para agregar un miembro: un usuario y una fecha opcional
 export interface UsuarioFechaFormulario {
     usuarioId: string
     fecha: Date | null
-    asignarRolLider?: boolean
+    reasignarElementos?: boolean
 }
 
 // Area que se ofrece en el combo (GET /catalogos/areas?activo=true)
@@ -86,13 +86,12 @@ export interface AreaDisponible {
     nombre: string
 }
 
-// Usuario que se puede elegir como miembro o lider; el backend ya quita a los que tienen otro equipo
+// Usuario que se puede elegir como miembro o lider; el backend ya quita a los que tienen otro equipo y, para lider,
+// solo manda a quienes tienen el rol Lider tecnico (los roles se cambian en Usuarios)
 export interface CandidatoResponse {
     usuarioId: number
     nombre: string
     usuarioRed: string
-    // No tiene el rol Lider tecnico: para nombrarlo lider hay que enviar asignarRolLider
-    requiereRolLider: boolean
 }
 
 // MIEMBRO: agregar miembro; LIDER: cambiar o asignar el lider; NUEVO_EQUIPO: lider al crear

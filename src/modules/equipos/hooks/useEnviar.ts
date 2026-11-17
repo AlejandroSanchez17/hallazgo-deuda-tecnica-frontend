@@ -3,7 +3,8 @@ import { aErrorApi, avisarSiNoSeAviso } from '../../../services/api'
 import { avisarExito } from '../../../utils/alertas'
 import { aErroresCampo, type ErroresCampo } from '../../../utils/erroresCampo'
 
-// Para los formularios que no crean ni editan el equipo (cambiar el lider, agregar un miembro)
+// Para los formularios que no crean ni editan el equipo (cambiar el lider, agregar un miembro). Si enviar devuelve
+// un texto (el mensaje del backend), el aviso lo muestra en lugar de mensaje
 export const useEnviar = <F>(enviar: (formulario: F) => Promise<unknown>, mensaje: string, onEnviado: () => void) => {
     const [errores, setErrores] = useState<ErroresCampo>({})
     const [enviando, setEnviando] = useState(false)
@@ -12,8 +13,8 @@ export const useEnviar = <F>(enviar: (formulario: F) => Promise<unknown>, mensaj
         setEnviando(true)
         setErrores({})
         try {
-            await enviar(formulario)
-            void avisarExito(mensaje)
+            const resultado = await enviar(formulario)
+            void avisarExito(typeof resultado === 'string' ? resultado : mensaje)
             onEnviado()
         } catch (error) {
             const errorApi = aErrorApi(error)

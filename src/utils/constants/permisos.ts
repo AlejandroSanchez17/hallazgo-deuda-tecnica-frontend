@@ -17,5 +17,6 @@ export const PERMISOS = {
     elementoLeer: 'ELEMENTO:LEER',
     elementoCrear: 'ELEMENTO:CREAR',
     elementoActualizar: 'ELEMENTO:ACTUALIZAR',
+    elementoDesactivar: 'ELEMENTO:DESACTIVAR',
     deudaRestringidaLeer: 'DEUDA_RESTRINGIDA:LEER',
 } as const

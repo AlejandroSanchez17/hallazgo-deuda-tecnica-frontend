@@ -16,6 +16,11 @@ const equipos: Miga = { texto: 'Equipos técnicos', ruta: RUTAS.equipos }
 // Siguen los grupos del menu (utils/constants/menu.ts). Al agregar una pantalla se agrega su linea aqui
 export const MIGAS: Record<string, Miga[]> = {
     [RUTAS.elementos]: [inicio, { texto: 'Hallazgos y deuda' }],
+    [RUTAS.elementoDetalle]: [
+        inicio,
+        { texto: 'Hallazgos y deuda', ruta: RUTAS.elementos },
+        { texto: 'Detalle del elemento' },
+    ],
     [RUTAS.catalogosAreas]: [inicio, administracion, catalogos, { texto: 'Áreas' }],
     [RUTAS.catalogosOrigenes]: [inicio, administracion, catalogos, { texto: 'Orígenes' }],
     [RUTAS.catalogosCategorias]: [inicio, administracion, catalogos, { texto: 'Categorías de deuda' }],

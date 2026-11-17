@@ -1,13 +1,15 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, Button, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
 import { columna } from '../../../../styles/disposicion'
+import { rutaElemento } from '../../../../utils/constants/rutas'
 import { formatearFecha } from '../../../../utils/formato'
 import { normalizar } from '../../../../utils/texto'
 import { elementosApi } from '../../api'
-import { accionesEditar, columnaSemaforo } from '../../columnas'
+import { accionesEditar, accionVer, columnaSemaforo } from '../../columnas'
 import { BarraElementos } from '../../components/BarraElementos/BarraElementos'
 import { ElementoForm } from '../../components/ElementoForm/ElementoForm'
 import { filtrarElementos, hayFiltros, opcionesDeFiltro, SIN_FILTROS } from '../../filtros'
@@ -37,6 +39,7 @@ const columnas: TableColumn<ElementoResponse>[] = [
 ]
 
 export const ElementosPage = () => {
+    const navegar = useNavigate()
     const [busqueda, setBusqueda] = useState('')
     const [filtros, setFiltros] = useState<FiltrosElementos>(SIN_FILTROS)
     const { registros, cargando, error, recargar } = useLista(elementosApi.listar)
@@ -46,7 +49,10 @@ export const ElementosPage = () => {
     const termino = normalizar(busqueda)
     const filas = filtrarElementos(registros, termino, filtros)
     const opciones = opcionesDeFiltro(registros)
-    const acciones = accionesEditar(muestraEditar ? abrirEdicion : undefined, puedeEditar)
+    const acciones = [
+        accionVer((elemento) => void navegar(rutaElemento(elemento.id))),
+        ...accionesEditar(muestraEditar ? abrirEdicion : undefined, puedeEditar),
+    ]
 
     const alGuardar = () => {
         cerrar()

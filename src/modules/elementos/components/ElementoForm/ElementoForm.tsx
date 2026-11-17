@@ -74,9 +74,7 @@ export const ElementoForm = ({ ficha, onCerrar, onGuardado }: ElementoFormProps)
                     <FieldInput
                         label="Criticidad"
                         errorText={errores.criticidadId}
-                        helperText={
-                            esNuevo ? 'Define el plazo de la fecha sugerida.' : 'Se cambia con una reasignación.'
-                        }
+                        helperText={esNuevo ? 'Define el plazo de la fecha sugerida.' : 'La criticidad no cambia.'}
                     >
                         <Select
                             options={opciones.criticidades}

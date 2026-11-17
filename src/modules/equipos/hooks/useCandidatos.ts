@@ -26,7 +26,7 @@ export const useCandidatos = (para: ParaCandidatos, equipoId?: number, activo = 
         pedir(para, equipoId)
             .then((candidatos) => {
                 if (vigente) {
-                    setOpciones(aOpciones(candidatos, para !== 'MIEMBRO'))
+                    setOpciones(aOpciones(candidatos))
                 }
             })
             .catch((error: unknown) => {

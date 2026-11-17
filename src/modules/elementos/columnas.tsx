@@ -20,6 +20,15 @@ export const columnaSemaforo: TableColumn<ElementoResponse> = {
         ),
 }
 
+// La accion Ver abre el detalle del elemento; la pueden usar todos los que ven la lista
+export const accionVer = (onVer: (elemento: ElementoResponse) => void): TableRowAction<ElementoResponse> => ({
+    id: 'ver',
+    header: 'Ver',
+    iconName: 'eye',
+    variant: 'ghost',
+    onClick: onVer,
+})
+
 // Con onEditar devuelve la accion Editar, deshabilitada en las filas que el usuario no puede editar
 export const accionesEditar = (
     onEditar?: (elemento: ElementoResponse) => void,

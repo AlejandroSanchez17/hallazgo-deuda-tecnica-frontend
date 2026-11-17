@@ -148,6 +148,62 @@ export interface EquipoDisponible extends RegistroDeCatalogo {
     liderId: number | null
 }
 
+// Sin liderId, el lider es el lider vigente del equipo elegido
+export interface ReasignacionRequest {
+    equipoId: number | null
+    liderId?: number
+    motivo: string
+}
+
+export interface ReasignacionFormulario {
+    equipoId: string
+    liderId: string
+    motivo: string
+}
+
+// GET /elementos/{id}/reasignaciones, la mas reciente primero; usuario es quien reasigno
+export interface ReasignacionResponse {
+    id: number
+    // ISO con hora
+    fecha: string
+    equipoAnteriorId: number
+    equipoAnteriorNombre: string
+    equipoNuevoId: number
+    equipoNuevoNombre: string
+    liderAnteriorId: number
+    liderAnteriorNombre: string
+    liderNuevoId: number
+    liderNuevoNombre: string
+    motivo: string
+    usuarioId: number
+    usuarioNombre: string
+}
+
+// GET /elementos/{id}/estados, el mas reciente primero; el registro inicial trae estadoAnterior en null
+export interface CambioEstadoResponse {
+    id: number
+    fecha: string
+    estadoAnterior: EstadoElemento | null
+    estadoNuevo: EstadoElemento
+    motivo: string | null
+    usuarioId: number
+    usuarioNombre: string
+}
+
+// Solo lo que se lee de GET /equipos/{id} y /equipos/{id}/miembros para reasignar
+export interface EquipoDelElemento {
+    id: number
+    nombre: string
+    liderId: number | null
+}
+
+export interface MiembroDelEquipo {
+    usuarioId: number
+    usuarioNombre: string
+    usuarioActivo: boolean
+    esLider: boolean
+}
+
 // Solo lo que se lee de GET /parametros
 export interface ParametroTalla {
     clave: string

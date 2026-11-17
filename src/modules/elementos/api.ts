@@ -1,15 +1,20 @@
 import { api } from '../../services/api'
 import type { ApiResponse } from '../../types/api.types'
 import type {
+    CambioEstadoResponse,
     CategoriaDisponible,
     CriticidadDisponible,
     ElementoActualizarRequest,
     ElementoCrearRequest,
     ElementoDetalleResponse,
     ElementoResponse,
+    EquipoDelElemento,
     EquipoDisponible,
     HorasPorTalla,
+    MiembroDelEquipo,
     ParametroTalla,
+    ReasignacionRequest,
+    ReasignacionResponse,
     RegistroDeCatalogo,
 } from './types'
 import { TALLAS } from './textos'
@@ -35,6 +40,29 @@ export const elementosApi = {
         const { data } = await api.put<ApiResponse<ElementoDetalleResponse>>(`${RUTA_ELEMENTOS}/${id}`, solicitud)
         return data.mensaje
     },
+    // "Elemento reasignado al equipo 'X' con el lider 'Y'"
+    reasignar: async (id: number, solicitud: ReasignacionRequest): Promise<string> => {
+        const { data } = await api.post<ApiResponse<ElementoDetalleResponse>>(
+            `${RUTA_ELEMENTOS}/${id}/reasignacion`,
+            solicitud,
+        )
+        return data.mensaje
+    },
+    // "Hallazgo HA-2026-0001 anulado"
+    anular: async (id: number, motivo: string): Promise<string> => {
+        const { data } = await api.post<ApiResponse<ElementoDetalleResponse>>(`${RUTA_ELEMENTOS}/${id}/anulacion`, {
+            motivo,
+        })
+        return data.mensaje
+    },
+    reasignaciones: async (id: number): Promise<ReasignacionResponse[]> => {
+        const { data } = await api.get<ApiResponse<ReasignacionResponse[]>>(`${RUTA_ELEMENTOS}/${id}/reasignaciones`)
+        return data.datos
+    },
+    estados: async (id: number): Promise<CambioEstadoResponse[]> => {
+        const { data } = await api.get<ApiResponse<CambioEstadoResponse[]>>(`${RUTA_ELEMENTOS}/${id}/estados`)
+        return data.datos
+    },
 }
 
 const listarActivos =
@@ -50,6 +78,16 @@ export const combosApi = {
     categorias: listarActivos<CategoriaDisponible>('/catalogos/categorias-deuda'),
     aplicaciones: listarActivos<RegistroDeCatalogo>('/aplicaciones'),
     equipos: listarActivos<EquipoDisponible>('/equipos'),
+    // Con PROPIO, para saber si el usuario es el lider vigente del equipo del elemento (puede reasignar)
+    equipo: async (id: number): Promise<EquipoDelElemento> => {
+        const { data } = await api.get<ApiResponse<EquipoDelElemento>>(`/equipos/${id}`)
+        return data.datos
+    },
+    // Miembros vigentes: el lider del elemento es el lider del equipo o un miembro que el designe
+    miembros: async (equipoId: number): Promise<MiembroDelEquipo[]> => {
+        const { data } = await api.get<ApiResponse<MiembroDelEquipo[]>>(`/equipos/${equipoId}/miembros`)
+        return data.datos
+    },
     // Las criticidades no admiten el filtro de activo: se filtran en el navegador
     criticidades: async (): Promise<CriticidadDisponible[]> => {
         const { data } = await api.get<ApiResponse<CriticidadDisponible[]>>('/catalogos/criticidades')

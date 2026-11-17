@@ -35,9 +35,10 @@ export const equiposApi = {
         const { data } = await api.patch<ApiResponse<EquipoResponse>>(`${RUTA_EQUIPOS}/${id}/estado`, { activo })
         return data.datos
     },
-    cambiarLider: async (id: number, solicitud: LiderRequest): Promise<EquipoDetalleResponse> => {
+    // Devuelve el mensaje, que dice cuantos elementos abiertos pasaron al nuevo lider
+    cambiarLider: async (id: number, solicitud: LiderRequest): Promise<string> => {
         const { data } = await api.put<ApiResponse<EquipoDetalleResponse>>(`${RUTA_EQUIPOS}/${id}/lider`, solicitud)
-        return data.datos
+        return data.mensaje
     },
     // Con incluirRetirados tambien llegan los que ya salieron (historial)
     listarMiembros: async (id: number, incluirRetirados = false): Promise<MiembroResponse[]> => {
@@ -55,12 +56,12 @@ export const equiposApi = {
         const { data } = await api.post<ApiResponse<MiembroResponse>>(`${RUTA_EQUIPOS}/${id}/miembros`, solicitud)
         return data.datos
     },
-    // Sin fecha, el backend usa la de hoy
-    retirarMiembro: async (id: number, usuarioId: number): Promise<MiembroResponse> => {
+    // Sin fecha, el backend usa la de hoy. El mensaje dice si sus elementos abiertos pasaron al lider del equipo
+    retirarMiembro: async (id: number, usuarioId: number): Promise<string> => {
         const { data } = await api.patch<ApiResponse<MiembroResponse>>(
             `${RUTA_EQUIPOS}/${id}/miembros/${usuarioId}/salida`,
         )
-        return data.datos
+        return data.mensaje
     },
     // Para agregar un miembro, o para el lider con LIDER (alcance TODO); el backend ya quita a los que tienen otro equipo
     candidatos: async (id: number, para?: 'LIDER'): Promise<CandidatoResponse[]> => {

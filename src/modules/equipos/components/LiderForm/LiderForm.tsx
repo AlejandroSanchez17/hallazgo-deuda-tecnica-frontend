@@ -1,7 +1,7 @@
 import { aFechaApi } from '../../../../utils/formato'
 import { equiposApi } from '../../api'
 import { useCandidatos } from '../../hooks/useCandidatos'
-import { useConfirmarRolLider } from '../../hooks/useConfirmarRolLider'
+import { useConfirmarReasignarElementos } from '../../hooks/useConfirmarReasignarElementos'
 import { useEnviar } from '../../hooks/useEnviar'
 import type { EquipoDetalleResponse, UsuarioFechaFormulario } from '../../types'
 import { AsignacionForm } from '../AsignacionForm/AsignacionForm'
@@ -15,25 +15,36 @@ interface LiderFormProps {
 // Asigna un lider (equipo reactivado, sin lider) o cambia el actual; el anterior sigue como miembro
 export const LiderForm = ({ equipo, onCerrar, onCambiado }: LiderFormProps) => {
     const opciones = useCandidatos('LIDER', equipo.id)
-    const { confirmarSiHaceFalta, dialogo } = useConfirmarRolLider()
     const asignar = equipo.liderId === null
+    // Sin lider anterior no hay elementos que pasar
+    const reasignacion = useConfirmarReasignarElementos(
+        asignar ? 0 : equipo.elementosAbiertos,
+        equipo.liderNombre ?? 'el líder anterior',
+    )
     const { ejecutar, errores, enviando } = useEnviar(
-        (formulario: UsuarioFechaFormulario) =>
-            equiposApi.cambiarLider(equipo.id, {
+        async (formulario: UsuarioFechaFormulario) => {
+            const mensaje = await equiposApi.cambiarLider(equipo.id, {
                 usuarioId: formulario.usuarioId === '' ? null : Number(formulario.usuarioId),
                 fecha: formulario.fecha ? aFechaApi(formulario.fecha) : undefined,
-                asignarRolLider: formulario.asignarRolLider || undefined,
-            }),
+                reasignarElementos: formulario.reasignarElementos,
+            })
+            // El backend dice "Líder cambiado" tambien al asignar el primero
+            return asignar ? 'Líder asignado' : mensaje
+        },
         asignar ? 'Líder asignado' : 'Líder cambiado',
         onCambiado,
     )
 
+    // Si el lider anterior tiene elementos abiertos, pregunta si pasan al nuevo
     const alEnviar = (formulario: UsuarioFechaFormulario) => {
         const elegido = opciones.find((opcion) => opcion.valor === formulario.usuarioId)
-        confirmarSiHaceFalta(elegido, (asignarRolLider) => void ejecutar({ ...formulario, asignarRolLider }))
+        reasignacion.preguntarSiHaceFalta(
+            elegido?.nombre ?? 'el nuevo líder',
+            (reasignarElementos) => void ejecutar({ ...formulario, reasignarElementos }),
+        )
     }
 
-    const ayuda = 'Usuario activo sin equipo con el rol Líder técnico, o un miembro del equipo (se le asignará el rol).'
+    const ayuda = 'Solo usuarios con el rol Líder técnico.'
     return (
         <>
             <AsignacionForm
@@ -49,7 +60,7 @@ export const LiderForm = ({ equipo, onCerrar, onCambiado }: LiderFormProps) => {
                 onCerrar={onCerrar}
                 onEnviar={alEnviar}
             />
-            {dialogo}
+            {reasignacion.dialogo}
         </>
     )
 }

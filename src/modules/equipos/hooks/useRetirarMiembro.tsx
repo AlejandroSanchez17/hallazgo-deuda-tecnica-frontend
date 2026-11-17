@@ -17,8 +17,7 @@ export const useRetirarMiembro = (equipoId: number, onRetirado: () => void) => {
         }
         setRetirando(true)
         try {
-            await equiposApi.retirarMiembro(equipoId, pendiente.usuarioId)
-            void avisarExito('Miembro retirado')
+            void avisarExito(await equiposApi.retirarMiembro(equipoId, pendiente.usuarioId))
             onRetirado()
         } catch (error) {
             avisarSiNoSeAviso(aErrorApi(error))

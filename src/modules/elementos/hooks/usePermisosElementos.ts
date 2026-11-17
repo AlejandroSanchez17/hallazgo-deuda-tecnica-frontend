@@ -2,17 +2,20 @@ import { useCallback } from 'react'
 import { usePermiso, usePermisoConAlcance } from '../../../hooks/auth/usePermiso'
 import { useSesionStore } from '../../../store/sesionStore'
 import { PERMISOS } from '../../../utils/constants/permisos'
-import type { ElementoResponse } from '../types'
+import type { ElementoResponse, EstadoElemento } from '../types'
 
-const ESTADOS_FINALES = ['CERRADO', 'ANULADO']
+const ESTADOS_FINALES: EstadoElemento[] = ['CERRADO', 'ANULADO']
+// Anular es la forma de corregir una fecha mal registrada; despues del plan ya no se puede (422 en estado)
+const ESTADOS_ANULABLES: EstadoElemento[] = ['REGISTRADO', 'PLAN_EN_ELABORACION']
 
 // Ver la lista lo decide la ruta (ELEMENTO:LEER)
 export const usePermisosElementos = () => {
     const usuarioId = useSesionStore((estado) => estado.usuario?.id)
     const actualizar = usePermiso(PERMISOS.elementoActualizar)
     const actualizarTodo = usePermisoConAlcance(PERMISOS.elementoActualizar, 'TODO')
+    const desactivar = usePermiso(PERMISOS.elementoDesactivar)
 
-    // Con alcance PROPIO solo el lider vigente del equipo edita; cerrados y anulados no se editan (422)
+    // Con alcance PROPIO solo el lider vigente edita; cerrados y anulados no se editan (422)
     const puedeEditar = useCallback(
         (elemento: ElementoResponse) =>
             !ESTADOS_FINALES.includes(elemento.estado) &&
@@ -20,11 +23,21 @@ export const usePermisosElementos = () => {
         [actualizar, actualizarTodo, usuarioId],
     )
 
+    // Con PROPIO cuenta el lider del equipo, no el del elemento (puede ser un miembro designado)
+    const puedeReasignar = (elemento: ElementoResponse, liderDelEquipo: number | null | undefined) =>
+        !ESTADOS_FINALES.includes(elemento.estado) &&
+        (actualizarTodo || (actualizar && usuarioId !== undefined && liderDelEquipo === usuarioId))
+
     return {
         puedeCrear: usePermiso(PERMISOS.elementoCrear),
         // Sin ACTUALIZAR no se dibuja la columna Editar
         muestraEditar: actualizar,
         puedeEditar,
+        puedeReasignar,
+        // Solo con PROPIO hace falta pedir el equipo para conocer a su lider; con TODO tambien se cambia el equipo
+        necesitaLiderDelEquipo: actualizar && !actualizarTodo,
+        cambiaEquipo: actualizarTodo,
+        puedeAnular: (elemento: ElementoResponse) => desactivar && ESTADOS_ANULABLES.includes(elemento.estado),
         veRestringidas: usePermiso(PERMISOS.deudaRestringidaLeer),
     }
 }
