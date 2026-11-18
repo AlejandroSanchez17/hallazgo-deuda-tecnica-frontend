@@ -13,6 +13,8 @@ export interface OpcionMenu {
 export const OPCIONES_MENU: OpcionMenu[] = [
     { ruta: RUTAS.inicio, texto: 'Inicio' },
     { ruta: RUTAS.elementos, texto: 'Hallazgos y deuda', permiso: PERMISOS.elementoLeer },
+    // Solo quien puede ser responsable de una tarea (Lider tecnico y Miembro de equipo)
+    { ruta: RUTAS.misTareas, texto: 'Mis tareas', permiso: PERMISOS.tareaActualizar },
     {
         ruta: RUTAS.administracion,
         texto: 'Administración',

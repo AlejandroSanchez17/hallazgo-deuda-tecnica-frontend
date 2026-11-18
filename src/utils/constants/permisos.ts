@@ -19,4 +19,12 @@ export const PERMISOS = {
     elementoActualizar: 'ELEMENTO:ACTUALIZAR',
     elementoDesactivar: 'ELEMENTO:DESACTIVAR',
     deudaRestringidaLeer: 'DEUDA_RESTRINGIDA:LEER',
+    planLeer: 'PLAN:LEER',
+    planCrear: 'PLAN:CREAR',
+    planActualizar: 'PLAN:ACTUALIZAR',
+    planSolicitar: 'PLAN:SOLICITAR',
+    planAprobar: 'PLAN:APROBAR',
+    tareaCrear: 'TAREA:CREAR',
+    tareaActualizar: 'TAREA:ACTUALIZAR',
+    tareaDesactivar: 'TAREA:DESACTIVAR',
 } as const

@@ -2,7 +2,8 @@ import { RUTAS } from './rutas'
 
 export interface Miga {
     texto: string
-    // Sin ruta, la miga no navega: es la pagina actual o un grupo del menu sin pantalla propia (Administración)
+    // Sin ruta, la miga no navega: es la pagina actual o un grupo del menu sin pantalla propia (Administración).
+    // Puede llevar los parametros de la pagina actual (/elementos/:id): MigasDePan los completa
     ruta?: string
 }
 
@@ -21,6 +22,13 @@ export const MIGAS: Record<string, Miga[]> = {
         { texto: 'Hallazgos y deuda', ruta: RUTAS.elementos },
         { texto: 'Detalle del elemento' },
     ],
+    [RUTAS.elementoPlan]: [
+        inicio,
+        { texto: 'Hallazgos y deuda', ruta: RUTAS.elementos },
+        { texto: 'Detalle del elemento', ruta: RUTAS.elementoDetalle },
+        { texto: 'Plan de acción' },
+    ],
+    [RUTAS.misTareas]: [inicio, { texto: 'Mis tareas' }],
     [RUTAS.catalogosAreas]: [inicio, administracion, catalogos, { texto: 'Áreas' }],
     [RUTAS.catalogosOrigenes]: [inicio, administracion, catalogos, { texto: 'Orígenes' }],
     [RUTAS.catalogosCategorias]: [inicio, administracion, catalogos, { texto: 'Categorías de deuda' }],

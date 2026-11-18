@@ -1,7 +1,7 @@
 import { colors, spacing } from '@hnba/design-tokens'
 import { Breadcrumb } from '@hnba/react-ui'
 import type { CSSProperties } from 'react'
-import { matchPath, useLocation, useNavigate } from 'react-router-dom'
+import { generatePath, matchPath, useLocation, useNavigate } from 'react-router-dom'
 import { MIGAS } from '../../../utils/constants/migas'
 
 const estiloFranja: CSSProperties = {
@@ -17,16 +17,17 @@ export const MigasDePan = () => {
     const patron = Object.keys(MIGAS).find((ruta) => matchPath(ruta, pathname))
     const migas = patron ? MIGAS[patron] : undefined
 
-    if (!migas) {
+    if (!patron || !migas) {
         return null
     }
+    const parametros = matchPath(patron, pathname)?.params ?? {}
     return (
         <nav style={estiloFranja} aria-label="Ruta de navegación">
             <Breadcrumb
                 lastIsCurrent
                 items={migas.map((miga) => ({
                     label: miga.texto,
-                    onClick: miga.ruta ? () => void navegar(miga.ruta ?? '') : undefined,
+                    onClick: miga.ruta ? () => void navegar(generatePath(miga.ruta ?? '', parametros)) : undefined,
                 }))}
             />
         </nav>

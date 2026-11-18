@@ -26,6 +26,21 @@ export const ResumenEquipo = ({ equipo }: ResumenEquipoProps) => (
                 trailing={<Text variant="body-bold-medium">{equipo.miembros.length}</Text>}
             />
             <ListItem
+                iconName="square_list"
+                title="Tareas pendientes"
+                trailing={<Text variant="body-bold-medium">{equipo.tareasPendientes ?? 0}</Text>}
+            />
+            <ListItem
+                iconName="clock"
+                title="Tareas vencidas"
+                trailing={
+                    <Badge
+                        status={(equipo.tareasVencidas ?? 0) > 0 ? 'error' : 'success'}
+                        label={String(equipo.tareasVencidas ?? 0)}
+                    />
+                }
+            />
+            <ListItem
                 iconName="check_circle"
                 title="Estado"
                 trailing={

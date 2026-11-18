@@ -11,6 +11,7 @@ type Usuario = Parameters<typeof tienePermiso>[0]
 const ICONOS: Record<string, IconName> = {
     [RUTAS.inicio]: 'house',
     [RUTAS.elementos]: 'clipboard_list',
+    [RUTAS.misTareas]: 'file_check',
     [RUTAS.administracion]: 'gears',
 }
 

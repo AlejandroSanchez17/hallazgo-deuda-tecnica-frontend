@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
-import { RUTAS } from '../../../../utils/constants/rutas'
+import { usePermiso } from '../../../../hooks/auth/usePermiso'
+import { PERMISOS } from '../../../../utils/constants/permisos'
+import { RUTAS, rutaPlanElemento } from '../../../../utils/constants/rutas'
 import { AnulacionForm } from '../../components/AnulacionForm/AnulacionForm'
 import { DatosElemento } from '../../components/DatosElemento/DatosElemento'
 import { ElementoForm } from '../../components/ElementoForm/ElementoForm'
@@ -14,7 +16,7 @@ import { ResumenElemento } from '../../components/ResumenElemento/ResumenElement
 import { useDetalleElemento } from '../../hooks/useDetalleElemento'
 import { usePermisosElementos } from '../../hooks/usePermisosElementos'
 
-// Plan y tareas, evidencias, prorrogas y comentarios se suman cuando tengan su API
+// Evidencias, prorrogas y comentarios se suman cuando tengan su API; el plan tiene su propia pagina
 type Pestana = 'datos' | 'historial'
 type Formulario = 'editar' | 'reasignar' | 'anular' | null
 
@@ -29,6 +31,7 @@ export const ElementoDetallePage = () => {
     const [pestana, setPestana] = useState<Pestana>('datos')
     const [formulario, setFormulario] = useState<Formulario>(null)
     const permisos = usePermisosElementos()
+    const veElPlan = usePermiso(PERMISOS.planLeer)
     const { ficha, reasignaciones, estados, liderDelEquipo, cargando, error, recargar } = useDetalleElemento(
         id,
         permisos.necesitaLiderDelEquipo,
@@ -64,6 +67,15 @@ export const ElementoDetallePage = () => {
                     <div style={filaEntreExtremos}>
                         {volver}
                         <div style={fila(spacing.sm)}>
+                            {veElPlan && (
+                                <Button
+                                    variant="outlined"
+                                    iconName="square_list"
+                                    onClick={() => void navegar(rutaPlanElemento(ficha.id))}
+                                >
+                                    Plan de acción
+                                </Button>
+                            )}
                             {permisos.puedeEditar(ficha) && (
                                 <Button variant="outlined" iconName="edit" onClick={() => setFormulario('editar')}>
                                     Editar

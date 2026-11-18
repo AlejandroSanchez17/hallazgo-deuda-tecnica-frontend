@@ -24,6 +24,9 @@ export interface EquipoResponse extends RegistroActivable {
     cantidadMiembros: number
     // Elementos del equipo que no estan cerrados ni anulados
     elementosAbiertos: number
+    // Tareas abiertas de los planes vigentes aprobados del equipo, y cuantas pasaron su fecha de fin
+    tareasPendientes: number | null
+    tareasVencidas: number | null
 }
 
 export interface MiembroResponse {

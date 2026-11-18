@@ -10,6 +10,8 @@ import { CategoriasPage } from '../modules/catalogos/pages/CategoriasPage/Catego
 import { CriticidadesPage } from '../modules/catalogos/pages/CriticidadesPage/CriticidadesPage'
 import { ElementoDetallePage } from '../modules/elementos/pages/ElementoDetallePage/ElementoDetallePage'
 import { ElementosPage } from '../modules/elementos/pages/ElementosPage/ElementosPage'
+import { MisTareasPage } from '../modules/elementos/pages/MisTareasPage/MisTareasPage'
+import { PlanElementoPage } from '../modules/elementos/pages/PlanElementoPage/PlanElementoPage'
 import { EquipoDetallePage } from '../modules/equipos/pages/EquipoDetallePage/EquipoDetallePage'
 import { EquiposPage } from '../modules/equipos/pages/EquiposPage/EquiposPage'
 import { OrigenesPage } from '../modules/catalogos/pages/OrigenesPage/OrigenesPage'
@@ -78,7 +80,23 @@ export const router = createBrowserRouter([
                 children: [
                     { index: true, element: <ElementosPage /> },
                     { path: RUTAS.elementoDetalle, element: <ElementoDetallePage /> },
+                    {
+                        path: RUTAS.elementoPlan,
+                        element: (
+                            <RutaProtegida permiso={PERMISOS.planLeer}>
+                                <PlanElementoPage />
+                            </RutaProtegida>
+                        ),
+                    },
                 ],
+            },
+            {
+                path: RUTAS.misTareas,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.tareaActualizar}>
+                        <MisTareasPage />
+                    </RutaProtegida>
+                ),
             },
             {
                 path: RUTAS.equipos,
