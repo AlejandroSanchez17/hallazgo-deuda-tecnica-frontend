@@ -30,6 +30,7 @@ export const MIGAS: Record<string, Miga[]> = {
     ],
     [RUTAS.misTareas]: [inicio, { texto: 'Mis tareas' }],
     [RUTAS.aprobaciones]: [inicio, { texto: 'Aprobaciones' }],
+    [RUTAS.notificaciones]: [inicio, { texto: 'Notificaciones' }],
     [RUTAS.catalogosAreas]: [inicio, administracion, catalogos, { texto: 'Áreas' }],
     [RUTAS.catalogosOrigenes]: [inicio, administracion, catalogos, { texto: 'Orígenes' }],
     [RUTAS.catalogosCategorias]: [inicio, administracion, catalogos, { texto: 'Categorías de deuda' }],

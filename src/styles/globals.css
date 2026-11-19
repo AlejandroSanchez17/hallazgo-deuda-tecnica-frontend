@@ -37,6 +37,37 @@ table tbody td {
 }
 
 /*
+ * Insignia de la campana: el NavBar de la libreria solo admite ariaLabel, iconName y onClick en sus acciones, sin
+ * contador. Header pone la clase navbar-con-avisos cuando hay notificaciones sin leer y el texto ("3", "99+") en la
+ * variable --insignia-notificaciones; el boton se reconoce por su aria-label. Los lectores de pantalla leen el numero
+ * en el aria-label, por eso la insignia no se anuncia. Ajuste fragil: revisar al actualizar @hnba/react-ui.
+ */
+.navbar-con-avisos button[aria-label^='Notificaciones'] {
+    position: relative;
+    overflow: visible;
+}
+
+.navbar-con-avisos button[aria-label^='Notificaciones']::after {
+    content: var(--insignia-notificaciones);
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 11px;
+    border: 2px solid var(--atl-color-brand-red-800);
+    background: #ffffff;
+    color: var(--atl-color-brand-red-800);
+    font-family: var(--atl-font-family-base);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    pointer-events: none;
+}
+
+/*
  * Campos dentro de un FormModal (la libreria marca el panel con data-rui-modal-panel): FieldInput arma su contenido con
  * una rejilla propia que crece con el texto, y un Select con un valor largo se salia de su columna o del borde de la
  * ventana. Con min-width 0 en los hijos de cada rejilla (la de FieldInput y la de rejillaFormulario) el campo se queda

@@ -15,6 +15,7 @@ import { AprobacionesPage } from '../modules/elementos/pages/AprobacionesPage/Ap
 import { PlanElementoPage } from '../modules/elementos/pages/PlanElementoPage/PlanElementoPage'
 import { EquipoDetallePage } from '../modules/equipos/pages/EquipoDetallePage/EquipoDetallePage'
 import { EquiposPage } from '../modules/equipos/pages/EquiposPage/EquiposPage'
+import { NotificacionesPage } from '../modules/notificaciones/pages/NotificacionesPage/NotificacionesPage'
 import { OrigenesPage } from '../modules/catalogos/pages/OrigenesPage/OrigenesPage'
 import { ParametrosPage } from '../modules/parametros/pages/ParametrosPage/ParametrosPage'
 import { PermisosPage } from '../modules/roles/pages/PermisosPage/PermisosPage'
@@ -107,6 +108,8 @@ export const router = createBrowserRouter([
                     </RutaProtegida>
                 ),
             },
+            // Sin permiso propio: cada usuario ve solo las suyas
+            { path: RUTAS.notificaciones, element: <NotificacionesPage /> },
             {
                 path: RUTAS.equipos,
                 element: (

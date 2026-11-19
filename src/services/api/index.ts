@@ -1,8 +1,16 @@
-import axios, { type AxiosError } from 'axios'
+import axios, { type AxiosError, type AxiosResponse } from 'axios'
 import { env } from '../../config/env'
+import { useNotificacionesStore } from '../../store/notificacionesStore'
 import { useSesionStore } from '../../store/sesionStore'
 import type { ApiResponse, ErrorCampo } from '../../types/api.types'
 import { avisarError } from '../../utils/alertas'
+
+declare module 'axios' {
+    interface AxiosRequestConfig {
+        // Consultas de fondo (el contador de la campana): sus errores no se avisan, para no repetirlos cada minuto
+        silencioso?: boolean
+    }
+}
 
 export class ErrorApi extends Error {
     readonly estado: number
@@ -68,15 +76,31 @@ const leerErrorEnBlob = async (error: AxiosError<ApiResponse<unknown>>) => {
     }
 }
 
+let refrescoPendiente: number | undefined
+
+// Una accion (registrar, reasignar, enviar, aprobar…) puede generar avisos: se vuelve a pedir el contador una sola
+// vez aunque la pantalla haga varias peticiones seguidas
+const refrescarContadorDespuesDe = (respuesta: AxiosResponse) => {
+    const metodo = respuesta.config.method ?? 'get'
+    if (metodo === 'get' || respuesta.config.url?.startsWith('/notificaciones')) {
+        return
+    }
+    window.clearTimeout(refrescoPendiente)
+    refrescoPendiente = window.setTimeout(() => useNotificacionesStore.getState().pedirRefresco(), 1000)
+}
+
 api.interceptors.response.use(
-    (respuesta) => respuesta,
+    (respuesta) => {
+        refrescarContadorDespuesDe(respuesta)
+        return respuesta
+    },
     async (error: AxiosError<ApiResponse<unknown>>) => {
         await leerErrorEnBlob(error)
         const errorApi = convertirError(error)
         if (errorApi.estado === 401) {
             useSesionStore.getState().cerrarSesion()
         }
-        if (seAvisaEnTodaLaApp(errorApi.estado)) {
+        if (seAvisaEnTodaLaApp(errorApi.estado) && !error.config?.silencioso) {
             void avisarError(errorApi.mensaje)
         }
         return Promise.reject(errorApi)

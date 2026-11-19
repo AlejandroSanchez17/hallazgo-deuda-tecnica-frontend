@@ -1,11 +1,11 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, Button, EmptyState, Loader, Select, Text } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { useSesionStore } from '../../../../store/sesionStore'
 import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
-import { rutaElemento } from '../../../../utils/constants/rutas'
+import { PARAMETRO_TAREA, rutaElemento } from '../../../../utils/constants/rutas'
 import { AvisosPlan } from '../../components/AvisosPlan/AvisosPlan'
 import { ComentariosPlan } from '../../components/ComentariosPlan/ComentariosPlan'
 import { FormulariosPlan, type FormularioPlan } from '../../components/FormulariosPlan/FormulariosPlan'
@@ -36,6 +36,17 @@ export const PlanElementoPage = () => {
     const pagina = usePaginaPlan(id, conLider)
     const { ficha, plan } = pagina
     const [formulario, setFormulario] = useState<FormularioPlan>(null)
+    // ?tarea=15 abre Ver tarea al cargar el plan (lo usan las notificaciones). Si la tarea no esta en el plan
+    // (por ejemplo, una version nueva la copio con otro id), solo se muestra el plan
+    const tareaPedida = Number(useSearchParams()[0].get(PARAMETRO_TAREA)) || null
+    const [tareaAtendida, setTareaAtendida] = useState<number | null>(null)
+    if (tareaPedida !== null && tareaPedida !== tareaAtendida && plan && !pagina.cargandoVersion) {
+        setTareaAtendida(tareaPedida)
+        const tarea = plan.tareas.find((candidata) => candidata.id === tareaPedida)
+        if (tarea) {
+            setFormulario({ tipo: 'ver', tarea })
+        }
+    }
     const permisos = usePermisosPlan(ficha, plan, pagina.liderDelEquipo)
 
     const alTerminar = () => {

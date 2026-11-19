@@ -1,12 +1,12 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, Button, Loader, Tabs } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
 import { PERMISOS } from '../../../../utils/constants/permisos'
-import { RUTAS, rutaPlanElemento } from '../../../../utils/constants/rutas'
+import { PARAMETRO_PESTANA, RUTAS, rutaPlanElemento } from '../../../../utils/constants/rutas'
 import { AnulacionForm } from '../../components/AnulacionForm/AnulacionForm'
 import { AvisosElemento } from '../../components/AvisosElemento/AvisosElemento'
 import { CierreElemento } from '../../components/CierreElemento/CierreElemento'
@@ -38,10 +38,21 @@ const PESTANAS: { id: Pestana; label: string }[] = [
     { id: 'comentarios', label: 'Comentarios' },
 ]
 
+const esPestana = (valor: string | null): valor is Pestana => PESTANAS.some((opcion) => opcion.id === valor)
+
 export const ElementoDetallePage = () => {
     const navegar = useNavigate()
     const id = Number(useParams().id)
-    const [pestana, setPestana] = useState<Pestana>('datos')
+    // ?pestana=prorrogas abre esa pestana (lo usan las notificaciones); si cambia estando en la pagina, se cambia
+    const pestanaPedida = useSearchParams()[0].get(PARAMETRO_PESTANA)
+    const [pestana, setPestana] = useState<Pestana>(esPestana(pestanaPedida) ? pestanaPedida : 'datos')
+    const [pedidaAnterior, setPedidaAnterior] = useState(pestanaPedida)
+    if (pedidaAnterior !== pestanaPedida) {
+        setPedidaAnterior(pestanaPedida)
+        if (esPestana(pestanaPedida)) {
+            setPestana(pestanaPedida)
+        }
+    }
     const [formulario, setFormulario] = useState<Formulario>(null)
     const permisos = usePermisosElementos()
     const veElPlan = usePermiso(PERMISOS.planLeer)
@@ -63,6 +74,8 @@ export const ElementoDetallePage = () => {
         cierre: pc.veCierre,
         comentarios: true,
     }
+    // Una pestana pedida que el usuario no puede ver (Miembro de equipo y Prorrogas) cae en Datos
+    const actual: Pestana = visibles[pestana] ? pestana : 'datos'
 
     const volver = (
         <Button variant="ghost" iconName="chevron_left" onClick={() => void navegar(RUTAS.elementos)}>
@@ -149,16 +162,16 @@ export const ElementoDetallePage = () => {
                     <div className="pestanas-ajustadas">
                         <Tabs
                             tabs={PESTANAS.filter((opcion) => visibles[opcion.id])}
-                            value={pestana}
+                            value={actual}
                             onChange={(siguiente) => setPestana(siguiente as Pestana)}
                         />
                     </div>
-                    {pestana === 'datos' && <DatosElemento ficha={ficha} />}
-                    {pestana === 'historial' && <HistorialElemento reasignaciones={reasignaciones} estados={estados} />}
-                    {pestana === 'evidencias' && veEvidencias && (
+                    {actual === 'datos' && <DatosElemento ficha={ficha} />}
+                    {actual === 'historial' && <HistorialElemento reasignaciones={reasignaciones} estados={estados} />}
+                    {actual === 'evidencias' && veEvidencias && (
                         <EvidenciasElemento elemento={ficha} codigo={ficha.codigo} />
                     )}
-                    {pestana === 'prorrogas' && visibles.prorrogas && (
+                    {actual === 'prorrogas' && visibles.prorrogas && (
                         <DatosDePestana cargando={pc.cargando} error={pc.error}>
                             {pc.resumen && (
                                 <ProrrogasElemento
@@ -172,7 +185,7 @@ export const ElementoDetallePage = () => {
                             )}
                         </DatosDePestana>
                     )}
-                    {pestana === 'cierre' && visibles.cierre && (
+                    {actual === 'cierre' && visibles.cierre && (
                         <DatosDePestana cargando={pc.cargando} error={pc.error}>
                             <CierreElemento
                                 cierres={pc.cierres}
@@ -185,7 +198,7 @@ export const ElementoDetallePage = () => {
                             />
                         </DatosDePestana>
                     )}
-                    {pestana === 'comentarios' && <ComentariosElemento elementoId={ficha.id} />}
+                    {actual === 'comentarios' && <ComentariosElemento elementoId={ficha.id} />}
                 </div>
             </Pantalla>
 
