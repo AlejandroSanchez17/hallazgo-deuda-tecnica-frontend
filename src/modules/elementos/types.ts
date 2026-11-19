@@ -80,6 +80,7 @@ export interface ElementoDetalleResponse extends ElementoResponse {
     aplicaciones: AplicacionDelElemento[]
     hallazgo: DatosHallazgo | null
     deuda: DeudaResponse | null
+    prorrogasAprobadas: number
 }
 
 // Se manda solo el bloque del tipo del elemento

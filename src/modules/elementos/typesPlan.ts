@@ -129,6 +129,8 @@ export interface PlanResponse {
     rolAprobadorNombre: string
     // Sin las tareas canceladas
     sumaPesos: number
+    // RF-TAR-05: con true, una tarea no se finaliza sin al menos una evidencia vigente
+    requiereEvidencia: boolean
     listoParaEnvio: boolean
     problemas: ProblemaPlan[]
     ultimaAprobacion: AprobacionPlan | null
@@ -155,6 +157,8 @@ export interface PlanRequest {
     estrategia: string
     fechaInicio: string | null
     fechaCompromiso: string | null
+    // Opcional en el backend: al crear queda en true si no se envia
+    requiereEvidencia: boolean
 }
 
 export interface TareaRequest {
@@ -172,6 +176,7 @@ export interface PlanFormulario {
     estrategia: string
     fechaInicio: string
     fechaCompromiso: string
+    requiereEvidencia: boolean
 }
 
 // Los combos y el peso se guardan como texto; '' es vacio

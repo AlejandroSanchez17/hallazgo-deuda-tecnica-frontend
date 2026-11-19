@@ -4,10 +4,13 @@ import type { ReactNode } from 'react'
 import { fila } from '../../../../styles/disposicion'
 import { formatearFecha } from '../../../../utils/formato'
 import { SEMAFORO, TEXTO_ESTADO, TEXTO_TIPO, textoDias } from '../../textos'
+import { textoCantidad } from '../../textosProrroga'
 import type { ElementoDetalleResponse, EstadoElemento } from '../../types'
 
 interface ResumenElementoProps {
     ficha: ElementoDetalleResponse
+    // Maximo de prorrogas de la criticidad; solo llega con PRORROGA:LEER
+    maximoProrrogas?: number
 }
 
 const ESTADO_BADGE: Partial<Record<EstadoElemento, 'success' | 'neutral' | 'error'>> = {
@@ -32,7 +35,7 @@ const dato = (icono: IconName, titulo: string, valor: ReactNode) => (
 )
 
 // Datos que identifican al elemento y dicen como va, sobre las pestanas
-export const ResumenElemento = ({ ficha }: ResumenElementoProps) => (
+export const ResumenElemento = ({ ficha, maximoProrrogas }: ResumenElementoProps) => (
     <Card padding={16}>
         <div style={rejillaResumen}>
             <List dividers>
@@ -44,6 +47,7 @@ export const ResumenElemento = ({ ficha }: ResumenElementoProps) => (
                 )}
                 {dato('exclamation_triangle', 'Criticidad', texto(ficha.criticidadNombre))}
                 {dato('building_memo', 'Origen', texto(ficha.origenNombre))}
+                {dato('calendar_clock', 'Prórrogas', texto(textoCantidad(ficha.prorrogasAprobadas, maximoProrrogas)))}
             </List>
             <List dividers>
                 {dato('people_group', 'Equipo', texto(ficha.equipoNombre))}

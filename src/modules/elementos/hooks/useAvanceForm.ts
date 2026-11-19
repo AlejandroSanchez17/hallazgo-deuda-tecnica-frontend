@@ -8,6 +8,7 @@ import { useGuardar } from './useGuardar'
 // Lo que hace falta de la tarea: sirve para las del plan y para las de Mis tareas
 export interface TareaConAvance {
     id: number
+    planId: number
     titulo: string
     estado: EstadoTarea
     avance: number

@@ -56,9 +56,22 @@ api.interceptors.request.use((config) => {
     return config
 })
 
+// Con responseType 'blob' (descargas) el error tambien llega como Blob: se lee para tener el mensaje del backend
+const leerErrorEnBlob = async (error: AxiosError<ApiResponse<unknown>>) => {
+    const datos: unknown = error.response?.data
+    if (error.response && datos instanceof Blob) {
+        try {
+            error.response.data = JSON.parse(await datos.text()) as ApiResponse<unknown>
+        } catch {
+            error.response.data = undefined as unknown as ApiResponse<unknown>
+        }
+    }
+}
+
 api.interceptors.response.use(
     (respuesta) => respuesta,
-    (error: AxiosError<ApiResponse<unknown>>) => {
+    async (error: AxiosError<ApiResponse<unknown>>) => {
+        await leerErrorEnBlob(error)
         const errorApi = convertirError(error)
         if (errorApi.estado === 401) {
             useSesionStore.getState().cerrarSesion()

@@ -76,7 +76,14 @@ export const MisTareasPage = () => {
                 </div>
             </Pantalla>
 
-            {enAvance && <AvanceForm tarea={enAvance} onCerrar={() => setEnAvance(null)} onRegistrado={alRegistrar} />}
+            {enAvance && (
+                <AvanceForm
+                    elementoId={enAvance.elementoId}
+                    tarea={enAvance}
+                    onCerrar={() => setEnAvance(null)}
+                    onRegistrado={alRegistrar}
+                />
+            )}
         </>
     )
 }

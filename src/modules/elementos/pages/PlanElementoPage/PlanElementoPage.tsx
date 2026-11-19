@@ -7,6 +7,7 @@ import { useSesionStore } from '../../../../store/sesionStore'
 import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
 import { rutaElemento } from '../../../../utils/constants/rutas'
 import { AvisosPlan } from '../../components/AvisosPlan/AvisosPlan'
+import { ComentariosPlan } from '../../components/ComentariosPlan/ComentariosPlan'
 import { FormulariosPlan, type FormularioPlan } from '../../components/FormulariosPlan/FormulariosPlan'
 import { FranjaElemento } from '../../components/FranjaElemento/FranjaElemento'
 import { ResumenPlan } from '../../components/ResumenPlan/ResumenPlan'
@@ -68,7 +69,7 @@ export const PlanElementoPage = () => {
         <>
             <Pantalla
                 titulo={`${ficha.codigo} - Plan de acción${tituloVersion}`}
-                descripcion="Objetivo, estrategia y tareas del plan, con sus versiones."
+                descripcion="Objetivo, estrategia y tareas del plan, con sus versiones y comentarios."
             >
                 <div style={columna(spacing.md)}>
                     <div style={filaEntreExtremos}>
@@ -174,6 +175,7 @@ export const PlanElementoPage = () => {
                                         : undefined
                                 }
                             />
+                            <ComentariosPlan plan={plan} />
                         </>
                     )}
                     {!pagina.cargandoVersion && !plan && (

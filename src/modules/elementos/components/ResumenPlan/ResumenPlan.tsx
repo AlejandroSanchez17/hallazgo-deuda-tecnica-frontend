@@ -50,6 +50,7 @@ export const ResumenPlan = ({ plan }: ResumenPlanProps) => (
                     {dato('user_shield_solid', 'Líder', texto(plan.liderNombre))}
                     {dato('calendar_alt', 'Inicio', texto(formatearFecha(plan.fechaInicio)))}
                     {dato('calendar_check', 'Fecha compromiso', texto(formatearFecha(plan.fechaCompromiso)))}
+                    {dato('file_check', 'Evidencia para finalizar', texto(plan.requiereEvidencia ? 'Sí' : 'No'))}
                 </List>
                 <List dividers>
                     {dato('square_list', 'Versión', texto(plan.vigente ? `${plan.version} · vigente` : plan.version))}

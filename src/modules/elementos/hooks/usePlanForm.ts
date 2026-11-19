@@ -14,6 +14,7 @@ export const usePlanForm = (ficha: ElementoDetalleResponse, plan: PlanResponse |
         estrategia: plan?.estrategia ?? '',
         fechaInicio: plan?.fechaInicio ?? hoyApi(),
         fechaCompromiso: plan?.fechaCompromiso ?? '',
+        requiereEvidencia: plan?.requiereEvidencia ?? true,
     })
     const { guardar, errores, guardando } = useGuardar(onGuardado)
 
@@ -23,6 +24,7 @@ export const usePlanForm = (ficha: ElementoDetalleResponse, plan: PlanResponse |
             estrategia: formulario.estrategia.trim(),
             fechaInicio: aFecha(formulario.fechaInicio),
             fechaCompromiso: aFecha(formulario.fechaCompromiso),
+            requiereEvidencia: formulario.requiereEvidencia,
         }
         void guardar(() => (plan ? planesApi.actualizar(plan.id, solicitud) : planesApi.crear(ficha.id, solicitud)))
     }

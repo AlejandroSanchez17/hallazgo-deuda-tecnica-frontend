@@ -46,3 +46,14 @@ table tbody td {
 [data-rui-modal-panel] [style*='display: grid'] > * {
     min-width: 0;
 }
+
+/*
+ * Pestanas del detalle del elemento: la libreria da a cada pestana min-width 180px en linea (sin prop para cambiarlo),
+ * y con seis (Datos … Comentarios) la fila mide 1138 px y se sale de la pagina a 1280 px. Aqui cada una mide lo que
+ * su texto. Ajuste fragil: revisar al actualizar @hnba/react-ui.
+ */
+.pestanas-ajustadas [role='tab'] {
+    min-width: 0 !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+}

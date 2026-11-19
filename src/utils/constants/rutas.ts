@@ -17,6 +17,7 @@ export const RUTAS = {
     elementoDetalle: '/elementos/:id',
     elementoPlan: '/elementos/:id/plan',
     misTareas: '/mis-tareas',
+    aprobaciones: '/aprobaciones',
     // Solo identifica el grupo del menu; no es una pantalla
     administracion: '/administracion',
 } as const

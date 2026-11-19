@@ -11,6 +11,7 @@ import { CriticidadesPage } from '../modules/catalogos/pages/CriticidadesPage/Cr
 import { ElementoDetallePage } from '../modules/elementos/pages/ElementoDetallePage/ElementoDetallePage'
 import { ElementosPage } from '../modules/elementos/pages/ElementosPage/ElementosPage'
 import { MisTareasPage } from '../modules/elementos/pages/MisTareasPage/MisTareasPage'
+import { AprobacionesPage } from '../modules/elementos/pages/AprobacionesPage/AprobacionesPage'
 import { PlanElementoPage } from '../modules/elementos/pages/PlanElementoPage/PlanElementoPage'
 import { EquipoDetallePage } from '../modules/equipos/pages/EquipoDetallePage/EquipoDetallePage'
 import { EquiposPage } from '../modules/equipos/pages/EquiposPage/EquiposPage'
@@ -20,7 +21,7 @@ import { PermisosPage } from '../modules/roles/pages/PermisosPage/PermisosPage'
 import { RolesPage } from '../modules/roles/pages/RolesPage/RolesPage'
 import { UsuariosPage } from '../modules/usuarios/pages/UsuariosPage/UsuariosPage'
 import { InicioPage } from '../pages/InicioPage/InicioPage'
-import { PERMISOS } from '../utils/constants/permisos'
+import { PERMISOS, PERMISOS_BANDEJA } from '../utils/constants/permisos'
 import { RUTAS } from '../utils/constants/rutas'
 
 export const router = createBrowserRouter([
@@ -95,6 +96,14 @@ export const router = createBrowserRouter([
                 element: (
                     <RutaProtegida permiso={PERMISOS.tareaActualizar}>
                         <MisTareasPage />
+                    </RutaProtegida>
+                ),
+            },
+            {
+                path: RUTAS.aprobaciones,
+                element: (
+                    <RutaProtegida permiso={PERMISOS_BANDEJA}>
+                        <AprobacionesPage />
                     </RutaProtegida>
                 ),
             },

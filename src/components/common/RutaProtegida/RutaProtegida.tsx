@@ -3,7 +3,8 @@ import { usePermiso } from '../../../hooks/auth/usePermiso'
 import { SinPermisoPage } from '../../../pages/Error/SinPermisoPage/SinPermisoPage'
 
 interface RutaProtegidaProps {
-    permiso: string
+    // Con una lista basta con uno de ellos
+    permiso: string | string[]
     children: ReactNode
 }
 

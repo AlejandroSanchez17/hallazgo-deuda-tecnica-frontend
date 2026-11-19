@@ -42,6 +42,8 @@ export const FormulariosPlan = ({ formulario, ficha, plan, onCerrar, onHecho }: 
         case 'ver':
             return (
                 <DetalleTarea
+                    elemento={ficha}
+                    plan={plan}
                     tarea={formulario.tarea}
                     problemas={plan.problemas.filter((problema) => problema.tareaId === formulario.tarea.id)}
                     onCerrar={onCerrar}
@@ -50,6 +52,8 @@ export const FormulariosPlan = ({ formulario, ficha, plan, onCerrar, onHecho }: 
         case 'avance':
             return (
                 <AvanceForm
+                    elementoId={ficha.id}
+                    requiereEvidencia={plan.requiereEvidencia}
                     tarea={formulario.tarea}
                     avisoDependencia={avisoDependencia(plan, formulario.tarea)}
                     onCerrar={onCerrar}

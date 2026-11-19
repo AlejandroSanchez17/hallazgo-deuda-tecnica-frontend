@@ -27,4 +27,16 @@ export const PERMISOS = {
     tareaCrear: 'TAREA:CREAR',
     tareaActualizar: 'TAREA:ACTUALIZAR',
     tareaDesactivar: 'TAREA:DESACTIVAR',
+    evidenciaLeer: 'EVIDENCIA:LEER',
+    evidenciaCrear: 'EVIDENCIA:CREAR',
+    evidenciaDescargar: 'EVIDENCIA:DESCARGAR',
+    prorrogaLeer: 'PRORROGA:LEER',
+    prorrogaSolicitar: 'PRORROGA:SOLICITAR',
+    prorrogaAprobar: 'PRORROGA:APROBAR',
+    cierreLeer: 'CIERRE:LEER',
+    cierreSolicitar: 'CIERRE:SOLICITAR',
+    cierreValidar: 'CIERRE:VALIDAR',
 } as const
+
+// Con cualquiera de ellos se ve la bandeja de aprobaciones (GET /aprobaciones/pendientes)
+export const PERMISOS_BANDEJA: string[] = [PERMISOS.planAprobar, PERMISOS.prorrogaAprobar, PERMISOS.cierreValidar]

@@ -1,10 +1,11 @@
-import { PERMISOS } from './permisos'
+import { PERMISOS, PERMISOS_BANDEJA } from './permisos'
 import { RUTAS } from './rutas'
 
 export interface OpcionMenu {
     ruta: string
     texto: string
-    permiso?: string
+    // Con una lista basta con tener uno de ellos
+    permiso?: string | string[]
     // Con hijos, la opcion se despliega en el menu en lugar de navegar; cada hijo es una pantalla o un subgrupo
     hijos?: OpcionMenu[]
 }
@@ -15,6 +16,8 @@ export const OPCIONES_MENU: OpcionMenu[] = [
     { ruta: RUTAS.elementos, texto: 'Hallazgos y deuda', permiso: PERMISOS.elementoLeer },
     // Solo quien puede ser responsable de una tarea (Lider tecnico y Miembro de equipo)
     { ruta: RUTAS.misTareas, texto: 'Mis tareas', permiso: PERMISOS.tareaActualizar },
+    // Gerencia de TI, Registrador y Auditor: lo que les toca aprobar o validar
+    { ruta: RUTAS.aprobaciones, texto: 'Aprobaciones', permiso: PERMISOS_BANDEJA },
     {
         ruta: RUTAS.administracion,
         texto: 'Administración',

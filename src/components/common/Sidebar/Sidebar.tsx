@@ -12,6 +12,7 @@ const ICONOS: Record<string, IconName> = {
     [RUTAS.inicio]: 'house',
     [RUTAS.elementos]: 'clipboard_list',
     [RUTAS.misTareas]: 'file_check',
+    [RUTAS.aprobaciones]: 'double_check',
     [RUTAS.administracion]: 'gears',
 }
 

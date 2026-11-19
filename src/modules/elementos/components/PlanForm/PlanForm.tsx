@@ -1,4 +1,4 @@
-import { DatePicker, FieldInput, FormModal, LargeTextArea } from '@hnba/react-ui'
+import { DatePicker, FieldInput, FormModal, LargeTextArea, Toggle } from '@hnba/react-ui'
 import { anchoCompleto, rejillaFormulario } from '../../../../styles/disposicion'
 import { aFechaApi, formatearFecha } from '../../../../utils/formato'
 import { deFechaApi } from '../../fechas'
@@ -62,6 +62,18 @@ export const PlanForm = ({ ficha, plan, onCerrar, onGuardado }: PlanFormProps) =
                         onChange={(fecha) => asignar('fechaCompromiso', aFechaApi(fecha))}
                     />
                 </FieldInput>
+                <div style={anchoCompleto}>
+                    <FieldInput
+                        label="Evidencia para finalizar"
+                        helperText="Con esto activo, una tarea no se finaliza sin al menos una evidencia vigente."
+                    >
+                        <Toggle
+                            checked={formulario.requiereEvidencia}
+                            onChange={(valor) => asignar('requiereEvidencia', valor)}
+                            label="Exige evidencia para finalizar las tareas"
+                        />
+                    </FieldInput>
+                </div>
             </div>
         </FormModal>
     )
