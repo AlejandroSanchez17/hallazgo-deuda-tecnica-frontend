@@ -44,7 +44,7 @@ export const LiderForm = ({ equipo, onCerrar, onCambiado }: LiderFormProps) => {
         )
     }
 
-    const ayuda = 'Solo usuarios con el rol Líder técnico.'
+    const ayuda = 'Solo usuarios con el permiso de liderar equipos.'
     return (
         <>
             <AsignacionForm

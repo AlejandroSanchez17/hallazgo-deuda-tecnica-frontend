@@ -17,7 +17,8 @@ export interface TextosRegistro {
 
 export interface RolDeUsuario {
     id: number
-    codigo: string
+    // Null en los roles creados desde el sistema
+    codigo: string | null
     nombre: string
     activo: boolean
 }

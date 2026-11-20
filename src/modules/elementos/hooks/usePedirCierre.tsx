@@ -7,8 +7,8 @@ import type { ElementoResponse } from '../types'
 
 const quienValida = (elemento: ElementoResponse) =>
     elemento.tipo === 'HALLAZGO'
-        ? 'Lo valida el rol Auditor.'
-        : 'Lo valida el rol que pide su criticidad (Gerencia de TI en Crítica y Alta, Registrador en Media y Baja).'
+        ? 'Lo valida el rol que se definió en Parámetros para el cierre de hallazgos.'
+        : 'Lo valida el rol que pide su criticidad.'
 
 // Pedir el cierre no lleva datos, solo confirmacion. Si al backend le falta algo (RN-09) responde 422 con un
 // error por problema: se guardan todos para mostrarlos juntos hasta el siguiente intento. La pantalla dibuja `dialogo`

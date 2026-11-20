@@ -48,7 +48,7 @@ export const InicioPage = () => {
                         trailing={
                             <div style={fila(spacing.sm)}>
                                 {usuario.roles.map((rol) => (
-                                    <Badge key={rol.codigo} status="info" label={rol.nombre} />
+                                    <Badge key={rol.id} status="info" label={rol.nombre} />
                                 ))}
                             </div>
                         }

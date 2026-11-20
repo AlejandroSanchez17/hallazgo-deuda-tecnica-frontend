@@ -14,12 +14,14 @@ import { NombreParametro } from '../../components/NombreParametro/NombreParametr
 import { agruparParametros } from '../../grupos'
 import { lectorDe, textoDe } from '../../textos'
 import { useParametros } from '../../hooks/useParametros'
+import { useRolesActivos } from '../../hooks/useRolesActivos'
 import type { ParametroResponse } from '../../types'
 
 export const ParametrosPage = () => {
     const [busqueda, setBusqueda] = useState('')
     const [edicion, setEdicion] = useState<ParametroResponse | null>(null)
     const { parametros, cargando, error, recargar } = useParametros()
+    const roles = useRolesActivos()
     const puedeActualizar = usePermiso(PERMISOS.parametroActualizar)
 
     const termino = normalizar(busqueda)
@@ -45,7 +47,7 @@ export const ParametrosPage = () => {
             header: 'Parámetro',
             render: (parametro) => <NombreParametro parametro={parametro} valor={valor} />,
         },
-        { id: 'valor', header: 'Valor', render: (parametro) => <ValorParametro parametro={parametro} /> },
+        { id: 'valor', header: 'Valor', render: (parametro) => <ValorParametro parametro={parametro} roles={roles} /> },
         {
             id: 'fechaModificacion',
             header: 'Última modificación',
@@ -108,6 +110,7 @@ export const ParametrosPage = () => {
                 <ParametroForm
                     parametro={edicion}
                     parametros={parametros}
+                    roles={roles}
                     onCerrar={() => setEdicion(null)}
                     onGuardado={alGuardar}
                 />

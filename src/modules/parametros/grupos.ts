@@ -4,6 +4,7 @@ import type { GrupoParametros, ParametroResponse } from './types'
 const GRUPOS = [
     { titulo: 'Semáforo de riesgo', prefijos: ['riesgo_'] },
     { titulo: 'Notificaciones', prefijos: ['dias_anticipacion_alerta', 'resumen_semanal_dia'] },
+    { titulo: 'Cierre de hallazgos', prefijos: ['rol_valida_cierre'] },
     { titulo: 'Correo', prefijos: ['correo_', 'ses_'] },
     { titulo: 'Esfuerzo por talla', prefijos: ['talla_'] },
     { titulo: 'Evidencias', prefijos: ['tamano_max_evidencia', 'tipos_archivo'] },

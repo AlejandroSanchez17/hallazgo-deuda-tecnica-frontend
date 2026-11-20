@@ -50,7 +50,6 @@ export interface CierreResponse {
     planId: number | null
     planVersion: number | null
     resultado: ResultadoCierre
-    rolRequeridoCodigo: string
     rolRequeridoNombre: string
     solicitanteId: number
     solicitanteNombre: string

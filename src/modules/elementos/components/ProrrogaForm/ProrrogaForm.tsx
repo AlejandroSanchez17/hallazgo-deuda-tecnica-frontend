@@ -34,7 +34,7 @@ export const ProrrogaForm = ({ elementoId, codigo, resumen, onCerrar, onPedida }
         >
             <Alert
                 variant="info"
-                description={`Lleva ${textoCantidad(resumen.aprobadas, resumen.maximo)} que permite su criticidad. Fecha compromiso vigente: ${formatearFecha(resumen.fechaCompromisoVigente)}. La aprueba Gerencia de TI.`}
+                description={`Lleva ${textoCantidad(resumen.aprobadas, resumen.maximo)} que permite su criticidad. Fecha compromiso vigente: ${formatearFecha(resumen.fechaCompromisoVigente)}. La aprueba quien puede aprobar prórrogas.`}
             />
             {resumen.siguienteEsAdicional && (
                 <Alert variant="warning" title="Prórroga adicional" description={AVISO_ADICIONAL} />

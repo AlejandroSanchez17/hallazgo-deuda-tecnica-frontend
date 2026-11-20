@@ -5,15 +5,22 @@ import { aErroresCampo, type ErroresCampo } from '../../../utils/erroresCampo'
 import { mensajeExito } from '../textos'
 import type { TextosRegistro } from '../types'
 
-interface OpcionesGuardar<F, S> {
+interface OpcionesGuardar<F, S, R> {
     aSolicitud: (formulario: F) => S
-    crear?: (solicitud: S) => Promise<unknown>
-    actualizar: (id: number, solicitud: S) => Promise<unknown>
+    crear: (solicitud: S) => Promise<R>
+    actualizar: (id: number, solicitud: S) => Promise<R>
     textos: TextosRegistro
-    onGuardado: () => void
+    // Recibe lo que devolvio el backend: al crear, el registro nuevo
+    onGuardado: (guardado: R) => void
 }
 
-export const useGuardar = <F, S>({ aSolicitud, crear, actualizar, textos, onGuardado }: OpcionesGuardar<F, S>) => {
+export const useGuardar = <F, S, R>({
+    aSolicitud,
+    crear,
+    actualizar,
+    textos,
+    onGuardado,
+}: OpcionesGuardar<F, S, R>) => {
     const [errores, setErrores] = useState<ErroresCampo>({})
     const [guardando, setGuardando] = useState(false)
 
@@ -22,13 +29,9 @@ export const useGuardar = <F, S>({ aSolicitud, crear, actualizar, textos, onGuar
         setErrores({})
         try {
             const solicitud = aSolicitud(formulario)
-            if (id !== undefined) {
-                await actualizar(id, solicitud)
-            } else if (crear) {
-                await crear(solicitud)
-            }
+            const guardado = id !== undefined ? await actualizar(id, solicitud) : await crear(solicitud)
             void avisarExito(mensajeExito(textos, id === undefined ? 'cread' : 'actualizad'))
-            onGuardado()
+            onGuardado(guardado)
         } catch (error) {
             const errorApi = aErrorApi(error)
             // 409 y 422 traen el campo en errores: se marca en el formulario y ademas se avisa

@@ -53,14 +53,16 @@ export const usePermisosPlan = (
     const otrasNoCanceladas = (tarea: TareaResponse) =>
         plan?.tareas.some((otra) => otra.id !== tarea.id && otra.estado !== 'CANCELADA') ?? false
     const aprobacion = plan?.ultimaAprobacion
-    const tieneElRol = usuario?.roles.some((rol) => rol.codigo === aprobacion?.rolRequeridoCodigo) ?? false
+    // El rol no siempre tiene codigo (los creados desde el sistema no lo tienen) y la respuesta solo trae su nombre,
+    // que es unico: se compara por el
+    const tieneElRol = usuario?.roles.some((rol) => rol.nombre === aprobacion?.rolRequeridoNombre) ?? false
 
     return {
         // El backend solo crea el plan con el elemento Registrado
         puedeCrearPlan: plan === null && ficha?.estado === 'REGISTRADO' && puede(PERMISOS.planCrear),
         puedeEditarPlan: enElaboracion && puede(PERMISOS.planActualizar),
         puedeEnviar: enElaboracion && puede(PERMISOS.planSolicitar),
-        // Aprueba o devuelve el rol que pide la criticidad (Gerencia de TI en Crítica y Alta, Registrador en Media y Baja)
+        // Aprueba o devuelve el rol que pide la criticidad, con el permiso de aprobar planes
         puedeResolver:
             vigente &&
             plan?.estado === 'EN_APROBACION' &&

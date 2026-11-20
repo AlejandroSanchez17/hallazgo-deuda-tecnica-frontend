@@ -1,31 +1,28 @@
 import { spacing } from '@hnba/design-tokens'
-import { Alert, Table, type TableColumn, type TableRowAction } from '@hnba/react-ui'
-import { useState, type CSSProperties } from 'react'
+import { Alert, Button, type TableColumn, type TableRowAction } from '@hnba/react-ui'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
+import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 import { recargarUsuariosSimulables } from '../../../../services/api/auth'
-import { columna } from '../../../../styles/disposicion'
+import { columna, fila } from '../../../../styles/disposicion'
 import { rutaPermisosDeRol } from '../../../../utils/constants/rutas'
 import { rolesApi } from '../../api'
 import { accionesEditar, columnaEstado, columnasActivar } from '../../columnas'
 import { RolForm } from '../../components/RolForm/RolForm'
+import { useBorrar } from '../../hooks/useBorrar'
 import { useCambiarEstado } from '../../hooks/useCambiarEstado'
 import { useLista } from '../../hooks/useLista'
 import { usePermisosRoles } from '../../hooks/usePermisosRoles'
 import { TEXTOS } from '../../textos'
-import type { RolResponse } from '../../types'
+import type { Edicion, RolResponse } from '../../types'
 
-// Dos lineas como maximo con puntos suspensivos; el texto completo sale en el tooltip
-const estiloDescripcion: CSSProperties = {
-    maxWidth: 120,
-    overflow: 'hidden',
-    display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    WebkitLineClamp: 2,
-}
+// El Administrador es el unico rol fijo: no se borra (el backend tambien lo rechaza)
+const esAdministrador = (rol: RolResponse) => rol.codigo === 'ADMINISTRADOR'
 
 export const RolesPage = () => {
-    const [edicion, setEdicion] = useState<RolResponse | null>(null)
+    const [edicion, setEdicion] = useState<Edicion<RolResponse>>(undefined)
     const navegar = useNavigate()
     const { registros, cargando, error, recargar } = useLista(rolesApi.listar, 'todos')
     // Los nombres de los roles salen en el selector de usuario simulado: se actualiza con cada cambio
@@ -34,19 +31,16 @@ export const RolesPage = () => {
         void recargarUsuariosSimulables()
     }
     const { cambiarEstado, dialogo } = useCambiarEstado(rolesApi.cambiarEstado, TEXTOS.rol, alCambiar)
-    const { puedeActualizar } = usePermisosRoles()
+    const { pedirBorrado, dialogo: dialogoBorrar } = useBorrar(rolesApi.borrar, alCambiar)
+    const { puedeCrear, puedeActualizar, puedeBorrar } = usePermisosRoles()
 
     const columnas: TableColumn<RolResponse>[] = [
-        { id: 'nombre', header: 'Nombre', accessor: (rol) => rol.nombre },
+        { id: 'nombre', header: 'Nombre', render: (rol) => <TextoCorto texto={rol.nombre} ancho={220} /> },
         {
             id: 'descripcion',
             header: 'Descripción',
-            // Se recorta con puntos suspensivos para que alcancen las columnas de la derecha; completa, en el tooltip
-            render: (rol) => (
-                <div style={estiloDescripcion} title={rol.descripcion ?? undefined}>
-                    {rol.descripcion ?? '—'}
-                </div>
-            ),
+            // Una sola linea con puntos suspensivos; completa, arriba al pasar el cursor
+            render: (rol) => <TextoCorto texto={rol.descripcion} ancho={320} />,
         },
         {
             id: 'visibilidadGlobal',
@@ -58,6 +52,18 @@ export const RolesPage = () => {
         columnaEstado<RolResponse>(TEXTOS.rol),
         ...columnasActivar<RolResponse>(TEXTOS.rol, puedeActualizar ? cambiarEstado : undefined),
     ]
+    const accionesBorrar: TableRowAction<RolResponse>[] = puedeBorrar
+        ? [
+              {
+                  id: 'borrar',
+                  header: 'Borrar',
+                  iconName: 'x_circle',
+                  variant: 'ghost',
+                  disabled: esAdministrador,
+                  onClick: (rol) => pedirBorrado(rol),
+              },
+          ]
+        : []
     const acciones: TableRowAction<RolResponse>[] = [
         {
             id: 'permisos',
@@ -67,37 +73,57 @@ export const RolesPage = () => {
             onClick: (rol) => void navegar(rutaPermisosDeRol(rol.id)),
         },
         ...accionesEditar<RolResponse>(puedeActualizar ? setEdicion : undefined),
+        // La libreria no oculta una accion por fila: en el Administrador queda deshabilitada
+        ...accionesBorrar,
     ]
 
-    const alGuardar = () => {
-        setEdicion(null)
+    const alGuardar = (guardado: RolResponse) => {
+        const eraNuevo = edicion === null
+        setEdicion(undefined)
         alCambiar()
+        // Un rol nuevo no tiene permisos: se lleva a su matriz para que los asigne
+        if (eraNuevo) {
+            void navegar(rutaPermisosDeRol(guardado.id))
+        }
     }
 
     return (
         <>
             <Pantalla
                 titulo="Roles"
-                descripcion="Los roles no se crean ni se eliminan: se editan, se activan o desactivan y se les asignan permisos."
+                descripcion="Los roles se crean, se editan, se activan o desactivan y se borran si no están en uso. Lo que cada uno puede hacer depende de sus permisos."
             >
                 <div style={columna(spacing.md)}>
+                    {puedeCrear && (
+                        <div style={{ ...fila(spacing.md), justifyContent: 'flex-end' }}>
+                            <Button variant="primary" iconName="plus" onClick={() => setEdicion(null)}>
+                                Nuevo rol
+                            </Button>
+                        </div>
+                    )}
+
                     {error ? (
                         <Alert variant="error" description={error.mensaje} />
                     ) : (
-                        <Table
-                            columns={columnas}
-                            rowActions={acciones}
-                            getRowLabel={(rol) => rol.nombre}
-                            rows={registros}
-                            getRowKey={(rol) => String(rol.id)}
-                            loading={cargando}
+                        <TablaPaginada
+                            columnas={columnas}
+                            acciones={acciones}
+                            filas={registros}
+                            claveFila={(rol) => rol.id}
+                            etiquetaFila={(rol) => rol.nombre}
+                            claveReinicio="roles"
+                            cargando={cargando}
+                            textoVacio="No hay roles"
                         />
                     )}
                 </div>
             </Pantalla>
 
-            {edicion && <RolForm rol={edicion} onCerrar={() => setEdicion(null)} onGuardado={alGuardar} />}
+            {edicion !== undefined && (
+                <RolForm rol={edicion ?? undefined} onCerrar={() => setEdicion(undefined)} onGuardado={alGuardar} />
+            )}
             {dialogo}
+            {dialogoBorrar}
         </>
     )
 }

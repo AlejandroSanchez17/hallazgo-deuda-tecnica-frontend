@@ -2,6 +2,9 @@ import type { Alcance } from '../../types/usuario.types'
 
 export type FiltroEstado = 'activos' | 'inactivos' | 'todos'
 
+// undefined: formulario cerrado; null: registro nuevo
+export type Edicion<T> = T | null | undefined
+
 export interface RegistroActivable {
     id: number
     nombre: string
@@ -15,7 +18,8 @@ export interface TextosRegistro {
 }
 
 export interface RolResponse extends RegistroActivable {
-    codigo: string
+    // Solo el Administrador y los roles de origen traen codigo; los creados desde el sistema, null
+    codigo: string | null
     descripcion: string | null
     visibilidadGlobal: boolean
     cantidadPermisos: number

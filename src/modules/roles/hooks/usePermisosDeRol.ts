@@ -5,9 +5,7 @@ import { recargarUsuariosSimulables } from '../../../services/api/auth'
 import { avisarExito } from '../../../utils/alertas'
 import { permisosApi, rolesApi } from '../api'
 import {
-    admiteSoloPropio,
     agruparPorRecurso,
-    alcanceHabitual,
     alternarPermiso,
     aMapa,
     aPermisosAsignados,
@@ -34,7 +32,7 @@ interface EdicionPermisos {
     marcados: MapaPermisos
 }
 
-// Los 39 permisos y los de un rol; los cambios quedan en pantalla hasta guardar (PUT con la lista completa)
+// Todos los permisos y los de un rol; los cambios quedan en pantalla hasta guardar (PUT con la lista completa)
 export const usePermisosDeRol = (rolId: number | undefined) => {
     const [catalogo, setCatalogo] = useState<CatalogoPermisos | null>(null)
     const [resultado, setResultado] = useState<ResultadoRol | null>(null)
@@ -79,8 +77,7 @@ export const usePermisosDeRol = (rolId: number | undefined) => {
         if (rolId === undefined || rol === null) {
             return
         }
-        const habitual = alcanceHabitual(grupo.recurso, admiteSoloPropio(rol.codigo))
-        setEdicion({ rolId, marcados: alternarPermiso(marcados, grupo, permisoId, habitual) })
+        setEdicion({ rolId, marcados: alternarPermiso(marcados, grupo, permisoId) })
     }
 
     const cambiarSoloPropio = (grupo: GrupoRecurso, soloPropio: boolean) => {
@@ -131,7 +128,6 @@ export const usePermisosDeRol = (rolId: number | undefined) => {
         guardando,
         errorGuardado,
         cerrarError: () => setErrorGuardado(null),
-        conSoloPropio: rol !== null && admiteSoloPropio(rol.codigo),
         alternar,
         cambiarSoloPropio,
         descartar,

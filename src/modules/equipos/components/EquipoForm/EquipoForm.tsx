@@ -85,7 +85,7 @@ export const EquipoForm = ({ equipo, onCerrar, onGuardado }: EquipoFormProps) =>
                         <FieldInput
                             label="Líder"
                             errorText={errores.liderId}
-                            helperText="Solo usuarios con el rol Líder técnico. Entra como primer miembro."
+                            helperText="Solo usuarios con el permiso de liderar equipos. Entra como primer miembro."
                         >
                             <Select
                                 options={lideres}

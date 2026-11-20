@@ -16,19 +16,16 @@ interface MatrizPermisosProps {
     grupos: GrupoRecurso[]
     marcados: MapaPermisos
     soloLectura: boolean
-    // Solo los roles de lider tecnico y miembro de equipo trabajan con lo propio
-    conSoloPropio: boolean
     onAlternar: (grupo: GrupoRecurso, permisoId: number) => void
     onCambiarSoloPropio: (grupo: GrupoRecurso, soloPropio: boolean) => void
 }
 
 // Una fila por recurso y una columna por accion: cada interruptor da o quita un permiso.
-// En los roles que lo admiten, el alcance se decide por fila con "Propio" (el equipo o las tareas del usuario)
+// El alcance se decide por fila con "Propio": el permiso vale solo para lo del usuario (su equipo o sus tareas)
 export const MatrizPermisos = ({
     grupos,
     marcados,
     soloLectura,
-    conSoloPropio,
     onAlternar,
     onCambiarSoloPropio,
 }: MatrizPermisosProps) => {
@@ -99,7 +96,7 @@ export const MatrizPermisos = ({
 
     return (
         <Table
-            columns={[columnaRecurso, ...columnasAccion, ...(conSoloPropio ? [columnaSoloPropio] : [])]}
+            columns={[columnaRecurso, ...columnasAccion, columnaSoloPropio]}
             rows={grupos}
             getRowKey={(grupo) => grupo.recurso}
         />

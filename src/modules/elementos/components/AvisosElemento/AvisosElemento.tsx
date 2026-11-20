@@ -26,7 +26,7 @@ export const AvisosElemento = ({ resumen, cierres, onVerProrrogas, onVerCierre }
                 <Banner
                     variant="info"
                     title={prorroga.esAdicional ? 'Prórroga adicional pendiente' : 'Prórroga pendiente'}
-                    description={`${prorroga.solicitanteNombre} propone pasar la fecha compromiso del ${formatearFecha(prorroga.fechaAnterior)} al ${formatearFecha(prorroga.fechaPropuesta)}. La resuelve Gerencia de TI.`}
+                    description={`${prorroga.solicitanteNombre} propone pasar la fecha compromiso del ${formatearFecha(prorroga.fechaAnterior)} al ${formatearFecha(prorroga.fechaPropuesta)}. La resuelve quien puede aprobar prórrogas.`}
                     action={{ label: 'Ver prórroga', onClick: onVerProrrogas }}
                 />
             )}

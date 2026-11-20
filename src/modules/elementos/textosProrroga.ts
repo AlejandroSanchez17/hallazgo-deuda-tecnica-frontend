@@ -21,7 +21,7 @@ export const TIPO_PENDIENTE: Record<TipoPendiente, { texto: string; estado: Badg
 
 // RN-08
 export const AVISO_ADICIONAL =
-    'Supera el máximo de su criticidad: es una prórroga adicional y la resuelve Gerencia de TI.'
+    'Supera el máximo de su criticidad: es una prórroga adicional y la resuelve quien puede aprobar prórrogas.'
 
 // "1 de 2 prórrogas"
 export const textoCantidad = (aprobadas: number, maximo?: number) =>

@@ -15,14 +15,22 @@ const NOMBRES_RECURSO: Record<string, string> = {
     BITACORA: 'Bitácora',
     PRORROGA: 'Prórroga',
     APROBACION: 'Aprobación',
-    NOTIFICACION: 'Notificación',
+    EQUIPO: 'Equipos',
+    NOTIFICACION: 'Notificaciones',
+}
+
+// Las acciones nuevas llevan un guion bajo: se muestran con espacio ("Resumen semanal")
+const NOMBRES_ACCION: Record<string, string> = {
+    PARTICIPAR: 'Participar',
+    LIDERAR: 'Liderar',
+    RESUMEN_SEMANAL: 'Resumen semanal',
 }
 
 const capitalizar = (texto: string) => `${texto.charAt(0).toUpperCase()}${texto.slice(1).toLowerCase()}`
 
 export const nombreRecurso = (recurso: string) => NOMBRES_RECURSO[recurso] ?? capitalizar(recurso.replace(/_/g, ' '))
 
-export const nombreAccion = (accion: string) => capitalizar(accion)
+export const nombreAccion = (accion: string) => NOMBRES_ACCION[accion] ?? capitalizar(accion.replace(/_/g, ' '))
 
 // Conserva el orden en que el backend entrega los permisos
 export const agruparPorRecurso = (permisos: Permiso[]): GrupoRecurso[] => {
@@ -43,9 +51,6 @@ export const accionesDe = (grupos: GrupoRecurso[]): string[] => {
     return acciones.sort((a, b) => posicion(a) - posicion(b))
 }
 
-// Estos recursos se leen en todo el sistema, aunque el rol trabaje solo con lo propio
-const RECURSOS_SIEMPRE_TODO = ['CATALOGO', 'PARAMETRO']
-
 export const asignadosDe = (grupo: GrupoRecurso, marcados: MapaPermisos) =>
     grupo.permisos.filter((permiso) => marcados[permiso.id] !== undefined)
 
@@ -58,32 +63,18 @@ export const alcanceDeFila = (grupo: GrupoRecurso, marcados: MapaPermisos): Alca
     return asignados.every((permiso) => marcados[permiso.id] === 'PROPIO') ? 'PROPIO' : 'TODO'
 }
 
-// Solo estos roles trabajan con lo propio (su equipo o sus tareas); los demas siempre tienen alcance TODO
-const ROLES_CON_SOLO_PROPIO = ['LIDER_TECNICO', 'MIEMBRO_EQUIPO']
-
-export const admiteSoloPropio = (codigoRol: string) => ROLES_CON_SOLO_PROPIO.includes(codigoRol)
-
-// Alcance del primer permiso de una fila
-export const alcanceHabitual = (recurso: string, conSoloPropio: boolean): Alcance =>
-    conSoloPropio && !RECURSOS_SIEMPRE_TODO.includes(recurso) ? 'PROPIO' : 'TODO'
-
 export const aMapa = (permisos: PermisoDeRol[]): MapaPermisos =>
     Object.fromEntries(permisos.map((permiso) => [permiso.id, permiso.alcance]))
 
 export const sinPermiso = (mapa: MapaPermisos, permisoId: number): MapaPermisos =>
     Object.fromEntries(Object.entries(mapa).filter(([id]) => Number(id) !== permisoId))
 
-// Da o quita un permiso; uno nuevo toma el alcance de su fila, o el habitual si la fila estaba vacía
-export const alternarPermiso = (
-    marcados: MapaPermisos,
-    grupo: GrupoRecurso,
-    permisoId: number,
-    habitual: Alcance,
-): MapaPermisos => {
+// Da o quita un permiso; uno nuevo toma el alcance de su fila, o TODO si la fila estaba vacía
+export const alternarPermiso = (marcados: MapaPermisos, grupo: GrupoRecurso, permisoId: number): MapaPermisos => {
     if (marcados[permisoId] !== undefined) {
         return sinPermiso(marcados, permisoId)
     }
-    return { ...marcados, [permisoId]: alcanceDeFila(grupo, marcados) ?? habitual }
+    return { ...marcados, [permisoId]: alcanceDeFila(grupo, marcados) ?? 'TODO' }
 }
 
 // Aplica el mismo alcance a todos los permisos dados de la fila

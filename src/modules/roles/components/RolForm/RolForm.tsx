@@ -13,20 +13,21 @@ const aSolicitud = (formulario: RolFormulario): RolRequest => ({
 })
 
 interface RolFormProps {
-    rol: RolResponse
+    // Sin rol, el formulario crea uno nuevo (llega sin permisos)
+    rol?: RolResponse
     onCerrar: () => void
-    onGuardado: () => void
+    onGuardado: (guardado: RolResponse) => void
 }
 
-// Los roles no se crean ni se borran, y su codigo no cambia
 export const RolForm = ({ rol, onCerrar, onGuardado }: RolFormProps) => {
     const { formulario, cambiar, asignar } = useFormulario<RolFormulario>({
-        nombre: rol.nombre,
-        descripcion: rol.descripcion ?? '',
-        visibilidadGlobal: rol.visibilidadGlobal,
+        nombre: rol?.nombre ?? '',
+        descripcion: rol?.descripcion ?? '',
+        visibilidadGlobal: rol?.visibilidadGlobal ?? false,
     })
     const { guardar, errores, guardando } = useGuardar({
         aSolicitud,
+        crear: rolesApi.crear,
         actualizar: rolesApi.actualizar,
         textos: TEXTOS.rol,
         onGuardado,
@@ -37,10 +38,10 @@ export const RolForm = ({ rol, onCerrar, onGuardado }: RolFormProps) => {
             open
             position="center"
             size="sm"
-            title={`Editar rol (${rol.codigo})`}
+            title={rol ? `Editar rol ${rol.nombre}` : 'Nuevo rol'}
             loading={guardando}
             onClose={onCerrar}
-            onSubmit={() => void guardar(formulario, rol.id)}
+            onSubmit={() => void guardar(formulario, rol?.id)}
         >
             <FieldInput label="Nombre" errorText={errores.nombre}>
                 <TextInput maxLength={60} value={formulario.nombre} onChange={cambiar('nombre')} />

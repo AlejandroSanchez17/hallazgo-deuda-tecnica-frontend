@@ -75,9 +75,8 @@ export const PermisosPage = () => {
                 <div style={columna(spacing.md)}>
                     {puedeActualizar && edicion.rol && (
                         <Text variant="body-regular-small" as="p" style={textoSecundario}>
-                            {edicion.conSoloPropio
-                                ? 'Cada interruptor da o quita un permiso. «Propio» limita los permisos de esa fila al equipo o a las tareas del usuario.'
-                                : 'Cada interruptor da o quita un permiso.'}
+                            Cada interruptor da o quita un permiso. «Propio» limita los permisos de esa fila al equipo o
+                            a las tareas del usuario.
                         </Text>
                     )}
 
@@ -115,7 +114,6 @@ export const PermisosPage = () => {
                             grupos={edicion.grupos}
                             marcados={edicion.marcados}
                             soloLectura={!puedeActualizar}
-                            conSoloPropio={edicion.conSoloPropio}
                             onAlternar={edicion.alternar}
                             onCambiarSoloPropio={edicion.cambiarSoloPropio}
                         />

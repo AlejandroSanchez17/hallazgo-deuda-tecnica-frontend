@@ -1,4 +1,5 @@
 import type { ParametroResponse } from './types'
+import { CLAVE_ROL_VALIDA_CIERRE } from './valores'
 
 // Valor actual de un parametro por su clave
 export type LeerValor = (clave: string) => string
@@ -60,7 +61,14 @@ const TEXTOS: TextoParametro[] = [
         nombre: 'Día del resumen semanal',
         unidad: '',
         explicacion: (valor) =>
-            `Cada ${valor('resumen_semanal_dia').toLowerCase()} Gerencia recibe el resumen de los elementos vencidos.`,
+            `Cada ${valor('resumen_semanal_dia').toLowerCase()} los usuarios con el permiso de resumen semanal reciben el resumen de los elementos vencidos.`,
+    },
+    {
+        clave: CLAVE_ROL_VALIDA_CIERRE,
+        nombre: 'Rol que valida el cierre de hallazgos',
+        unidad: '',
+        explicacion: () =>
+            'El cierre de un hallazgo lo valida este rol. Mientras lo tenga, no se puede desactivar ni borrar.',
     },
     {
         clave: 'correo_habilitado',

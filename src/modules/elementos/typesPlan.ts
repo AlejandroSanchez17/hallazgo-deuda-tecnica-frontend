@@ -19,7 +19,6 @@ export interface ProblemaPlan {
 export interface AprobacionPlan {
     id: number
     resultado: ResultadoAprobacion
-    rolRequeridoCodigo: string
     rolRequeridoNombre: string
     solicitanteId: number
     solicitanteNombre: string
@@ -125,7 +124,7 @@ export interface PlanResponse {
     estado: EstadoPlan
     avance: number
     fechaCreacion: string
-    // "Gerencia de TI" o "Registrador", segun la criticidad
+    // Nombre del rol que aprueba el plan, segun la criticidad
     rolAprobadorNombre: string
     // Sin las tareas canceladas
     sumaPesos: number

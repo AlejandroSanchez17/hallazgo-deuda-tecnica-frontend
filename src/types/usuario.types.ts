@@ -1,7 +1,9 @@
 export type Alcance = 'TODO' | 'PROPIO'
 
 export interface Rol {
-    codigo: string
+    id: number
+    // Los roles creados desde el sistema no tienen codigo: no se decide nada por el, se usan los permisos
+    codigo: string | null
     nombre: string
 }
 

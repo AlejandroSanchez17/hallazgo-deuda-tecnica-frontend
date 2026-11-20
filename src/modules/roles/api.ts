@@ -4,7 +4,6 @@ import type { Permiso, PermisosRolRequest, RolDetalle, RolRequest, RolResponse }
 
 const RUTA_ROLES = '/roles'
 
-// Los roles no se crean ni se borran
 export const rolesApi = {
     listar: async (activo?: boolean): Promise<RolResponse[]> => {
         const { data } = await api.get<ApiResponse<RolResponse[]>>(RUTA_ROLES, { params: { activo } })
@@ -13,6 +12,15 @@ export const rolesApi = {
     obtener: async (id: number): Promise<RolDetalle> => {
         const { data } = await api.get<ApiResponse<RolDetalle>>(`${RUTA_ROLES}/${id}`)
         return data.datos
+    },
+    // Llega sin permisos y sin codigo
+    crear: async (solicitud: RolRequest): Promise<RolResponse> => {
+        const { data } = await api.post<ApiResponse<RolResponse>>(RUTA_ROLES, solicitud)
+        return data.datos
+    },
+    // 422 si esta en uso (usuarios, criticidades, validacion de hallazgos o aprobaciones): el mensaje dice el motivo
+    borrar: async (id: number): Promise<void> => {
+        await api.delete(`${RUTA_ROLES}/${id}`)
     },
     actualizar: async (id: number, solicitud: RolRequest): Promise<RolResponse> => {
         const { data } = await api.put<ApiResponse<RolResponse>>(`${RUTA_ROLES}/${id}`, solicitud)

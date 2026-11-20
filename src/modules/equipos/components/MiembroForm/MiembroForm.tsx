@@ -27,7 +27,7 @@ export const MiembroForm = ({ equipo, onCerrar, onAgregado }: MiembroFormProps) 
         <AsignacionForm
             titulo="Agregar miembro"
             etiquetaUsuario="Usuario"
-            ayudaUsuario="Usuario activo con el rol Líder técnico o Miembro de equipo que no esté en este ni en otro equipo."
+            ayudaUsuario="Usuario activo con el permiso de participar en equipos que no esté en este ni en otro equipo."
             etiquetaFecha="Fecha de ingreso"
             opciones={opciones}
             errores={{ usuario: errores.usuarioId, fecha: errores.fechaIngreso }}

@@ -2,14 +2,20 @@ import { spacing } from '@hnba/design-tokens'
 import { Badge, Text } from '@hnba/react-ui'
 import { fila } from '../../../../styles/disposicion'
 import { textoDe } from '../../textos'
-import type { ParametroResponse } from '../../types'
-import { separarLista } from '../../valores'
+import type { ParametroResponse, RolActivo } from '../../types'
+import { CLAVE_ROL_VALIDA_CIERRE, separarLista } from '../../valores'
 
 interface ValorParametroProps {
     parametro: ParametroResponse
+    // Para mostrar el nombre del rol en lugar de su id
+    roles: RolActivo[]
 }
 
-export const ValorParametro = ({ parametro }: ValorParametroProps) => {
+export const ValorParametro = ({ parametro, roles }: ValorParametroProps) => {
+    if (parametro.clave === CLAVE_ROL_VALIDA_CIERRE) {
+        const rol = roles.find((candidato) => String(candidato.id) === parametro.valor)
+        return <Text variant="body-bold-medium">{rol?.nombre ?? `Rol ${parametro.valor}`}</Text>
+    }
     if (parametro.tipoDato === 'BOOLEANO') {
         return (
             <Badge

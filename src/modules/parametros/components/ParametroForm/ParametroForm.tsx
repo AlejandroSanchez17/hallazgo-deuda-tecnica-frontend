@@ -1,22 +1,25 @@
 import { colors, spacing } from '@hnba/design-tokens'
-import { Badge, FieldInput, FormModal, LargeTextArea, Text, TextInput, Toggle } from '@hnba/react-ui'
+import { Badge, FieldInput, FormModal, LargeTextArea, Select, Text, TextInput, Toggle } from '@hnba/react-ui'
 import { useState } from 'react'
 import { columna, fila } from '../../../../styles/disposicion'
+import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { useGuardarParametro } from '../../hooks/useGuardarParametro'
 import { lectorDe, textoDe, type LeerValor } from '../../textos'
 import { NombreParametro } from '../NombreParametro/NombreParametro'
-import type { ParametroResponse } from '../../types'
-import { separarLista } from '../../valores'
+import type { ParametroResponse, RolActivo } from '../../types'
+import { CLAVE_ROL_VALIDA_CIERRE, separarLista } from '../../valores'
 
 interface ParametroFormProps {
     parametro: ParametroResponse
     // Todos los parametros: algunas explicaciones usan el valor de otro (el avance minimo menciona los dias)
     parametros: ParametroResponse[]
+    // Roles activos, para el parametro que guarda un rol
+    roles: RolActivo[]
     onCerrar: () => void
     onGuardado: () => void
 }
 
-export const ParametroForm = ({ parametro, parametros, onCerrar, onGuardado }: ParametroFormProps) => {
+export const ParametroForm = ({ parametro, parametros, roles, onCerrar, onGuardado }: ParametroFormProps) => {
     const [valor, setValor] = useState(parametro.valor)
     const { guardar, error, guardando } = useGuardarParametro(onGuardado)
 
@@ -29,7 +32,25 @@ export const ParametroForm = ({ parametro, parametros, onCerrar, onGuardado }: P
     const unidad = textoDe(parametro.clave)?.unidad
     const etiquetaValor = unidad ? `Valor (${unidad})` : 'Valor'
 
+    const opcionesRol: Opcion[] = roles.map((rol) => ({ valor: String(rol.id), texto: rol.nombre }))
+
     const control = () => {
+        // Sin la lista de roles (el usuario no puede pedirla) queda el campo numerico
+        if (parametro.clave === CLAVE_ROL_VALIDA_CIERRE && opcionesRol.length > 0) {
+            return (
+                <FieldInput label="Rol" errorText={error}>
+                    <Select
+                        options={opcionesRol}
+                        value={opcionDe(opcionesRol, valor)}
+                        getLabel={textoDeOpcion}
+                        getValue={valorDeOpcion}
+                        searchable
+                        placeholder="Seleccione un rol"
+                        onChange={(opcion) => setValor(opcion.valor)}
+                    />
+                </FieldInput>
+            )
+        }
         switch (parametro.tipoDato) {
             case 'BOOLEANO':
                 return (

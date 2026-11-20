@@ -11,7 +11,7 @@ interface Resultado {
 }
 
 // Se piden al abrir el detalle (no al abrir la pestana) porque el aviso de lo pendiente va sobre las pestanas.
-// Sin el permiso de leer no se pide (el Miembro de equipo recibiria 403)
+// Sin el permiso de leer no se pide (sin el permiso el backend responderia 403)
 export const useProrrogasCierres = (elementoId: number, veProrrogas: boolean, veCierre: boolean) => {
     const [resultado, setResultado] = useState<Resultado | null>(null)
     const [version, setVersion] = useState(0)

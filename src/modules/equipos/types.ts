@@ -90,7 +90,7 @@ export interface AreaDisponible {
 }
 
 // Usuario que se puede elegir como miembro o lider; el backend ya quita a los que tienen otro equipo y, para lider,
-// solo manda a quienes tienen el rol Lider tecnico (los roles se cambian en Usuarios)
+// solo manda a quienes tienen el permiso de liderar equipos (los roles se cambian en Usuarios)
 export interface CandidatoResponse {
     usuarioId: number
     nombre: string

@@ -46,15 +46,16 @@ export const usePermisosProrrogaCierre = (
             estado !== undefined &&
             ESTADOS_CON_PRORROGA.includes(estado) &&
             comoLider(PERMISOS.prorrogaSolicitar),
-        // Hoy solo Gerencia de TI, tambien las adicionales
+        // Quien tiene el permiso de aprobar prorrogas; tambien las adicionales
         puedeResolverProrroga: aprobar,
         // Lo demas (tareas, evidencias, prorroga pendiente) lo revisa el backend y lo devuelve todo junto
         puedePedirCierre: estado === 'EN_EJECUCION' && comoLider(PERMISOS.cierreSolicitar),
-        // Un hallazgo lo valida el Auditor; una deuda tecnica, el rol de su criticidad
+        // Lo valida el rol que pide el cierre (el del parametro en un hallazgo, el de la criticidad en una deuda tecnica);
+        // se compara por nombre porque el rol no siempre tiene codigo
         puedeValidarCierre: (cierre: CierreResponse) =>
             validar &&
             estado === 'CIERRE_SOLICITADO' &&
             cierre.resultado === 'PENDIENTE' &&
-            (usuario?.roles.some((rol) => rol.codigo === cierre.rolRequeridoCodigo) ?? false),
+            (usuario?.roles.some((rol) => rol.nombre === cierre.rolRequeridoNombre) ?? false),
     }
 }
