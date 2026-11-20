@@ -19,8 +19,10 @@ export const useAnular = (ficha: ElementoDetalleResponse, onAnulado: () => void)
     }
 
     const confirmar = async () => {
-        await guardar(() => elementosApi.anular(ficha.id, motivo.trim()))
+        // La confirmacion se cierra antes de enviar: si siguiera abierta cuando la pantalla desmonta los dos modales
+        // juntos, la libreria restauraria mal el scroll de la pagina y esta quedaria bloqueada
         setConfirmando(false)
+        await guardar(() => elementosApi.anular(ficha.id, motivo.trim()))
     }
 
     return {

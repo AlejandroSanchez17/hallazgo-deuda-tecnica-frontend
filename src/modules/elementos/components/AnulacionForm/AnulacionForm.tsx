@@ -40,7 +40,6 @@ export const AnulacionForm = ({ ficha, onCerrar, onAnulado }: AnulacionFormProps
                 description={`La anulación ${ficha.tipo === 'HALLAZGO' ? 'del hallazgo' : 'de la deuda técnica'} no se deshace.`}
                 confirmLabel="Anular"
                 cancelLabel="Cancelar"
-                confirmLoading={anulacion.guardando}
                 onConfirm={anulacion.confirmar}
                 onClose={anulacion.cancelarConfirmacion}
             />
