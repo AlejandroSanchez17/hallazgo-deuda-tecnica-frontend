@@ -1,9 +1,10 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, Button, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 import { columna } from '../../../../styles/disposicion'
 import { rutaElemento } from '../../../../utils/constants/rutas'
 import { formatearFecha } from '../../../../utils/formato'
@@ -12,22 +13,28 @@ import { elementosApi } from '../../api'
 import { accionesEditar, accionVer, columnaSemaforo } from '../../columnas'
 import { BarraElementos } from '../../components/BarraElementos/BarraElementos'
 import { ElementoForm } from '../../components/ElementoForm/ElementoForm'
-import { filtrarElementos, hayFiltros, opcionesDeFiltro, SIN_FILTROS } from '../../filtros'
+import { filtrarElementos, filtrosAUrl, filtrosDeUrl, hayFiltros, opcionesDeFiltro } from '../../filtros'
 import { useFichaElemento } from '../../hooks/useFichaElemento'
 import { useLista } from '../../hooks/useLista'
 import { usePermisosElementos } from '../../hooks/usePermisosElementos'
-import { TEXTO_ESTADO, TEXTO_TIPO } from '../../textos'
-import type { ElementoResponse, FiltrosElementos } from '../../types'
+import { TEXTO_ESTADO, TEXTO_TIPO, TEXTOS_LISTA } from '../../textos'
+import type { ElementoResponse, FiltrosElementos, TipoElemento } from '../../types'
 
 // Codigo, tipo y fecha no se parten en dos lineas (las celdas saltan de linea por una regla global)
 const sinCortar = (texto: string) => <span style={{ whiteSpace: 'nowrap' }}>{texto}</span>
 
+const columnaTipo: TableColumn<ElementoResponse> = {
+    id: 'tipo',
+    header: 'Tipo',
+    render: (elemento) => sinCortar(TEXTO_TIPO[elemento.tipo]),
+}
+
 const columnas: TableColumn<ElementoResponse>[] = [
     { id: 'codigo', header: 'Código', render: (elemento) => sinCortar(elemento.codigo) },
-    { id: 'tipo', header: 'Tipo', render: (elemento) => sinCortar(TEXTO_TIPO[elemento.tipo]) },
-    { id: 'titulo', header: 'Título', accessor: (elemento) => elemento.titulo },
+    columnaTipo,
+    { id: 'titulo', header: 'Título', render: (elemento) => <TextoCorto texto={elemento.titulo} ancho={320} /> },
     { id: 'criticidad', header: 'Criticidad', accessor: (elemento) => elemento.criticidadNombre },
-    { id: 'equipo', header: 'Equipo', accessor: (elemento) => elemento.equipoNombre },
+    { id: 'equipo', header: 'Equipo', render: (elemento) => <TextoCorto texto={elemento.equipoNombre} ancho={200} /> },
     { id: 'estado', header: 'Estado', accessor: (elemento) => TEXTO_ESTADO[elemento.estado] },
     {
         id: 'compromiso',
@@ -38,17 +45,30 @@ const columnas: TableColumn<ElementoResponse>[] = [
     columnaSemaforo,
 ]
 
-export const ElementosPage = () => {
+// En la lista de un solo tipo todas las filas valen lo mismo: la columna Tipo sobra
+const columnasDeUnTipo = columnas.filter((columna) => columna !== columnaTipo)
+
+interface ElementosPageProps {
+    // Sin tipo es la lista combinada (/elementos), a la que llegan los enlaces del tablero
+    tipo?: TipoElemento
+}
+
+export const ElementosPage = ({ tipo }: ElementosPageProps) => {
     const navegar = useNavigate()
     const [busqueda, setBusqueda] = useState('')
-    const [filtros, setFiltros] = useState<FiltrosElementos>(SIN_FILTROS)
+    const [parametros, setParametros] = useSearchParams()
+    // En la lista de un tipo, el tipo de la URL se ignora
+    const filtros = tipo ? { ...filtrosDeUrl(parametros), tipo: '' } : filtrosDeUrl(parametros)
+    const setFiltros = (nuevos: FiltrosElementos) => setParametros(filtrosAUrl(nuevos), { replace: true })
     const { registros, cargando, error, recargar } = useLista(elementosApi.listar)
     const { edicion, abrirNuevo, abrirEdicion, cerrar } = useFichaElemento()
     const { puedeCrear, muestraEditar, puedeEditar } = usePermisosElementos()
 
     const termino = normalizar(busqueda)
-    const filas = filtrarElementos(registros, termino, filtros)
-    const opciones = opcionesDeFiltro(registros)
+    const delTipo = tipo ? registros.filter((elemento) => elemento.tipo === tipo) : registros
+    const filas = filtrarElementos(delTipo, termino, filtros)
+    const opciones = opcionesDeFiltro(delTipo)
+    const textos = tipo ? TEXTOS_LISTA[tipo] : undefined
     const acciones = [
         accionVer((elemento) => void navegar(rutaElemento(elemento.id))),
         ...accionesEditar(muestraEditar ? abrirEdicion : undefined, puedeEditar),
@@ -62,8 +82,11 @@ export const ElementosPage = () => {
     return (
         <>
             <Pantalla
-                titulo="Hallazgos y deuda técnica"
-                descripcion="Hallazgos de auditoría y deuda técnica registrados, con su equipo, su fecha compromiso y el semáforo de vencimiento."
+                titulo={textos?.titulo ?? 'Hallazgos y deuda técnica'}
+                descripcion={
+                    textos?.descripcion ??
+                    'Hallazgos de auditoría y deuda técnica registrados, con su equipo, su fecha compromiso y el semáforo de vencimiento.'
+                }
             >
                 <div style={columna(spacing.md)}>
                     <BarraElementos
@@ -74,10 +97,11 @@ export const ElementosPage = () => {
                         criticidades={opciones.criticidades}
                         equipos={opciones.equipos}
                         origenes={opciones.origenes}
+                        ocultarTipo={tipo !== undefined}
                         accion={
                             puedeCrear ? (
                                 <Button variant="primary" iconName="plus" onClick={abrirNuevo}>
-                                    Nuevo elemento
+                                    {textos?.botonNuevo ?? 'Nuevo elemento'}
                                 </Button>
                             ) : undefined
                         }
@@ -87,7 +111,7 @@ export const ElementosPage = () => {
                         <Alert variant="error" description={error.mensaje} />
                     ) : (
                         <TablaPaginada
-                            columnas={columnas}
+                            columnas={tipo ? columnasDeUnTipo : columnas}
                             acciones={acciones}
                             filas={filas}
                             claveFila={(elemento) => elemento.id}
@@ -96,7 +120,7 @@ export const ElementosPage = () => {
                             cargando={cargando}
                             textoVacio={
                                 termino === '' && !hayFiltros(filtros)
-                                    ? 'No hay hallazgos ni deuda técnica registrados'
+                                    ? (textos?.textoVacio ?? 'No hay hallazgos ni deuda técnica registrados')
                                     : 'Ningún elemento coincide con la búsqueda o los filtros'
                             }
                         />
@@ -104,7 +128,9 @@ export const ElementosPage = () => {
                 </div>
             </Pantalla>
 
-            {edicion !== undefined && <ElementoForm ficha={edicion} onCerrar={cerrar} onGuardado={alGuardar} />}
+            {edicion !== undefined && (
+                <ElementoForm ficha={edicion} tipo={tipo} onCerrar={cerrar} onGuardado={alGuardar} />
+            )}
         </>
     )
 }

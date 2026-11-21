@@ -11,6 +11,15 @@ export const SIN_FILTROS: FiltrosElementos = {
     semaforo: '',
 }
 
+const CAMPOS = Object.keys(SIN_FILTROS) as (keyof FiltrosElementos)[]
+
+// Los filtros viven en la URL (/elementos?semaforo=VENCIDO&equipo=6): el tablero enlaza al listado ya filtrado
+export const filtrosDeUrl = (parametros: URLSearchParams): FiltrosElementos =>
+    Object.fromEntries(CAMPOS.map((campo) => [campo, parametros.get(campo) ?? ''])) as unknown as FiltrosElementos
+
+export const filtrosAUrl = (filtros: FiltrosElementos): Record<string, string> =>
+    Object.fromEntries(CAMPOS.filter((campo) => filtros[campo] !== '').map((campo) => [campo, filtros[campo]]))
+
 export const hayFiltros = (filtros: FiltrosElementos) => Object.values(filtros).some((valor) => valor !== '')
 
 const cumple = (filtro: string, valor: string | number | null) => filtro === '' || filtro === String(valor)

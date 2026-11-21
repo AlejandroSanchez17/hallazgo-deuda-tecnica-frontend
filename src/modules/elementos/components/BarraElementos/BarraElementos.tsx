@@ -27,6 +27,8 @@ interface BarraElementosProps {
     origenes: Opcion[]
     // Boton principal (Nuevo); queda a la derecha, pegado a la tabla
     accion?: ReactNode
+    // En la lista de un solo tipo el filtro de tipo sobra
+    ocultarTipo?: boolean
 }
 
 // Dos filas: el buscador arriba con el boton a la derecha, y los seis filtros abajo
@@ -39,6 +41,7 @@ export const BarraElementos = ({
     equipos,
     origenes,
     accion,
+    ocultarTipo = false,
 }: BarraElementosProps) => {
     const dibujar = ({ campo, todos, opciones, ancho }: FiltroConfig) => {
         const conTodos = [{ valor: '', texto: todos }, ...opciones]
@@ -69,7 +72,7 @@ export const BarraElementos = ({
                 {accion}
             </div>
             <div style={fila(spacing.sm)}>
-                {dibujar({ campo: 'tipo', todos: 'Todo tipo', opciones: OPCIONES_TIPO, ancho: 150 })}
+                {!ocultarTipo && dibujar({ campo: 'tipo', todos: 'Todo tipo', opciones: OPCIONES_TIPO, ancho: 150 })}
                 {dibujar({ campo: 'estado', todos: 'Todo estado', opciones: OPCIONES_ESTADO, ancho: 180 })}
                 {dibujar({ campo: 'semaforo', todos: 'Todo semáforo', opciones: OPCIONES_SEMAFORO, ancho: 170 })}
                 {dibujar({ campo: 'criticidad', todos: 'Toda criticidad', opciones: criticidades, ancho: 170 })}

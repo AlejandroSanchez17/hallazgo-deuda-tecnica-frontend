@@ -16,6 +16,7 @@ import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { usePermisosCatalogo } from '../../hooks/usePermisosCatalogo'
 import { TEXTOS } from '../../textos'
 import type { AreaResponse, Edicion, FiltroEstado } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 type FiltroJerarquia = 'todas' | 'padres' | 'subareas'
 
@@ -52,8 +53,12 @@ export const AreasPage = () => {
     )
 
     const columnas: TableColumn<AreaResponse>[] = [
-        { id: 'nombre', header: 'Nombre', accessor: (area) => area.nombre },
-        { id: 'areaPadreNombre', header: 'Área padre', render: (area) => area.areaPadreNombre ?? '—' },
+        { id: 'nombre', header: 'Nombre', render: (area) => <TextoCorto texto={area.nombre} ancho={240} /> },
+        {
+            id: 'areaPadreNombre',
+            header: 'Área padre',
+            render: (area) => <TextoCorto texto={area.areaPadreNombre} ancho={240} />,
+        },
         columnaEstado<AreaResponse>(TEXTOS.area),
         ...columnasActivar<AreaResponse>(TEXTOS.area, puedeDesactivar ? cambiarEstado : undefined),
     ]

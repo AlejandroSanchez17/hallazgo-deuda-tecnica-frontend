@@ -7,6 +7,7 @@ import type {
     ElementoCrearRequest,
     ElementoDetalleResponse,
     ElementoFormulario,
+    TipoElemento,
 } from './types'
 
 // Mismo nombre de campo que usa el backend en errores
@@ -18,8 +19,9 @@ const aNumero = (valor: string) => (valor === '' ? null : Number(valor))
 // Acepta coma o punto decimal; texto que no es numero da NaN (lo marca validar)
 const aHoras = (valor: string) => (valor.trim() === '' ? null : Number(valor.trim().replace(',', '.')))
 
-export const formularioInicial = (ficha: ElementoDetalleResponse | null): ElementoFormulario => ({
-    tipo: ficha?.tipo ?? '',
+// tipo: el de la lista desde la que se registra un elemento nuevo; al editar manda el de la ficha
+export const formularioInicial = (ficha: ElementoDetalleResponse | null, tipo?: TipoElemento): ElementoFormulario => ({
+    tipo: ficha?.tipo ?? tipo ?? '',
     titulo: ficha?.titulo ?? '',
     descripcion: ficha?.descripcion ?? '',
     origenId: ficha ? String(ficha.origenId) : '',

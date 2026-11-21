@@ -5,6 +5,7 @@ import { formatearFecha, formatearFechaHora } from '../../utils/formato'
 import { TEXTO_TIPO } from './textos'
 import { textoEspera, TIPO_PENDIENTE } from './textosProrroga'
 import type { PendienteResponse } from './typesProrroga'
+import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
 
 const sinCorte = { whiteSpace: 'nowrap' } as const
 
@@ -39,11 +40,12 @@ export const COLUMNAS_APROBACIONES: TableColumn<PendienteResponse>[] = [
         header: 'Elemento',
         render: (fila) => (
             <div style={{ ...columna(spacing.xs), minWidth: 160 }}>
-                <span>
-                    {fila.elementoCodigo} · {fila.elementoTitulo}
-                </span>
+                <TextoCorto texto={`${fila.elementoCodigo} · ${fila.elementoTitulo}`} ancho={320} />
                 <small style={textoSecundario}>
-                    {TEXTO_TIPO[fila.elementoTipo]} · {fila.criticidadNombre} · {fila.equipoNombre}
+                    <TextoCorto
+                        texto={`${TEXTO_TIPO[fila.elementoTipo]} · ${fila.criticidadNombre} · ${fila.equipoNombre}`}
+                        ancho={320}
+                    />
                 </small>
             </div>
         ),
@@ -54,7 +56,7 @@ export const COLUMNAS_APROBACIONES: TableColumn<PendienteResponse>[] = [
         header: 'Pedido por',
         render: (fila) => (
             <div style={columna(spacing.xs)}>
-                <span>{fila.solicitanteNombre}</span>
+                <TextoCorto texto={fila.solicitanteNombre} ancho={180} />
                 <small style={{ ...textoSecundario, ...sinCorte }}>{formatearFechaHora(fila.fechaSolicitud)}</small>
             </div>
         ),

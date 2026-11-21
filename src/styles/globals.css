@@ -88,3 +88,13 @@ table tbody td {
     padding-left: 18px !important;
     padding-right: 18px !important;
 }
+
+/*
+ * Avisos (ToastProvider de la libreria) con un formulario o ventana abiertos: el contenedor de avisos y la capa de los
+ * modales tienen z-index 9999 en linea, y el modal va despues en la pagina, asi que su fondo oscuro tapaba el aviso (se
+ * veia apagado o no se veia). El contenedor es el unico hijo directo de #root con aria-live; aqui queda por encima.
+ * Ajuste fragil: revisar al actualizar @hnba/react-ui.
+ */
+#root > [aria-live='polite'] {
+    z-index: 10000 !important;
+}

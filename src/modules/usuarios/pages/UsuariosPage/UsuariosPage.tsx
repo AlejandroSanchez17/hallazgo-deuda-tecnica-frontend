@@ -16,6 +16,7 @@ import { useLista } from '../../hooks/useLista'
 import { usePermisosUsuarios } from '../../hooks/usePermisosUsuarios'
 import { TEXTOS } from '../../textos'
 import type { Edicion, FiltroEstado, UsuarioResponse } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 export const UsuariosPage = () => {
     const [filtro, setFiltro] = useState<FiltroEstado>('activos')
@@ -36,10 +37,18 @@ export const UsuariosPage = () => {
     )
 
     const columnas: TableColumn<UsuarioResponse>[] = [
-        { id: 'nombre', header: 'Nombre', accessor: (usuario) => usuario.nombre },
-        { id: 'correo', header: 'Correo', accessor: (usuario) => usuario.correo },
-        { id: 'usuarioRed', header: 'Usuario de red', accessor: (usuario) => usuario.usuarioRed },
-        { id: 'roles', header: 'Roles', render: (usuario) => nombreRoles(usuario.roles) },
+        { id: 'nombre', header: 'Nombre', render: (usuario) => <TextoCorto texto={usuario.nombre} ancho={220} /> },
+        { id: 'correo', header: 'Correo', render: (usuario) => <TextoCorto texto={usuario.correo} ancho={260} /> },
+        {
+            id: 'usuarioRed',
+            header: 'Usuario de red',
+            render: (usuario) => <TextoCorto texto={usuario.usuarioRed} ancho={180} />,
+        },
+        {
+            id: 'roles',
+            header: 'Roles',
+            render: (usuario) => <TextoCorto texto={nombreRoles(usuario.roles)} ancho={220} />,
+        },
         { id: 'ultimoAcceso', header: 'Último acceso', render: (usuario) => formatearFechaHora(usuario.ultimoAcceso) },
         columnaEstado<UsuarioResponse>(TEXTOS.usuario),
         ...columnasActivar<UsuarioResponse>(TEXTOS.usuario, puedeDesactivar ? cambiarEstado : undefined),

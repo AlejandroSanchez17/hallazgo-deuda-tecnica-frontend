@@ -25,7 +25,7 @@ export const LayoutPrincipal = () => {
         <div style={estiloPagina}>
             <Header onAbrirMenu={() => setMenuAbierto(true)} />
             <div style={estiloCuerpo}>
-                {!esCompacto && <Sidebar ancho={ANCHO_SIDEBAR} />}
+                {!esCompacto && <Sidebar ancho={ANCHO_SIDEBAR} colapsable />}
                 <div style={estiloColumna}>
                     <MigasDePan />
                     <main style={estiloContenido}>

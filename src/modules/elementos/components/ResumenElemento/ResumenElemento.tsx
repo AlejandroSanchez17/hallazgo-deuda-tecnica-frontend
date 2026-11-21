@@ -38,7 +38,7 @@ const dato = (icono: IconName, titulo: string, valor: ReactNode) => (
 export const ResumenElemento = ({ ficha, maximoProrrogas }: ResumenElementoProps) => (
     <Card padding={16}>
         <div style={rejillaResumen}>
-            <List dividers>
+            <List>
                 {dato('file_lines', 'Tipo', texto(TEXTO_TIPO[ficha.tipo]))}
                 {dato(
                     'check_circle',
@@ -49,7 +49,7 @@ export const ResumenElemento = ({ ficha, maximoProrrogas }: ResumenElementoProps
                 {dato('building_memo', 'Origen', texto(ficha.origenNombre))}
                 {dato('calendar_clock', 'Prórrogas', texto(textoCantidad(ficha.prorrogasAprobadas, maximoProrrogas)))}
             </List>
-            <List dividers>
+            <List>
                 {dato('people_group', 'Equipo', texto(ficha.equipoNombre))}
                 {dato('user_shield_solid', 'Líder', texto(ficha.liderNombre ?? '—'))}
                 {dato('calendar_check', 'Fecha compromiso', texto(formatearFecha(ficha.fechaCompromisoVigente)))}

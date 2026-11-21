@@ -41,7 +41,7 @@ export const ResumenPlan = ({ plan }: ResumenPlanProps) => (
     <Card padding={16}>
         <div style={columna(spacing.md)}>
             <div style={rejillaResumen}>
-                <List dividers>
+                <List>
                     {dato(
                         'check_circle',
                         'Estado',
@@ -52,7 +52,7 @@ export const ResumenPlan = ({ plan }: ResumenPlanProps) => (
                     {dato('calendar_check', 'Fecha compromiso', texto(formatearFecha(plan.fechaCompromiso)))}
                     {dato('file_check', 'Evidencia para finalizar', texto(plan.requiereEvidencia ? 'Sí' : 'No'))}
                 </List>
-                <List dividers>
+                <List>
                     {dato('square_list', 'Versión', texto(plan.vigente ? `${plan.version} · vigente` : plan.version))}
                     {dato('chart_pie', 'Avance', <BarraAvance valor={plan.avance} ancho={120} enLinea />)}
                     {dato(

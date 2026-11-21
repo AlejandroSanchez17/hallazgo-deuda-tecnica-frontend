@@ -3,14 +3,12 @@ import { avisoCancelacion, avisoDependencia } from '../../textosPlan'
 import type { ElementoDetalleResponse } from '../../types'
 import type { PlanResponse, TareaResponse } from '../../typesPlan'
 import { AvanceForm } from '../AvanceForm/AvanceForm'
-import { DetalleTarea } from '../DetalleTarea/DetalleTarea'
 import { MotivoForm } from '../MotivoForm/MotivoForm'
 import { PlanForm } from '../PlanForm/PlanForm'
 import { TareaForm } from '../TareaForm/TareaForm'
 
 export type FormularioPlan =
     | { tipo: 'plan' }
-    | { tipo: 'ver'; tarea: TareaResponse }
     | { tipo: 'avance'; tarea: TareaResponse }
     | { tipo: 'tarea'; tarea: TareaResponse | null }
     | { tipo: 'cancelar'; tarea: TareaResponse }
@@ -39,21 +37,9 @@ export const FormulariosPlan = ({ formulario, ficha, plan, onCerrar, onHecho }: 
         return null
     }
     switch (formulario.tipo) {
-        case 'ver':
-            return (
-                <DetalleTarea
-                    elemento={ficha}
-                    plan={plan}
-                    tarea={formulario.tarea}
-                    problemas={plan.problemas.filter((problema) => problema.tareaId === formulario.tarea.id)}
-                    onCerrar={onCerrar}
-                />
-            )
         case 'avance':
             return (
                 <AvanceForm
-                    elementoId={ficha.id}
-                    requiereEvidencia={plan.requiereEvidencia}
                     tarea={formulario.tarea}
                     avisoDependencia={avisoDependencia(plan, formulario.tarea)}
                     onCerrar={onCerrar}

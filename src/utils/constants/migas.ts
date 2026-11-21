@@ -16,6 +16,8 @@ const equipos: Miga = { texto: 'Equipos técnicos', ruta: RUTAS.equipos }
 // Migas de cada pantalla por su ruta (admite parametros, como /equipos/:id); Inicio y la pagina 404 no tienen.
 // Siguen los grupos del menu (utils/constants/menu.ts). Al agregar una pantalla se agrega su linea aqui
 export const MIGAS: Record<string, Miga[]> = {
+    [RUTAS.hallazgos]: [inicio, { texto: 'Hallazgos y deuda' }, { texto: 'Hallazgos' }],
+    [RUTAS.deudaTecnica]: [inicio, { texto: 'Hallazgos y deuda' }, { texto: 'Deuda técnica' }],
     [RUTAS.elementos]: [inicio, { texto: 'Hallazgos y deuda' }],
     [RUTAS.elementoDetalle]: [
         inicio,
@@ -28,6 +30,14 @@ export const MIGAS: Record<string, Miga[]> = {
         { texto: 'Detalle del elemento', ruta: RUTAS.elementoDetalle },
         { texto: 'Plan de acción' },
     ],
+    [RUTAS.elementoTarea]: [
+        inicio,
+        { texto: 'Hallazgos y deuda', ruta: RUTAS.elementos },
+        { texto: 'Detalle del elemento', ruta: RUTAS.elementoDetalle },
+        { texto: 'Plan de acción', ruta: RUTAS.elementoPlan },
+        { texto: 'Tarea' },
+    ],
+    [RUTAS.tablero]: [inicio, { texto: 'Tablero' }],
     [RUTAS.misTareas]: [inicio, { texto: 'Mis tareas' }],
     [RUTAS.aprobaciones]: [inicio, { texto: 'Aprobaciones' }],
     [RUTAS.notificaciones]: [inicio, { texto: 'Notificaciones' }],

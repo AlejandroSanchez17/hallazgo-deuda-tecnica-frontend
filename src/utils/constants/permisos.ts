@@ -36,6 +36,7 @@ export const PERMISOS = {
     cierreLeer: 'CIERRE:LEER',
     cierreSolicitar: 'CIERRE:SOLICITAR',
     cierreValidar: 'CIERRE:VALIDAR',
+    reporteLeer: 'REPORTE:LEER',
 } as const
 
 // Con cualquiera de ellos se ve la bandeja de aprobaciones (GET /aprobaciones/pendientes)

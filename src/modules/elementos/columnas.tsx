@@ -6,8 +6,8 @@ import type { ElementoResponse } from './types'
 
 // El color lo decide el backend; en cerrados y anulados no hay semaforo
 export const columnaSemaforo: TableColumn<ElementoResponse> = {
-    id: 'semaforo',
-    header: 'Semáforo',
+    id: 'Estado',
+    header: 'Estado',
     align: 'center',
     render: (elemento) =>
         elemento.semaforo ? (

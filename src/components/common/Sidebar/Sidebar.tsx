@@ -1,6 +1,7 @@
 import { Sidebar as SidebarBase, type IconName, type SidebarNavItem } from '@hnba/react-ui'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { tienePermiso } from '../../../hooks/auth/usePermiso'
+import { useMenuStore } from '../../../store/menuStore'
 import { useSesionStore } from '../../../store/sesionStore'
 import { OPCIONES_MENU, type OpcionMenu } from '../../../utils/constants/menu'
 import { RUTAS } from '../../../utils/constants/rutas'
@@ -9,8 +10,8 @@ type Usuario = Parameters<typeof tienePermiso>[0]
 
 // La libreria solo dibuja el icono en el primer nivel
 const ICONOS: Record<string, IconName> = {
-    [RUTAS.inicio]: 'house',
-    [RUTAS.elementos]: 'clipboard_list',
+    [RUTAS.tablero]: 'chart_mixed',
+    [RUTAS.hallazgosYDeuda]: 'clipboard_list',
     [RUTAS.misTareas]: 'file_check',
     [RUTAS.aprobaciones]: 'double_check',
     [RUTAS.administracion]: 'gears',
@@ -21,12 +22,14 @@ interface SidebarProps {
     alNavegar?: () => void
     // Ancho en px; sin valor se usa el de la libreria (320)
     ancho?: number
+    // Con true, la libreria dibuja el boton para reducir el menu a solo iconos (82 px); solo en escritorio
+    colapsable?: boolean
 }
 
 // Un grupo se ve si el usuario puede ver al menos uno de sus hijos (Administración no tiene permiso propio)
 const visibles = (opciones: OpcionMenu[], usuario: Usuario): OpcionMenu[] =>
     opciones
-        .filter((opcion) => tienePermiso(usuario, opcion.permiso))
+        .filter((opcion) => tienePermiso(usuario, opcion.permiso, opcion.alcance))
         .map((opcion) => (opcion.hijos ? { ...opcion, hijos: visibles(opcion.hijos, usuario) } : opcion))
         .filter((opcion) => !opcion.hijos || opcion.hijos.length > 0)
 
@@ -50,7 +53,10 @@ const gruposDe = (opciones: OpcionMenu[], pathname: string): string[] =>
             return []
         }
         const internos = gruposDe(opcion.hijos, pathname)
-        const contiene = internos.length > 0 || opcion.hijos.some((hijo) => esPantallaActual(hijo, pathname))
+        const contiene =
+            internos.length > 0 ||
+            opcion.hijos.some((hijo) => esPantallaActual(hijo, pathname)) ||
+            (opcion.incluye ?? []).some((ruta) => esPantallaActual({ ruta, texto: '' }, pathname))
         return contiene ? [opcion.ruta, ...internos] : []
     })
 
@@ -68,8 +74,10 @@ const rutaDeOpcion = (opciones: OpcionMenu[], pathname: string): string | undefi
     return undefined
 }
 
-export const Sidebar = ({ alNavegar, ancho }: SidebarProps) => {
+export const Sidebar = ({ alNavegar, ancho, colapsable = false }: SidebarProps) => {
     const usuario = useSesionStore((estado) => estado.usuario)
+    const { colapsado: guardado, cambiarColapsado } = useMenuStore()
+    const colapsado = colapsable && guardado
     const { pathname } = useLocation()
     const navegar = useNavigate()
 
@@ -90,7 +98,12 @@ export const Sidebar = ({ alNavegar, ancho }: SidebarProps) => {
             onNavigate={irA}
             defaultExpandedIds={desplegados}
             navAriaLabel="Menú principal"
-            style={ancho === undefined ? undefined : { width: ancho }}
+            collapseMode={colapsable ? 'toggle' : 'none'}
+            collapsed={colapsado}
+            onCollapsedChange={cambiarColapsado}
+            toggleAriaLabel={colapsado ? 'Mostrar el menú' : 'Ocultar el menú'}
+            // Colapsado, el ancho lo pone la libreria (82 px)
+            style={ancho === undefined || colapsado ? undefined : { width: ancho }}
         />
     )
 }

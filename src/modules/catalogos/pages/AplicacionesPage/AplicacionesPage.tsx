@@ -15,6 +15,7 @@ import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { usePermisosCatalogo } from '../../hooks/usePermisosCatalogo'
 import { TEXTOS } from '../../textos'
 import type { AplicacionResponse, Edicion, FiltroEstado } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 export const AplicacionesPage = () => {
     const [filtro, setFiltro] = useState<FiltroEstado>('activos')
@@ -30,9 +31,21 @@ export const AplicacionesPage = () => {
     )
 
     const columnas: TableColumn<AplicacionResponse>[] = [
-        { id: 'nombre', header: 'Nombre', accessor: (aplicacion) => aplicacion.nombre },
-        { id: 'areaNombre', header: 'Área', accessor: (aplicacion) => aplicacion.areaNombre },
-        { id: 'descripcion', header: 'Descripción', render: (aplicacion) => aplicacion.descripcion ?? '—' },
+        {
+            id: 'nombre',
+            header: 'Nombre',
+            render: (aplicacion) => <TextoCorto texto={aplicacion.nombre} ancho={220} />,
+        },
+        {
+            id: 'areaNombre',
+            header: 'Área',
+            render: (aplicacion) => <TextoCorto texto={aplicacion.areaNombre} ancho={200} />,
+        },
+        {
+            id: 'descripcion',
+            header: 'Descripción',
+            render: (aplicacion) => <TextoCorto texto={aplicacion.descripcion} ancho={320} />,
+        },
         columnaEstado<AplicacionResponse>(TEXTOS.aplicacion),
         ...columnasActivar<AplicacionResponse>(TEXTOS.aplicacion, puedeDesactivar ? cambiarEstado : undefined),
     ]

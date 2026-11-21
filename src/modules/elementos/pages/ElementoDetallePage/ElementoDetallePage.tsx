@@ -6,7 +6,7 @@ import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
 import { PERMISOS } from '../../../../utils/constants/permisos'
-import { PARAMETRO_PESTANA, RUTAS, rutaPlanElemento } from '../../../../utils/constants/rutas'
+import { PARAMETRO_PESTANA, RUTAS, rutaListaDe, rutaPlanElemento } from '../../../../utils/constants/rutas'
 import { AnulacionForm } from '../../components/AnulacionForm/AnulacionForm'
 import { AvisosElemento } from '../../components/AvisosElemento/AvisosElemento'
 import { CierreElemento } from '../../components/CierreElemento/CierreElemento'
@@ -72,12 +72,21 @@ export const ElementoDetallePage = () => {
         cierre: pc.veCierre,
         comentarios: true,
     }
-    // Una pestana pedida que el usuario no puede ver (Miembro de equipo y Prorrogas) cae en Datos
+    // Una pestana pedida que el usuario no puede ver (sin el permiso de leer prorrogas) cae en Datos
     const actual: Pestana = visibles[pestana] ? pestana : 'datos'
 
+    // A la lista del tipo del elemento; sin ficha (no cargo o no existe) a la lista combinada
     const volver = (
-        <Button variant="ghost" iconName="chevron_left" onClick={() => void navegar(RUTAS.elementos)}>
-            Volver a hallazgos y deuda
+        <Button
+            variant="ghost"
+            iconName="chevron_left"
+            onClick={() => void navegar(ficha ? rutaListaDe(ficha.tipo) : RUTAS.elementos)}
+        >
+            {ficha
+                ? ficha.tipo === 'HALLAZGO'
+                    ? 'Volver a hallazgos'
+                    : 'Volver a deuda técnica'
+                : 'Volver a hallazgos y deuda'}
         </Button>
     )
 
@@ -109,11 +118,7 @@ export const ElementoDetallePage = () => {
                         {volver}
                         <div style={fila(spacing.sm)}>
                             {veElPlan && (
-                                <Button
-                                    variant="outlined"
-                                    iconName="square_list"
-                                    onClick={() => void navegar(rutaPlanElemento(ficha.id))}
-                                >
+                                <Button variant="primary" onClick={() => void navegar(rutaPlanElemento(ficha.id))}>
                                     Plan de acción
                                 </Button>
                             )}

@@ -2,7 +2,7 @@ import { Alert, FieldInput, FormModal, LargeTextArea, MultiSelect, Select, Text,
 import { anchoCompleto, rejillaFormulario } from '../../../../styles/disposicion'
 import { opcionDe, textoDeOpcion, valorDeOpcion } from '../../../../utils/opciones'
 import { useElementoForm } from '../../hooks/useElementoForm'
-import { OPCIONES_TIPO } from '../../textos'
+import { OPCIONES_TIPO, TEXTOS_LISTA } from '../../textos'
 import type { ElementoDetalleResponse, TipoElemento } from '../../types'
 import { DatosDeuda } from '../DatosDeuda/DatosDeuda'
 import { DatosHallazgo } from '../DatosHallazgo/DatosHallazgo'
@@ -11,12 +11,15 @@ import { FechasCompromiso } from '../FechasCompromiso/FechasCompromiso'
 interface ElementoFormProps {
     // null: elemento nuevo
     ficha: ElementoDetalleResponse | null
+    // Solo para un elemento nuevo: lo registra la lista de hallazgos o la de deuda, y el tipo ya viene fijo
+    tipo?: TipoElemento
     onCerrar: () => void
     onGuardado: () => void
 }
 
-export const ElementoForm = ({ ficha, onCerrar, onGuardado }: ElementoFormProps) => {
-    const form = useElementoForm(ficha, onGuardado)
+export const ElementoForm = ({ ficha, tipo, onCerrar, onGuardado }: ElementoFormProps) => {
+    const form = useElementoForm(ficha, onGuardado, tipo)
+    const tipoFijo = ficha === null && tipo !== undefined
     const { formulario, cambiar, asignar, opciones, errores, esNuevo } = form
     // 422 en el bloque: falta el del tipo o se mando el del otro tipo
     const errorBloque = errores.hallazgo ?? errores.deuda
@@ -29,38 +32,29 @@ export const ElementoForm = ({ ficha, onCerrar, onGuardado }: ElementoFormProps)
             <FormModal
                 open
                 position="right"
-                title={ficha ? `Editar ${ficha.codigo}` : 'Nuevo elemento'}
+                title={ficha ? `Editar ${ficha.codigo}` : tipoFijo ? TEXTOS_LISTA[tipo].tituloNuevo : 'Nuevo elemento'}
                 loading={form.guardando}
                 onClose={onCerrar}
                 onSubmit={form.enviar}
             >
                 <div style={rejillaFormulario}>
-                    <FieldInput
-                        label="Tipo"
-                        errorText={errores.tipo}
-                        helperText={esNuevo ? undefined : 'El tipo no cambia.'}
-                    >
-                        <Select
-                            options={OPCIONES_TIPO}
-                            value={opcionDe(OPCIONES_TIPO, formulario.tipo)}
-                            getLabel={textoDeOpcion}
-                            getValue={valorDeOpcion}
-                            disabled={!esNuevo}
-                            placeholder="Seleccione…"
-                            onChange={(opcion) => asignar('tipo', opcion.valor as TipoElemento)}
-                        />
-                    </FieldInput>
-                    <FieldInput label="Origen" errorText={errores.origenId}>
-                        <Select
-                            options={opciones.origenes}
-                            value={opcionDe(opciones.origenes, formulario.origenId)}
-                            getLabel={textoDeOpcion}
-                            getValue={valorDeOpcion}
-                            searchable
-                            placeholder="Seleccione…"
-                            onChange={(opcion) => asignar('origenId', opcion.valor)}
-                        />
-                    </FieldInput>
+                    {!tipoFijo && (
+                        <FieldInput
+                            label="Tipo"
+                            errorText={errores.tipo}
+                            helperText={esNuevo ? undefined : 'El tipo no cambia.'}
+                        >
+                            <Select
+                                options={OPCIONES_TIPO}
+                                value={opcionDe(OPCIONES_TIPO, formulario.tipo)}
+                                getLabel={textoDeOpcion}
+                                getValue={valorDeOpcion}
+                                disabled={!esNuevo}
+                                placeholder="Seleccione…"
+                                onChange={(opcion) => asignar('tipo', opcion.valor as TipoElemento)}
+                            />
+                        </FieldInput>
+                    )}
                     <div style={anchoCompleto}>
                         <FieldInput label="Título" errorText={errores.titulo}>
                             <TextInput maxLength={200} value={formulario.titulo} onChange={cambiar('titulo')} />
@@ -102,24 +96,33 @@ export const ElementoForm = ({ ficha, onCerrar, onGuardado }: ElementoFormProps)
                             onChange={(opcion) => asignar('equipoId', opcion.valor)}
                         />
                     </FieldInput>
-                    <div style={anchoCompleto}>
-                        <FieldInput label="Aplicaciones" optional errorText={errores.aplicacionIds}>
-                            <MultiSelect
-                                options={opciones.aplicaciones}
-                                value={aplicacionesElegidas}
-                                getLabel={textoDeOpcion}
-                                getValue={valorDeOpcion}
-                                searchable
-                                placeholder="Seleccione…"
-                                onChange={(lista) =>
-                                    asignar(
-                                        'aplicacionIds',
-                                        lista.map((opcion) => opcion.valor),
-                                    )
-                                }
-                            />
-                        </FieldInput>
-                    </div>
+                    <FieldInput label="Aplicaciones" optional errorText={errores.aplicacionIds}>
+                        <MultiSelect
+                            options={opciones.aplicaciones}
+                            value={aplicacionesElegidas}
+                            getLabel={textoDeOpcion}
+                            getValue={valorDeOpcion}
+                            searchable
+                            placeholder="Seleccione…"
+                            onChange={(lista) =>
+                                asignar(
+                                    'aplicacionIds',
+                                    lista.map((opcion) => opcion.valor),
+                                )
+                            }
+                        />
+                    </FieldInput>
+                    <FieldInput label="Origen" errorText={errores.origenId}>
+                        <Select
+                            options={opciones.origenes}
+                            value={opcionDe(opciones.origenes, formulario.origenId)}
+                            getLabel={textoDeOpcion}
+                            getValue={valorDeOpcion}
+                            searchable
+                            placeholder="Seleccione…"
+                            onChange={(opcion) => asignar('origenId', opcion.valor)}
+                        />
+                    </FieldInput>
                     <FechasCompromiso
                         formulario={formulario}
                         cambiar={cambiar}

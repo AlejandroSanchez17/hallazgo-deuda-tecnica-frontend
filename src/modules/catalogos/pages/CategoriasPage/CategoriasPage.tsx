@@ -15,6 +15,7 @@ import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { usePermisosCatalogo } from '../../hooks/usePermisosCatalogo'
 import { TEXTOS } from '../../textos'
 import type { CategoriaResponse, Edicion, FiltroEstado } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 export const CategoriasPage = () => {
     const [filtro, setFiltro] = useState<FiltroEstado>('activos')
@@ -28,8 +29,12 @@ export const CategoriasPage = () => {
     const filas = registros.filter((categoria) => coincide(termino, categoria.nombre, categoria.descripcion))
 
     const columnas: TableColumn<CategoriaResponse>[] = [
-        { id: 'nombre', header: 'Nombre', accessor: (categoria) => categoria.nombre },
-        { id: 'descripcion', header: 'Descripción', render: (categoria) => categoria.descripcion ?? '—' },
+        { id: 'nombre', header: 'Nombre', render: (categoria) => <TextoCorto texto={categoria.nombre} ancho={220} /> },
+        {
+            id: 'descripcion',
+            header: 'Descripción',
+            render: (categoria) => <TextoCorto texto={categoria.descripcion} ancho={320} />,
+        },
         {
             id: 'restringida',
             header: 'Acceso',

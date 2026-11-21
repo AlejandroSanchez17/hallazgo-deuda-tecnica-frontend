@@ -4,37 +4,21 @@ import { columna, textoSecundario } from '../../styles/disposicion'
 import { formatearFecha, formatearFechaHora } from '../../utils/formato'
 import { ESTADO_PRORROGA, RESULTADO_CIERRE } from './textosProrroga'
 import type { CierreResponse, ProrrogaResponse } from './typesProrroga'
+import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
 
 const sinCorte = { whiteSpace: 'nowrap' } as const
 
 const apilado = { ...columna(spacing.xs), alignItems: 'center' }
 
-// Texto largo en tres lineas como maximo; el completo en el tooltip
-const recortado = (texto: string | null) =>
-    texto ? (
-        <span
-            title={texto}
-            style={{
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                minWidth: 120,
-                whiteSpace: 'pre-line',
-            }}
-        >
-            {texto}
-        </span>
-    ) : (
-        '—'
-    )
+// Texto largo en una linea; el completo, arriba al pasar el cursor
+const recortado = (texto: string | null) => <TextoCorto texto={texto} ancho={240} />
 
 // Nombre y, debajo, la fecha y hora y el comentario de quien resolvio; sin nombre (todavia sin resolver), "—".
 // El comentario no va en su propia columna para que la tabla quepa a 1280 px con las acciones
 const quienYCuando = (nombre: string | null, fecha: string | null, comentario?: string | null) =>
     nombre ? (
         <div style={columna(spacing.xs)}>
-            <span>{nombre}</span>
+            <TextoCorto texto={nombre} ancho={180} />
             <small style={{ ...textoSecundario, ...sinCorte }}>{formatearFechaHora(fecha)}</small>
             {comentario && <small>{recortado(comentario)}</small>}
         </div>

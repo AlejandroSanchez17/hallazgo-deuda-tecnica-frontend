@@ -1,50 +1,37 @@
 import { spacing } from '@hnba/design-tokens'
 import { Badge, type TableColumn } from '@hnba/react-ui'
-import { BarraAvance } from './components/BarraAvance/BarraAvance'
-import { columna, textoSecundario } from '../../styles/disposicion'
-import { formatearFecha, formatearFechaHora } from '../../utils/formato'
+import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
+import { fila } from '../../styles/disposicion'
+import { formatearFecha } from '../../utils/formato'
 import { textoDias } from './textos'
-import { ESTADO_TAREA, textoNumero } from './textosPlan'
+import { ESTADO_TAREA } from './textosPlan'
 import type { MiTarea } from './typesPlan'
 
+// Codigo y fechas no se parten en dos lineas (las celdas saltan de linea por una regla global)
 const sinCorte = { whiteSpace: 'nowrap' } as const
 
-const apilado = { ...columna(spacing.xs), alignItems: 'center' }
-
-// Inicio, fin y plazo (lo calcula el backend) van en una columna, y el ultimo avance solo con la fecha, para que la
-// tabla quepa a 1280 px
+// Solo para ubicar la tarea: cual es, de que elemento, para cuando y como va. El resto (inicio, peso, avance, ultimo
+// avance, evidencias) y el registro del avance estan en su detalle (boton Ver). El plazo lo calcula el backend
 export const COLUMNAS_MIS_TAREAS: TableColumn<MiTarea>[] = [
+    { id: 'tarea', header: 'Tarea', render: (tarea) => <TextoCorto texto={tarea.titulo} ancho={280} /> },
+    { id: 'codigo', header: 'Código', render: (tarea) => <span style={sinCorte}>{tarea.elementoCodigo}</span> },
+    { id: 'elemento', header: 'Elemento', render: (tarea) => <TextoCorto texto={tarea.elementoTitulo} ancho={320} /> },
     {
-        id: 'tarea',
-        header: 'Tarea',
-        render: (tarea) => (
-            <div style={{ ...columna(spacing.xs), minWidth: 160 }}>
-                <span>{tarea.titulo}</span>
-                <small style={textoSecundario}>
-                    {tarea.elementoCodigo} · {tarea.elementoTitulo}
-                </small>
-            </div>
-        ),
+        id: 'fin',
+        header: 'Fin',
+        align: 'center',
+        render: (tarea) => <span style={sinCorte}>{formatearFecha(tarea.fechaFin)}</span>,
     },
     {
-        id: 'fechas',
-        header: 'Fechas',
+        id: 'plazo',
+        header: 'Plazo',
         align: 'center',
         render: (tarea) => (
-            <div style={apilado}>
-                <span style={sinCorte}>{formatearFecha(tarea.fechaInicio)}</span>
-                <span style={sinCorte}>al {formatearFecha(tarea.fechaFin)}</span>
+            <div style={{ ...fila(spacing.xs), justifyContent: 'center' }}>
                 {tarea.vencida && <Badge status="error" label="Vencida" />}
-                <small style={textoSecundario}>{textoDias(tarea.diasRestantes)}</small>
+                <span style={sinCorte}>{textoDias(tarea.diasRestantes)}</span>
             </div>
         ),
-    },
-    { id: 'peso', header: 'Peso', align: 'center', accessor: (tarea) => textoNumero(tarea.peso) },
-    {
-        id: 'avance',
-        header: 'Avance',
-        align: 'center',
-        render: (tarea) => <BarraAvance valor={tarea.avance} ancho={48} />,
     },
     {
         id: 'estado',
@@ -53,16 +40,5 @@ export const COLUMNAS_MIS_TAREAS: TableColumn<MiTarea>[] = [
         render: (tarea) => (
             <Badge status={ESTADO_TAREA[tarea.estado].estado} label={ESTADO_TAREA[tarea.estado].texto} />
         ),
-    },
-    {
-        id: 'ultimoAvance',
-        header: 'Último avance',
-        align: 'center',
-        render: (tarea) =>
-            tarea.ultimoAvanceFecha ? (
-                <span style={sinCorte}>{formatearFechaHora(tarea.ultimoAvanceFecha).split(',')[0]}</span>
-            ) : (
-                'Sin avances'
-            ),
     },
 ]

@@ -3,7 +3,7 @@ import type { Opcion } from '../../../utils/opciones'
 import { elementosApi } from '../api'
 import { sumarMeses } from '../fechas'
 import { aSolicitudActualizar, aSolicitudCrear, faltaEsfuerzo, formularioInicial, validar } from '../solicitud'
-import type { ElementoDetalleResponse } from '../types'
+import type { ElementoDetalleResponse, TipoElemento } from '../types'
 import { useCombos } from './useCombos'
 import { useConfirmarFechas } from './useConfirmarFechas'
 import { useGuardar } from './useGuardar'
@@ -24,10 +24,10 @@ const conActuales = (opciones: Opcion[], actuales: Registro[], sufijo: string) =
         .map((actual) => ({ valor: String(actual.id), texto: `${actual.nombre} (${sufijo})` })),
 ]
 
-// ficha en null: elemento nuevo
-export const useElementoForm = (ficha: ElementoDetalleResponse | null, onGuardado: () => void) => {
+// ficha en null: elemento nuevo; tipo fija el tipo de un elemento nuevo (lista de hallazgos o de deuda)
+export const useElementoForm = (ficha: ElementoDetalleResponse | null, onGuardado: () => void, tipo?: TipoElemento) => {
     const esNuevo = ficha === null
-    const { formulario, cambiar, asignar } = useFormulario(formularioInicial(ficha))
+    const { formulario, cambiar, asignar } = useFormulario(formularioInicial(ficha, tipo))
     const combos = useCombos(esNuevo)
     const { veRestringidas } = usePermisosElementos()
     const { guardar, errores, guardando } = useGuardar(onGuardado)

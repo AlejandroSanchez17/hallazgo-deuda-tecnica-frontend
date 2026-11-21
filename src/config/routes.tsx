@@ -13,6 +13,7 @@ import { ElementosPage } from '../modules/elementos/pages/ElementosPage/Elemento
 import { MisTareasPage } from '../modules/elementos/pages/MisTareasPage/MisTareasPage'
 import { AprobacionesPage } from '../modules/elementos/pages/AprobacionesPage/AprobacionesPage'
 import { PlanElementoPage } from '../modules/elementos/pages/PlanElementoPage/PlanElementoPage'
+import { TareaDetallePage } from '../modules/elementos/pages/TareaDetallePage/TareaDetallePage'
 import { EquipoDetallePage } from '../modules/equipos/pages/EquipoDetallePage/EquipoDetallePage'
 import { EquiposPage } from '../modules/equipos/pages/EquiposPage/EquiposPage'
 import { NotificacionesPage } from '../modules/notificaciones/pages/NotificacionesPage/NotificacionesPage'
@@ -21,7 +22,8 @@ import { ParametrosPage } from '../modules/parametros/pages/ParametrosPage/Param
 import { PermisosPage } from '../modules/roles/pages/PermisosPage/PermisosPage'
 import { RolesPage } from '../modules/roles/pages/RolesPage/RolesPage'
 import { UsuariosPage } from '../modules/usuarios/pages/UsuariosPage/UsuariosPage'
-import { InicioPage } from '../pages/InicioPage/InicioPage'
+import { TableroPage } from '../modules/tablero/pages/TableroPage/TableroPage'
+import { InicioSegunRol } from '../pages/InicioSegunRol/InicioSegunRol'
 import { PERMISOS, PERMISOS_BANDEJA } from '../utils/constants/permisos'
 import { RUTAS } from '../utils/constants/rutas'
 
@@ -33,7 +35,16 @@ export const router = createBrowserRouter([
         // Se ve si la primera ruta que se abre es diferida
         hydrateFallbackElement: <Loader />,
         children: [
-            { index: true, element: <InicioPage /> },
+            // Cada rol entra a su pantalla de inicio (11.4): Mis tareas o el tablero
+            { index: true, element: <InicioSegunRol /> },
+            {
+                path: RUTAS.tablero,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.reporteLeer} alcance="TODO">
+                        <TableroPage />
+                    </RutaProtegida>
+                ),
+            },
             {
                 // Cada catalogo es su propia pantalla; la ruta del grupo solo redirige a la primera (la usa el breadcrumb)
                 path: RUTAS.catalogos,
@@ -73,6 +84,22 @@ export const router = createBrowserRouter([
                 ],
             },
             {
+                path: RUTAS.hallazgos,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.elementoLeer}>
+                        <ElementosPage tipo="HALLAZGO" />
+                    </RutaProtegida>
+                ),
+            },
+            {
+                path: RUTAS.deudaTecnica,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.elementoLeer}>
+                        <ElementosPage tipo="DEUDA" />
+                    </RutaProtegida>
+                ),
+            },
+            {
                 path: RUTAS.elementos,
                 element: (
                     <RutaProtegida permiso={PERMISOS.elementoLeer}>
@@ -87,6 +114,14 @@ export const router = createBrowserRouter([
                         element: (
                             <RutaProtegida permiso={PERMISOS.planLeer}>
                                 <PlanElementoPage />
+                            </RutaProtegida>
+                        ),
+                    },
+                    {
+                        path: RUTAS.elementoTarea,
+                        element: (
+                            <RutaProtegida permiso={PERMISOS.planLeer}>
+                                <TareaDetallePage />
                             </RutaProtegida>
                         ),
                     },

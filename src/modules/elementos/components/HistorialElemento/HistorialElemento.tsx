@@ -4,6 +4,7 @@ import { columna } from '../../../../styles/disposicion'
 import { formatearFechaHora } from '../../../../utils/formato'
 import { TEXTO_ESTADO } from '../../textos'
 import type { CambioEstadoResponse, ReasignacionResponse } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 interface HistorialElementoProps {
     reasignaciones: ReasignacionResponse[]
@@ -26,11 +27,15 @@ const columnasReasignacion: TableColumn<ReasignacionResponse>[] = [
     {
         id: 'equipo',
         header: 'Equipo',
-        accessor: (fila) => cambio(fila.equipoAnteriorNombre, fila.equipoNuevoNombre),
+        render: (fila) => <TextoCorto texto={cambio(fila.equipoAnteriorNombre, fila.equipoNuevoNombre)} ancho={260} />,
     },
-    { id: 'lider', header: 'Líder', accessor: (fila) => cambio(fila.liderAnteriorNombre, fila.liderNuevoNombre) },
-    { id: 'motivo', header: 'Motivo', accessor: (fila) => fila.motivo },
-    { id: 'usuario', header: 'Realizado por', accessor: (fila) => fila.usuarioNombre },
+    {
+        id: 'lider',
+        header: 'Líder',
+        render: (fila) => <TextoCorto texto={cambio(fila.liderAnteriorNombre, fila.liderNuevoNombre)} ancho={260} />,
+    },
+    { id: 'motivo', header: 'Motivo', render: (fila) => <TextoCorto texto={fila.motivo} ancho={320} /> },
+    { id: 'usuario', header: 'Realizado por', render: (fila) => <TextoCorto texto={fila.usuarioNombre} ancho={180} /> },
 ]
 
 const columnasEstado: TableColumn<CambioEstadoResponse>[] = [
@@ -44,8 +49,8 @@ const columnasEstado: TableColumn<CambioEstadoResponse>[] = [
         accessor: (fila) =>
             cambio(fila.estadoAnterior && TEXTO_ESTADO[fila.estadoAnterior], TEXTO_ESTADO[fila.estadoNuevo]),
     },
-    { id: 'motivo', header: 'Motivo', accessor: (fila) => fila.motivo ?? '—' },
-    { id: 'usuario', header: 'Realizado por', accessor: (fila) => fila.usuarioNombre },
+    { id: 'motivo', header: 'Motivo', render: (fila) => <TextoCorto texto={fila.motivo} ancho={320} /> },
+    { id: 'usuario', header: 'Realizado por', render: (fila) => <TextoCorto texto={fila.usuarioNombre} ancho={180} /> },
 ]
 
 const titulo = (texto: string) => (

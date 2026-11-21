@@ -3,6 +3,7 @@ import { Badge, Table, type TableColumn, type TableRowAction } from '@hnba/react
 import { fila } from '../../../../styles/disposicion'
 import { formatearFecha } from '../../../../utils/formato'
 import type { MiembroResponse } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 interface TablaMiembrosProps {
     miembros: MiembroResponse[]
@@ -19,7 +20,7 @@ export const TablaMiembros = ({ miembros, historial, textoVacio, onRetirar }: Ta
             header: 'Nombre',
             render: (miembro) =>
                 miembro.usuarioActivo ? (
-                    miembro.usuarioNombre
+                    <TextoCorto texto={miembro.usuarioNombre} ancho={220} />
                 ) : (
                     <div style={fila(spacing.sm)}>
                         {miembro.usuarioNombre}
@@ -27,7 +28,11 @@ export const TablaMiembros = ({ miembros, historial, textoVacio, onRetirar }: Ta
                     </div>
                 ),
         },
-        { id: 'usuarioRed', header: 'Usuario de red', accessor: (miembro) => miembro.usuarioRed },
+        {
+            id: 'usuarioRed',
+            header: 'Usuario de red',
+            render: (miembro) => <TextoCorto texto={miembro.usuarioRed} ancho={180} />,
+        },
         {
             id: 'papel',
             header: 'Papel',

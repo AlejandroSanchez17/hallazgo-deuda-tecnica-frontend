@@ -5,6 +5,7 @@ import { columna, textoSecundario } from '../../styles/disposicion'
 import { formatearFechaHora } from '../../utils/formato'
 import { ESTADO_EVIDENCIA, tamanoLegible, textoDestino, TIPO_EVIDENCIA } from './textosEvidencia'
 import type { EvidenciaResponse } from './typesEvidencia'
+import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
 
 // Las reemplazadas se siguen viendo, atenuadas
 const atenuada = (evidencia: EvidenciaResponse): CSSProperties =>
@@ -13,14 +14,6 @@ const atenuada = (evidencia: EvidenciaResponse): CSSProperties =>
 const celda = (evidencia: EvidenciaResponse, contenido: ReactNode, alineacion?: 'center') => (
     <div style={{ ...columna(spacing.xs), ...atenuada(evidencia), alignItems: alineacion }}>{contenido}</div>
 )
-
-const recortada: CSSProperties = {
-    ...textoSecundario,
-    display: '-webkit-box',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-}
 
 // "#12 · Reemplaza a #9 · Reemplazada por #15"
 export const referencias = (evidencia: EvidenciaResponse) =>
@@ -40,9 +33,9 @@ export const columnasEvidencias: TableColumn<EvidenciaResponse>[] = [
             celda(
                 evidencia,
                 <>
-                    <span style={{ wordBreak: 'break-word' }}>{evidencia.nombre}</span>
-                    <small style={recortada} title={evidencia.descripcion}>
-                        {evidencia.descripcion}
+                    <TextoCorto texto={evidencia.nombre} ancho={260} />
+                    <small style={textoSecundario}>
+                        <TextoCorto texto={evidencia.descripcion} ancho={260} />
                     </small>
                     <small style={textoSecundario}>{referencias(evidencia)}</small>
                 </>,
@@ -74,7 +67,7 @@ export const columnasEvidencias: TableColumn<EvidenciaResponse>[] = [
             celda(
                 evidencia,
                 <>
-                    <span>{evidencia.usuarioNombre}</span>
+                    <TextoCorto texto={evidencia.usuarioNombre} ancho={160} />
                     <small style={textoSecundario}>{formatearFechaHora(evidencia.fecha)}</small>
                 </>,
             ),

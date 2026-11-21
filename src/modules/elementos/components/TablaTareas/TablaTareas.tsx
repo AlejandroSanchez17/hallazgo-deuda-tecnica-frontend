@@ -5,6 +5,7 @@ import { formatearFecha } from '../../../../utils/formato'
 import { ESTADO_TAREA, textoNumero } from '../../textosPlan'
 import type { PlanResponse, TareaResponse } from '../../typesPlan'
 import { BarraAvance } from '../BarraAvance/BarraAvance'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 interface TablaTareasProps {
     plan: PlanResponse
@@ -30,13 +31,21 @@ const columnas = (conProblema: Set<number>): TableColumn<TareaResponse>[] => [
         header: 'Título',
         render: (tarea) => (
             <div style={{ ...columna(spacing.xs), alignItems: 'flex-start', minWidth: 110 }}>
-                <span>{tarea.titulo}</span>
-                {tarea.dependeDeTitulo && <small style={textoSecundario}>Depende de: {tarea.dependeDeTitulo}</small>}
+                <TextoCorto texto={tarea.titulo} ancho={260} />
+                {tarea.dependeDeTitulo && (
+                    <small style={textoSecundario}>
+                        <TextoCorto texto={`Depende de: ${tarea.dependeDeTitulo}`} ancho={260} />
+                    </small>
+                )}
                 {conProblema.has(tarea.id) && <Badge status="warning" label="Revisar" />}
             </div>
         ),
     },
-    { id: 'responsable', header: 'Responsable', accessor: (tarea) => tarea.responsableNombre },
+    {
+        id: 'responsable',
+        header: 'Responsable',
+        render: (tarea) => <TextoCorto texto={tarea.responsableNombre} ancho={180} />,
+    },
     // Inicio y fin en una columna para que la tabla quepa a 1280 px
     {
         id: 'fechas',

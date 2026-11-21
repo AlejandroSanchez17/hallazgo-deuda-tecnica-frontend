@@ -16,6 +16,7 @@ import { useLista } from '../../hooks/useLista'
 import { usePermisosEquipos } from '../../hooks/usePermisosEquipos'
 import { TEXTOS } from '../../textos'
 import type { Edicion, EquipoResponse, FiltroEstado } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 export const EquiposPage = () => {
     const navegar = useNavigate()
@@ -30,8 +31,8 @@ export const EquiposPage = () => {
     const filas = registros.filter((equipo) => coincide(termino, equipo.nombre, equipo.areaNombre, equipo.liderNombre))
 
     const columnas: TableColumn<EquipoResponse>[] = [
-        { id: 'nombre', header: 'Nombre', accessor: (equipo) => equipo.nombre },
-        { id: 'area', header: 'Área', accessor: (equipo) => equipo.areaNombre },
+        { id: 'nombre', header: 'Nombre', render: (equipo) => <TextoCorto texto={equipo.nombre} ancho={240} /> },
+        { id: 'area', header: 'Área', render: (equipo) => <TextoCorto texto={equipo.areaNombre} ancho={220} /> },
         { id: 'lider', header: 'Líder', render: (equipo) => nombreLider(equipo.liderNombre) },
         { id: 'miembros', header: 'Miembros', align: 'center', accessor: (equipo) => equipo.cantidadMiembros },
         columnaEstado<EquipoResponse>(TEXTOS.equipo),

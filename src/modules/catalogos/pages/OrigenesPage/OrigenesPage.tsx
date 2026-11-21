@@ -15,6 +15,7 @@ import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { usePermisosCatalogo } from '../../hooks/usePermisosCatalogo'
 import { TEXTOS } from '../../textos'
 import type { Edicion, FiltroEstado, OrigenResponse } from '../../types'
+import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 export const OrigenesPage = () => {
     const [filtro, setFiltro] = useState<FiltroEstado>('activos')
@@ -28,8 +29,12 @@ export const OrigenesPage = () => {
     const filas = registros.filter((origen) => coincide(termino, origen.nombre, origen.descripcion))
 
     const columnas: TableColumn<OrigenResponse>[] = [
-        { id: 'nombre', header: 'Nombre', accessor: (origen) => origen.nombre },
-        { id: 'descripcion', header: 'Descripción', render: (origen) => origen.descripcion ?? '—' },
+        { id: 'nombre', header: 'Nombre', render: (origen) => <TextoCorto texto={origen.nombre} ancho={220} /> },
+        {
+            id: 'descripcion',
+            header: 'Descripción',
+            render: (origen) => <TextoCorto texto={origen.descripcion} ancho={320} />,
+        },
         columnaEstado<OrigenResponse>(TEXTOS.origen),
         ...columnasActivar<OrigenResponse>(TEXTOS.origen, puedeDesactivar ? cambiarEstado : undefined),
     ]

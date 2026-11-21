@@ -30,6 +30,28 @@ const aOpciones = (textos: Record<string, string>): Opcion[] =>
     Object.entries(textos).map(([valor, texto]) => ({ valor, texto }))
 
 export const OPCIONES_TIPO = aOpciones(TEXTO_TIPO)
+
+// Textos de la lista de cada tipo (/hallazgos y /deuda-tecnica)
+export const TEXTOS_LISTA: Record<
+    TipoElemento,
+    { titulo: string; descripcion: string; botonNuevo: string; tituloNuevo: string; textoVacio: string }
+> = {
+    HALLAZGO: {
+        titulo: 'Hallazgos',
+        descripcion:
+            'Hallazgos de auditoría registrados, con su equipo, su fecha compromiso y el semáforo de vencimiento.',
+        botonNuevo: 'Nuevo hallazgo',
+        tituloNuevo: 'Nuevo hallazgo',
+        textoVacio: 'No hay hallazgos registrados',
+    },
+    DEUDA: {
+        titulo: 'Deuda técnica',
+        descripcion: 'Deuda técnica registrada, con su equipo, su fecha compromiso y el semáforo de vencimiento.',
+        botonNuevo: 'Nueva deuda técnica',
+        tituloNuevo: 'Nueva deuda técnica',
+        textoVacio: 'No hay deuda técnica registrada',
+    },
+}
 export const OPCIONES_ESTADO = aOpciones(TEXTO_ESTADO)
 export const OPCIONES_SEMAFORO: Opcion[] = Object.entries(SEMAFORO).map(([valor, { texto }]) => ({ valor, texto }))
 
