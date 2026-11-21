@@ -22,6 +22,7 @@ import { ParametrosPage } from '../modules/parametros/pages/ParametrosPage/Param
 import { PermisosPage } from '../modules/roles/pages/PermisosPage/PermisosPage'
 import { RolesPage } from '../modules/roles/pages/RolesPage/RolesPage'
 import { UsuariosPage } from '../modules/usuarios/pages/UsuariosPage/UsuariosPage'
+import { ReportesPage } from '../modules/reportes/pages/ReportesPage/ReportesPage'
 import { TableroPage } from '../modules/tablero/pages/TableroPage/TableroPage'
 import { InicioSegunRol } from '../pages/InicioSegunRol/InicioSegunRol'
 import { PERMISOS, PERMISOS_BANDEJA } from '../utils/constants/permisos'
@@ -140,6 +141,15 @@ export const router = createBrowserRouter([
                 element: (
                     <RutaProtegida permiso={PERMISOS_BANDEJA}>
                         <AprobacionesPage />
+                    </RutaProtegida>
+                ),
+            },
+            {
+                // A diferencia del tablero, sin alcance: tambien la ven lideres y miembros, con sus equipos
+                path: RUTAS.reportes,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.reporteLeer}>
+                        <ReportesPage />
                     </RutaProtegida>
                 ),
             },

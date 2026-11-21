@@ -14,6 +14,7 @@ const ICONOS: Record<string, IconName> = {
     [RUTAS.hallazgosYDeuda]: 'clipboard_list',
     [RUTAS.misTareas]: 'file_check',
     [RUTAS.aprobaciones]: 'double_check',
+    [RUTAS.reportes]: 'file_lines',
     [RUTAS.administracion]: 'gears',
 }
 

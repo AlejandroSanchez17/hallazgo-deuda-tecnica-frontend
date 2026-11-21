@@ -23,6 +23,7 @@ export const RUTAS = {
     elementoTarea: '/elementos/:id/plan/tareas/:tareaId',
     misTareas: '/mis-tareas',
     aprobaciones: '/aprobaciones',
+    reportes: '/reportes',
     // Sin opcion en el menu: se entra desde la campana
     notificaciones: '/notificaciones',
     // Solo identifican grupos del menu; no son pantallas
@@ -43,6 +44,15 @@ export const rutaElementosFiltrados = (filtros: Record<string, string>) => {
     const parametros = new URLSearchParams(Object.entries(filtros).filter(([, valor]) => valor !== ''))
     const consulta = parametros.toString()
     return consulta === '' ? RUTAS.elementos : `${RUTAS.elementos}?${consulta}`
+}
+
+// Pantalla de reportes con el reporte y los filtros ya puestos (?reporte=REP-03&equipo=6); los vacios no se ponen
+export const rutaReporte = (codigo: string, filtros: Record<string, string> = {}) => {
+    const parametros = new URLSearchParams([
+        ['reporte', codigo],
+        ...Object.entries(filtros).filter(([, valor]) => valor !== ''),
+    ])
+    return `${RUTAS.reportes}?${parametros.toString()}`
 }
 
 export const rutaElemento = (elementoId: number) => `${RUTAS.elementos}/${elementoId}`

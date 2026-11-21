@@ -36,6 +36,8 @@ export const OPCIONES_MENU: OpcionMenu[] = [
     },
     // Quien puede aprobar planes o prorrogas, o validar cierres: lo que le toca aprobar o validar
     { ruta: RUTAS.aprobaciones, texto: 'Aprobaciones', permiso: PERMISOS_BANDEJA },
+    // A diferencia del Tablero, sin alcance: la ven todos los que leen reportes, líderes y miembros con sus equipos
+    { ruta: RUTAS.reportes, texto: 'Reportes', permiso: PERMISOS.reporteLeer },
     {
         ruta: RUTAS.administracion,
         texto: 'Administración',

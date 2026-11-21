@@ -6,7 +6,7 @@ import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
 import { PERMISOS } from '../../../../utils/constants/permisos'
-import { PARAMETRO_PESTANA, RUTAS, rutaListaDe, rutaPlanElemento } from '../../../../utils/constants/rutas'
+import { PARAMETRO_PESTANA, RUTAS, rutaListaDe, rutaPlanElemento, rutaReporte } from '../../../../utils/constants/rutas'
 import { AnulacionForm } from '../../components/AnulacionForm/AnulacionForm'
 import { AvisosElemento } from '../../components/AvisosElemento/AvisosElemento'
 import { CierreElemento } from '../../components/CierreElemento/CierreElemento'
@@ -56,6 +56,7 @@ export const ElementoDetallePage = () => {
     const [formulario, setFormulario] = useState<Formulario>(null)
     const permisos = usePermisosElementos()
     const veElPlan = usePermiso(PERMISOS.planLeer)
+    const veReportes = usePermiso(PERMISOS.reporteLeer)
     const veEvidencias = usePermiso(PERMISOS.evidenciaLeer)
     const conLiderDelEquipo = useSesionStore((estado) => necesitaLiderParaSolicitar(estado.usuario))
     const { ficha, reasignaciones, estados, liderDelEquipo, cargando, error, recargar } = useDetalleElemento(
@@ -120,6 +121,16 @@ export const ElementoDetallePage = () => {
                             {veElPlan && (
                                 <Button variant="primary" onClick={() => void navegar(rutaPlanElemento(ficha.id))}>
                                     Plan de acción
+                                </Button>
+                            )}
+                            {veReportes && (
+                                // Abre la pantalla de reportes con REP-05 y este elemento ya elegidos
+                                <Button
+                                    variant="outlined"
+                                    iconName="file_excel"
+                                    onClick={() => void navegar(rutaReporte('REP-05', { elemento: String(ficha.id) }))}
+                                >
+                                    Reporte del plan
                                 </Button>
                             )}
                             {permisos.puedeEditar(ficha) && (
