@@ -23,10 +23,8 @@ export const usePermisosElementos = () => {
         [actualizar, actualizarTodo, usuarioId],
     )
 
-    // Con PROPIO cuenta el lider del equipo, no el del elemento (puede ser un miembro designado)
-    const puedeReasignar = (elemento: ElementoResponse, liderDelEquipo: number | null | undefined) =>
-        !ESTADOS_FINALES.includes(elemento.estado) &&
-        (actualizarTodo || (actualizar && usuarioId !== undefined && liderDelEquipo === usuarioId))
+    // Cambiar el equipo de un elemento pide alcance TODO: con PROPIO el backend responde 403
+    const puedeReasignar = (elemento: ElementoResponse) => !ESTADOS_FINALES.includes(elemento.estado) && actualizarTodo
 
     return {
         puedeCrear: usePermiso(PERMISOS.elementoCrear),
@@ -34,9 +32,6 @@ export const usePermisosElementos = () => {
         muestraEditar: actualizar,
         puedeEditar,
         puedeReasignar,
-        // Solo con PROPIO hace falta pedir el equipo para conocer a su lider; con TODO tambien se cambia el equipo
-        necesitaLiderDelEquipo: actualizar && !actualizarTodo,
-        cambiaEquipo: actualizarTodo,
         puedeAnular: (elemento: ElementoResponse) => desactivar && ESTADOS_ANULABLES.includes(elemento.estado),
         veRestringidas: usePermiso(PERMISOS.deudaRestringidaLeer),
     }

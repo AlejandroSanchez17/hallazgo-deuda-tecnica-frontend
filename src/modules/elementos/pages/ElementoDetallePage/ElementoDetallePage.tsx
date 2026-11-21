@@ -57,15 +57,13 @@ export const ElementoDetallePage = () => {
     const permisos = usePermisosElementos()
     const veElPlan = usePermiso(PERMISOS.planLeer)
     const veEvidencias = usePermiso(PERMISOS.evidenciaLeer)
-    const conLiderDelEquipo = useSesionStore(
-        (estado) => permisos.necesitaLiderDelEquipo || necesitaLiderParaSolicitar(estado.usuario),
-    )
+    const conLiderDelEquipo = useSesionStore((estado) => necesitaLiderParaSolicitar(estado.usuario))
     const { ficha, reasignaciones, estados, liderDelEquipo, cargando, error, recargar } = useDetalleElemento(
         id,
         conLiderDelEquipo,
     )
     const pc = useProrrogaCierre(id, ficha, liderDelEquipo, recargar)
-    // Sin el permiso de leer, la pestana no se muestra (el Miembro de equipo no ve prorrogas ni cierres)
+    // Sin el permiso de leer, la pestana no se muestra (un rol sin el permiso no ve prorrogas ni cierres)
     const visibles: Record<Pestana, boolean> = {
         datos: true,
         historial: true,
@@ -129,7 +127,7 @@ export const ElementoDetallePage = () => {
                                     Anular
                                 </Button>
                             )}
-                            {permisos.puedeReasignar(ficha, liderDelEquipo) && (
+                            {permisos.puedeReasignar(ficha) && (
                                 <Button
                                     variant="primary"
                                     iconName="transfer"
@@ -206,12 +204,7 @@ export const ElementoDetallePage = () => {
                 <ElementoForm ficha={ficha} onCerrar={() => setFormulario(null)} onGuardado={alTerminar} />
             )}
             {formulario === 'reasignar' && (
-                <ReasignacionForm
-                    ficha={ficha}
-                    cambiaEquipo={permisos.cambiaEquipo}
-                    onCerrar={() => setFormulario(null)}
-                    onReasignado={alTerminar}
-                />
+                <ReasignacionForm ficha={ficha} onCerrar={() => setFormulario(null)} onReasignado={alTerminar} />
             )}
             {formulario === 'anular' && (
                 <AnulacionForm ficha={ficha} onCerrar={() => setFormulario(null)} onAnulado={alTerminar} />

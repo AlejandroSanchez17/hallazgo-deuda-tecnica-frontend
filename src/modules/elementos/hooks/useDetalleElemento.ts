@@ -14,7 +14,7 @@ interface Resultado {
 }
 
 // Ficha del elemento con sus dos historiales. Con conLiderDelEquipo tambien pide el equipo, para saber si el
-// usuario es su lider vigente (con alcance PROPIO solo el reasigna)
+// usuario es su lider vigente (con alcance PROPIO es quien solicita prorrogas y cierres)
 export const useDetalleElemento = (id: number, conLiderDelEquipo: boolean) => {
     const [resultado, setResultado] = useState<Resultado | null>(null)
     const [version, setVersion] = useState(0)

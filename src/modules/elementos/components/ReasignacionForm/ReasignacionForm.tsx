@@ -5,14 +5,14 @@ import type { ElementoDetalleResponse } from '../../types'
 
 interface ReasignacionFormProps {
     ficha: ElementoDetalleResponse
-    // Solo con alcance TODO; el lider del equipo (PROPIO) designa al lider entre sus miembros
-    cambiaEquipo: boolean
     onCerrar: () => void
     onReasignado: () => void
 }
 
-export const ReasignacionForm = ({ ficha, cambiaEquipo, onCerrar, onReasignado }: ReasignacionFormProps) => {
-    const form = useReasignacion(ficha, cambiaEquipo, onReasignado)
+// Solo con alcance TODO (la pantalla oculta el boton a los demas): se elige el equipo destino y su lider vigente
+// pasa a ser el lider del elemento
+export const ReasignacionForm = ({ ficha, onCerrar, onReasignado }: ReasignacionFormProps) => {
+    const form = useReasignacion(ficha, onReasignado)
     const { formulario, errores } = form
 
     return (
@@ -29,36 +29,16 @@ export const ReasignacionForm = ({ ficha, cambiaEquipo, onCerrar, onReasignado }
             <FieldInput
                 label="Equipo"
                 errorText={errores.equipoId}
-                helperText={
-                    cambiaEquipo
-                        ? 'Solo equipos activos con líder.'
-                        : 'Usted designa al líder entre los miembros de su equipo.'
-                }
+                helperText="Solo equipos activos con líder, distintos del actual. Su líder pasa a ser el líder del elemento. Las fechas no cambian."
             >
                 <Select
                     options={form.opcionesEquipo}
                     value={opcionDe(form.opcionesEquipo, formulario.equipoId)}
                     getLabel={textoDeOpcion}
                     getValue={valorDeOpcion}
-                    disabled={!cambiaEquipo}
                     searchable
                     placeholder="Seleccione…"
                     onChange={(opcion) => form.elegirEquipo(opcion.valor)}
-                />
-            </FieldInput>
-            <FieldInput
-                label="Líder"
-                errorText={errores.liderId}
-                helperText="El líder del equipo o uno de sus miembros. Las fechas no cambian."
-            >
-                <Select
-                    options={form.opcionesLider}
-                    value={opcionDe(form.opcionesLider, formulario.liderId)}
-                    getLabel={textoDeOpcion}
-                    getValue={valorDeOpcion}
-                    searchable
-                    placeholder="Seleccione…"
-                    onChange={(opcion) => form.elegirLider(opcion.valor)}
                 />
             </FieldInput>
             <FieldInput label="Motivo" errorText={errores.motivo}>

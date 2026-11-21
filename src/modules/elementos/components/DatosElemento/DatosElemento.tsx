@@ -61,6 +61,17 @@ export const DatosElemento = ({ ficha }: DatosElementoProps) => {
                 )}
                 <Divider />
                 {seccion(
+                    'Equipo de trabajo',
+                    campo(
+                        'Participantes',
+                        ficha.participantes.length > 0
+                            ? ficha.participantes.map((participante) => participante.nombre).join(', ')
+                            : 'Los participantes se mostrarán cuando el plan esté aprobado.',
+                        true,
+                    ),
+                )}
+                <Divider />
+                {seccion(
                     'Fechas',
                     <>
                         {campo('Identificación', formatearFecha(ficha.fechaIdentificacion))}

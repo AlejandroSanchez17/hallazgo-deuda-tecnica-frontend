@@ -81,6 +81,13 @@ export interface ElementoDetalleResponse extends ElementoResponse {
     hallazgo: DatosHallazgo | null
     deuda: DeudaResponse | null
     prorrogasAprobadas: number
+    // Responsables de las tareas no canceladas del ultimo plan aprobado o finalizado, por nombre; [] si no hay
+    participantes: ParticipanteResponse[]
+}
+
+export interface ParticipanteResponse {
+    usuarioId: number
+    nombre: string
 }
 
 // Se manda solo el bloque del tipo del elemento
@@ -149,16 +156,14 @@ export interface EquipoDisponible extends RegistroDeCatalogo {
     liderId: number | null
 }
 
-// Sin liderId, el lider es el lider vigente del equipo elegido
+// El lider no se manda: el backend asigna al lider vigente del equipo destino
 export interface ReasignacionRequest {
     equipoId: number | null
-    liderId?: number
     motivo: string
 }
 
 export interface ReasignacionFormulario {
     equipoId: string
-    liderId: string
     motivo: string
 }
 
