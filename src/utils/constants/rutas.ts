@@ -8,6 +8,7 @@ export const RUTAS = {
     catalogosAplicaciones: '/catalogos/aplicaciones',
     catalogosCriticidades: '/catalogos/criticidades',
     parametros: '/parametros',
+    bitacora: '/bitacora',
     usuarios: '/usuarios',
     roles: '/roles',
     rolesListado: '/roles/listado',

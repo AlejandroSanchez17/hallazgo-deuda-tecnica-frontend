@@ -66,6 +66,7 @@ export const OPCIONES_MENU: OpcionMenu[] = [
                 ],
             },
             { ruta: RUTAS.parametros, texto: 'Parámetros', permiso: PERMISOS.parametroLeer },
+            { ruta: RUTAS.bitacora, texto: 'Bitácora', permiso: PERMISOS.bitacoraLeer },
         ],
     },
 ]

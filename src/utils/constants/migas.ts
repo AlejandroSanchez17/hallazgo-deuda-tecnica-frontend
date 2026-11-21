@@ -53,4 +53,5 @@ export const MIGAS: Record<string, Miga[]> = {
     [RUTAS.rolesListado]: [inicio, administracion, rolesYPermisos, { texto: 'Roles' }],
     [RUTAS.rolesPermisos]: [inicio, administracion, rolesYPermisos, { texto: 'Permisos' }],
     [RUTAS.parametros]: [inicio, administracion, { texto: 'Parámetros' }],
+    [RUTAS.bitacora]: [inicio, administracion, { texto: 'Bitácora' }],
 }
