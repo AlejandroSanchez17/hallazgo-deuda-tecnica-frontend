@@ -1,43 +1,27 @@
-import { spacing } from '@hnba/design-tokens'
 import { Badge, type TableColumn } from '@hnba/react-ui'
-import { columna, textoSecundario } from '../../styles/disposicion'
+import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
+import { TextoSinCorte } from '../../components/common/TextoSinCorte/TextoSinCorte'
 import { formatearFecha, formatearFechaHora } from '../../utils/formato'
 import { ESTADO_PRORROGA, RESULTADO_CIERRE } from './textosProrroga'
 import type { CierreResponse, ProrrogaResponse } from './typesProrroga'
-import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
-
-const sinCorte = { whiteSpace: 'nowrap' } as const
-
-const apilado = { ...columna(spacing.xs), alignItems: 'center' }
 
 // Texto largo en una linea; el completo, arriba al pasar el cursor
 const recortado = (texto: string | null) => <TextoCorto texto={texto} ancho={240} />
 
-// Nombre y, debajo, la fecha y hora y el comentario de quien resolvio; sin nombre (todavia sin resolver), "—".
-// El comentario no va en su propia columna para que la tabla quepa a 1280 px con las acciones
-const quienYCuando = (nombre: string | null, fecha: string | null, comentario?: string | null) =>
-    nombre ? (
-        <div style={columna(spacing.xs)}>
-            <TextoCorto texto={nombre} ancho={180} />
-            <small style={{ ...textoSecundario, ...sinCorte }}>{formatearFechaHora(fecha)}</small>
-            {comentario && <small>{recortado(comentario)}</small>}
-        </div>
-    ) : (
-        '—'
-    )
-
-export const COLUMNAS_PRORROGAS: TableColumn<ProrrogaResponse>[] = [
+// Cada dato en su columna (las fechas, quien pidio, quien resolvio y el comentario); sin resolver, las columnas de la
+// resolucion muestran "—"
+const COLUMNAS_PRORROGAS: TableColumn<ProrrogaResponse>[] = [
     {
-        id: 'fechas',
-        header: 'Fecha compromiso',
+        id: 'fechaAnterior',
+        header: 'Fecha anterior',
         align: 'center',
-        render: (prorroga) => (
-            <div style={apilado}>
-                <span style={sinCorte}>{formatearFecha(prorroga.fechaAnterior)}</span>
-                <span style={sinCorte}>→ {formatearFecha(prorroga.fechaPropuesta)}</span>
-                {prorroga.esAdicional && <Badge status="warning" label="Adicional" />}
-            </div>
-        ),
+        render: (prorroga) => <TextoSinCorte>{formatearFecha(prorroga.fechaAnterior)}</TextoSinCorte>,
+    },
+    {
+        id: 'fechaPropuesta',
+        header: 'Fecha propuesta',
+        align: 'center',
+        render: (prorroga) => <TextoSinCorte>{formatearFecha(prorroga.fechaPropuesta)}</TextoSinCorte>,
     },
     { id: 'justificacion', header: 'Justificación', render: (prorroga) => recortado(prorroga.justificacion) },
     {
@@ -48,18 +32,47 @@ export const COLUMNAS_PRORROGAS: TableColumn<ProrrogaResponse>[] = [
             <Badge status={ESTADO_PRORROGA[prorroga.estado].estado} label={ESTADO_PRORROGA[prorroga.estado].texto} />
         ),
     },
+    // Solo las que superan el maximo de la criticidad llevan la marca; las demas, "—"
+    {
+        id: 'adicional',
+        header: 'Adicional',
+        align: 'center',
+        render: (prorroga) => (prorroga.esAdicional ? <Badge status="warning" label="Adicional" /> : '—'),
+    },
     {
         id: 'solicitante',
         header: 'Pedida por',
-        render: (prorroga) => quienYCuando(prorroga.solicitanteNombre, prorroga.fechaSolicitud),
+        render: (prorroga) => <TextoCorto texto={prorroga.solicitanteNombre} ancho={180} />,
+    },
+    {
+        id: 'fechaSolicitud',
+        header: 'Fecha del pedido',
+        align: 'center',
+        render: (prorroga) => <TextoSinCorte>{formatearFechaHora(prorroga.fechaSolicitud)}</TextoSinCorte>,
     },
     {
         id: 'resolutor',
         header: 'Resuelta por',
-        render: (prorroga) =>
-            quienYCuando(prorroga.resolutorNombre, prorroga.fechaResolucion, prorroga.comentarioResolucion),
+        render: (prorroga) => <TextoCorto texto={prorroga.resolutorNombre} ancho={180} />,
+    },
+    {
+        id: 'fechaResolucion',
+        header: 'Fecha de resolución',
+        align: 'center',
+        render: (prorroga) => <TextoSinCorte>{formatearFechaHora(prorroga.fechaResolucion)}</TextoSinCorte>,
+    },
+    {
+        id: 'comentario',
+        header: 'Comentario',
+        render: (prorroga) => recortado(prorroga.comentarioResolucion),
     },
 ]
+
+// La columna Adicional solo se dibuja si alguna prorroga del historial supera el maximo de su criticidad
+export const columnasProrrogas = (prorrogas: ProrrogaResponse[]) =>
+    prorrogas.some((prorroga) => prorroga.esAdicional)
+        ? COLUMNAS_PRORROGAS
+        : COLUMNAS_PRORROGAS.filter((columna) => columna.id !== 'adicional')
 
 export const COLUMNAS_CIERRES: TableColumn<CierreResponse>[] = [
     {
@@ -79,17 +92,32 @@ export const COLUMNAS_CIERRES: TableColumn<CierreResponse>[] = [
         header: 'Plan',
         align: 'center',
         render: (cierre) => (
-            <span style={sinCorte}>{cierre.planVersion === null ? '—' : `Versión ${cierre.planVersion}`}</span>
+            <TextoSinCorte>{cierre.planVersion === null ? '—' : `Versión ${cierre.planVersion}`}</TextoSinCorte>
         ),
     },
+    // Cada dato en su columna (quien, cuando y el comentario); los textos largos se cortan con tooltip. Sin resolver,
+    // las columnas de la resolucion muestran "—"
     {
         id: 'solicitante',
         header: 'Pedido por',
-        render: (cierre) => quienYCuando(cierre.solicitanteNombre, cierre.fechaSolicitud),
+        render: (cierre) => <TextoCorto texto={cierre.solicitanteNombre} ancho={180} />,
+    },
+    {
+        id: 'fechaSolicitud',
+        header: 'Fecha del pedido',
+        align: 'center',
+        render: (cierre) => <TextoSinCorte>{formatearFechaHora(cierre.fechaSolicitud)}</TextoSinCorte>,
     },
     {
         id: 'resolutor',
         header: 'Resuelto por',
-        render: (cierre) => quienYCuando(cierre.resolutorNombre, cierre.fechaResolucion, cierre.comentario),
+        render: (cierre) => <TextoCorto texto={cierre.resolutorNombre} ancho={180} />,
     },
+    {
+        id: 'fechaResolucion',
+        header: 'Fecha de resolución',
+        align: 'center',
+        render: (cierre) => <TextoSinCorte>{formatearFechaHora(cierre.fechaResolucion)}</TextoSinCorte>,
+    },
+    { id: 'comentario', header: 'Comentario', render: (cierre) => recortado(cierre.comentario) },
 ]

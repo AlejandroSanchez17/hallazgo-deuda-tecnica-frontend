@@ -1,5 +1,5 @@
 import { Table, type TableColumn, type TableRowAction } from '@hnba/react-ui'
-import { useNavigate } from 'react-router-dom'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna, textoSecundario } from '../../../../styles/disposicion'
 import { enlaceListado } from '../../filtros'
 import { contar } from '../../textos'
@@ -12,7 +12,7 @@ interface RankingEquiposProps {
 }
 
 export const RankingEquipos = ({ equipos }: RankingEquiposProps) => {
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
     const maximo = Math.max(0, ...equipos.map((equipo) => equipo.vencidos))
 
     const columnas: TableColumn<EquipoRanking>[] = [
@@ -48,7 +48,7 @@ export const RankingEquipos = ({ equipos }: RankingEquiposProps) => {
             header: 'Ver',
             iconName: 'eye',
             variant: 'ghost',
-            onClick: (equipo) => void navegar(enlaceListado('VENCIDO', equipo.equipoId)),
+            onClick: (equipo) => ir(enlaceListado('VENCIDO', equipo.equipoId)),
         },
     ]
 

@@ -47,7 +47,7 @@ export const OrigenesPage = () => {
 
     return (
         <>
-            <Pantalla titulo="Orígenes" descripcion="De dónde proviene cada hallazgo o deuda técnica.">
+            <Pantalla titulo="Orígenes" descripcion="Orígenes de hallazgos y deuda técnica.">
                 <div style={columna(spacing.md)}>
                     <BarraCatalogo
                         textos={TEXTOS.origen}

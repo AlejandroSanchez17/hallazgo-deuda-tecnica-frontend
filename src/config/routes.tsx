@@ -9,6 +9,7 @@ import { AreasPage } from '../modules/catalogos/pages/AreasPage/AreasPage'
 import { CategoriasPage } from '../modules/catalogos/pages/CategoriasPage/CategoriasPage'
 import { CriticidadesPage } from '../modules/catalogos/pages/CriticidadesPage/CriticidadesPage'
 import { BitacoraPage } from '../modules/bitacora/pages/BitacoraPage/BitacoraPage'
+import { CambioPage } from '../modules/bitacora/pages/CambioPage/CambioPage'
 import { ElementoDetallePage } from '../modules/elementos/pages/ElementoDetallePage/ElementoDetallePage'
 import { ElementosPage } from '../modules/elementos/pages/ElementosPage/ElementosPage'
 import { MisTareasPage } from '../modules/elementos/pages/MisTareasPage/MisTareasPage'
@@ -181,6 +182,14 @@ export const router = createBrowserRouter([
                 element: (
                     <RutaProtegida permiso={PERMISOS.bitacoraLeer}>
                         <BitacoraPage />
+                    </RutaProtegida>
+                ),
+            },
+            {
+                path: RUTAS.bitacoraCambio,
+                element: (
+                    <RutaProtegida permiso={PERMISOS.bitacoraLeer}>
+                        <CambioPage />
                     </RutaProtegida>
                 ),
             },

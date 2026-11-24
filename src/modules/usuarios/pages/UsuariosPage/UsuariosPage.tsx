@@ -62,7 +62,7 @@ export const UsuariosPage = () => {
 
     return (
         <>
-            <Pantalla titulo="Usuarios" descripcion="Quién puede entrar al sistema y con qué roles.">
+            <Pantalla titulo="Usuarios" descripcion="Usuarios del sistema.">
                 <div style={columna(spacing.md)}>
                     <BarraUsuarios
                         busqueda={busqueda}

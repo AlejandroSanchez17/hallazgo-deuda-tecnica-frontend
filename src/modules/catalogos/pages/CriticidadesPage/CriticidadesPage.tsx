@@ -46,10 +46,7 @@ export const CriticidadesPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Criticidades"
-                descripcion="El plazo define la fecha compromiso sugerida de cada hallazgo o deuda. Las criticidades no se crean ni se desactivan."
-            >
+            <Pantalla titulo="Criticidades" descripcion="Niveles de criticidad y su plazo.">
                 <div style={columna(spacing.md)}>
                     {error ? (
                         <Alert variant="error" description={error.mensaje} />

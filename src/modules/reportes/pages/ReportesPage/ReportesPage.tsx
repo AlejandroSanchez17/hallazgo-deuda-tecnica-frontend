@@ -1,8 +1,11 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, EmptyState, FieldInput, Select, Text } from '@hnba/react-ui'
 import { useSearchParams } from 'react-router-dom'
+import { EnlaceVolver } from '../../../../components/common/EnlaceVolver/EnlaceVolver'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna, textoSecundario } from '../../../../styles/disposicion'
+import { RUTAS } from '../../../../utils/constants/rutas'
 import { opcionDe, textoDeOpcion, valorDeOpcion } from '../../../../utils/opciones'
 import { BotonesDeDescarga } from '../../components/BotonesDeDescarga/BotonesDeDescarga'
 import { FiltrosDelReporte } from '../../components/FiltrosDelReporte/FiltrosDelReporte'
@@ -14,6 +17,7 @@ import type { FiltrosReporte, FormatoReporte } from '../../types'
 
 export const ReportesPage = () => {
     const [parametros, setParametros] = useSearchParams()
+    const { origen, volver, reemplazar } = useNavegacion()
     const filtros = deUrl(parametros)
     const definicion = definicionDe(filtros.reporte)
     const combos = useCombos(definicion?.filtros.includes('elemento') ?? false)
@@ -21,15 +25,13 @@ export const ReportesPage = () => {
 
     const cambiar = (cambios: Partial<FiltrosReporte>) => {
         limpiarErrores()
-        setParametros(aUrl({ ...filtros, ...cambios }), { replace: true })
+        setParametros(aUrl({ ...filtros, ...cambios }), reemplazar)
     }
 
     const elegirReporte = (codigo: string) => {
         const elegida = definicionDe(codigo)
         limpiarErrores()
-        setParametros(aUrl(elegida ? alElegirReporte(filtros, elegida) : { ...filtros, reporte: '' }), {
-            replace: true,
-        })
+        setParametros(aUrl(elegida ? alElegirReporte(filtros, elegida) : { ...filtros, reporte: '' }), reemplazar)
     }
 
     const descargar = (formato: FormatoReporte) => {
@@ -45,8 +47,10 @@ export const ReportesPage = () => {
 
     return (
         <Pantalla
+            // Solo si se llego desde otra pantalla
+            volver={origen && <EnlaceVolver texto={origen.etiqueta} onClick={() => volver(RUTAS.tablero)} />}
             titulo="Reportes"
-            descripcion="Genere y descargue reportes de hallazgos y deuda técnica en Excel o PDF, con los filtros que elija."
+            descripcion="Reportes de hallazgos y deuda técnica en Excel o PDF."
         >
             <div style={columna(spacing.md)}>
                 <FieldInput label="Reporte">

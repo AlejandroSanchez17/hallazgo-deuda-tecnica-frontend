@@ -1,33 +1,32 @@
 import { spacing } from '@hnba/design-tokens'
 import { Badge, type TableColumn } from '@hnba/react-ui'
-import { columna, textoSecundario } from '../../styles/disposicion'
+import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
+import { TextoSinCorte } from '../../components/common/TextoSinCorte/TextoSinCorte'
+import { fila as filaFlex } from '../../styles/disposicion'
 import { formatearFecha, formatearFechaHora } from '../../utils/formato'
-import { TEXTO_TIPO } from './textos'
 import { textoEspera, TIPO_PENDIENTE } from './textosProrroga'
 import type { PendienteResponse } from './typesProrroga'
-import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
-
-const sinCorte = { whiteSpace: 'nowrap' } as const
-
-const apilado = { ...columna(spacing.xs), alignItems: 'center' }
 
 // Que se pide: la version del plan, el cambio de fecha de la prorroga o quien valida el cierre
 const detalle = (fila: PendienteResponse) => {
     if (fila.tipo === 'PLAN') {
-        return <span style={sinCorte}>Versión {fila.planVersion}</span>
+        return <TextoSinCorte>Versión {fila.planVersion}</TextoSinCorte>
     }
     if (fila.tipo === 'PRORROGA') {
         return (
-            <div style={apilado}>
-                <span style={sinCorte}>{formatearFecha(fila.fechaAnterior)}</span>
-                <span style={sinCorte}>→ {formatearFecha(fila.fechaPropuesta)}</span>
+            <span style={{ ...filaFlex(spacing.sm), justifyContent: 'center', flexWrap: 'wrap' }}>
+                <TextoSinCorte>
+                    {formatearFecha(fila.fechaAnterior)} → {formatearFecha(fila.fechaPropuesta)}
+                </TextoSinCorte>
                 {fila.esAdicional && <Badge status="warning" label="Adicional" />}
-            </div>
+            </span>
         )
     }
-    return <span>Lo valida {fila.rolRequeridoNombre}</span>
+    return <TextoCorto texto={`Lo valida ${fila.rolRequeridoNombre}`} ancho={160} />
 }
 
+// Cada dato en su columna; los textos largos se cortan con puntos suspensivos y el completo sale al pasar el cursor.
+// El tipo del elemento (hallazgo o deuda) no tiene columna: lo dice el prefijo del codigo (HA-, DT-)
 export const COLUMNAS_APROBACIONES: TableColumn<PendienteResponse>[] = [
     {
         id: 'tipo',
@@ -35,36 +34,30 @@ export const COLUMNAS_APROBACIONES: TableColumn<PendienteResponse>[] = [
         align: 'center',
         render: (fila) => <Badge status={TIPO_PENDIENTE[fila.tipo].estado} label={TIPO_PENDIENTE[fila.tipo].texto} />,
     },
+    { id: 'codigo', header: 'Código', render: (fila) => <TextoSinCorte>{fila.elementoCodigo}</TextoSinCorte> },
     {
         id: 'elemento',
         header: 'Elemento',
-        render: (fila) => (
-            <div style={{ ...columna(spacing.xs), minWidth: 160 }}>
-                <TextoCorto texto={`${fila.elementoCodigo} · ${fila.elementoTitulo}`} ancho={320} />
-                <small style={textoSecundario}>
-                    <TextoCorto
-                        texto={`${TEXTO_TIPO[fila.elementoTipo]} · ${fila.criticidadNombre} · ${fila.equipoNombre}`}
-                        ancho={320}
-                    />
-                </small>
-            </div>
-        ),
+        render: (fila) => <TextoCorto texto={fila.elementoTitulo} ancho={220} />,
     },
+    { id: 'criticidad', header: 'Criticidad', render: (fila) => fila.criticidadNombre },
+    { id: 'equipo', header: 'Equipo', render: (fila) => <TextoCorto texto={fila.equipoNombre} ancho={140} /> },
     { id: 'detalle', header: 'Solicitud', align: 'center', render: detalle },
     {
         id: 'solicitante',
         header: 'Pedido por',
-        render: (fila) => (
-            <div style={columna(spacing.xs)}>
-                <TextoCorto texto={fila.solicitanteNombre} ancho={180} />
-                <small style={{ ...textoSecundario, ...sinCorte }}>{formatearFechaHora(fila.fechaSolicitud)}</small>
-            </div>
-        ),
+        render: (fila) => <TextoCorto texto={fila.solicitanteNombre} ancho={150} />,
+    },
+    {
+        id: 'fechaSolicitud',
+        header: 'Fecha del pedido',
+        align: 'center',
+        render: (fila) => <TextoSinCorte>{formatearFechaHora(fila.fechaSolicitud)}</TextoSinCorte>,
     },
     {
         id: 'espera',
         header: 'Espera',
         align: 'center',
-        render: (fila) => <span style={sinCorte}>{textoEspera(fila.diasEsperando)}</span>,
+        render: (fila) => <TextoSinCorte>{textoEspera(fila.diasEsperando)}</TextoSinCorte>,
     },
 ]

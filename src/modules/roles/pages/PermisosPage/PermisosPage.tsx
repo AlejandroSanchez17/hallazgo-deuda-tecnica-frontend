@@ -71,7 +71,7 @@ export const PermisosPage = () => {
 
     return (
         <>
-            <Pantalla titulo="Permisos" descripcion="Qué puede hacer cada rol dentro del sistema.">
+            <Pantalla titulo="Permisos" descripcion="Permisos por rol.">
                 <div style={columna(spacing.md)}>
                     {puedeActualizar && edicion.rol && (
                         <Text variant="body-regular-small" as="p" style={textoSecundario}>

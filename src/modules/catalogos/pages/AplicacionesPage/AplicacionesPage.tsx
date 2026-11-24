@@ -58,10 +58,7 @@ export const AplicacionesPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Aplicaciones"
-                descripcion="Aplicaciones de la organización y el área a la que pertenece cada una."
-            >
+            <Pantalla titulo="Aplicaciones" descripcion="Aplicaciones de la organización.">
                 <div style={columna(spacing.md)}>
                     <BarraCatalogo
                         textos={TEXTOS.aplicacion}

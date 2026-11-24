@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavegacion } from '../../../hooks/useNavegacion'
 import { aErrorApi, avisarSiNoSeAviso } from '../../../services/api'
 import { useNotificacionesStore } from '../../../store/notificacionesStore'
 import { notificacionesApi } from '../api'
@@ -16,7 +16,7 @@ interface AbrirNotificacionOpciones {
 // responde 403 (por ejemplo, el elemento paso a otro equipo) el interceptor muestra el aviso de siempre
 export const useAbrirNotificacion = ({ onMarcada, onNavegar }: AbrirNotificacionOpciones) => {
     const pedirRefresco = useNotificacionesStore((estado) => estado.pedirRefresco)
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
 
     const abrir = async (notificacion: NotificacionResponse) => {
         if (!notificacion.leida) {
@@ -30,7 +30,7 @@ export const useAbrirNotificacion = ({ onMarcada, onNavegar }: AbrirNotificacion
         const ruta = rutaDestino(notificacion)
         if (ruta !== null) {
             onNavegar?.()
-            void navegar(ruta)
+            ir(ruta)
         }
     }
 

@@ -1,11 +1,23 @@
 import { spacing } from '@hnba/design-tokens'
-import { Alert, Button, EmptyState, Loader, Select, Text } from '@hnba/react-ui'
+import { Alert, Banner, Button, EmptyState, Loader, Select, Text } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { usePublicarListaDelElemento } from '../../../../components/common/MigasDePan/listaDelElemento'
+import { EnlaceVolver } from '../../../../components/common/EnlaceVolver/EnlaceVolver'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
+import { AccionesPantalla } from '../../../../components/common/AccionesPantalla/AccionesPantalla'
+import { usePermiso } from '../../../../hooks/auth/usePermiso'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { useSesionStore } from '../../../../store/sesionStore'
-import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
-import { rutaElemento, rutaTareaPlan } from '../../../../utils/constants/rutas'
+import { columna, filaEntreExtremos } from '../../../../styles/disposicion'
+import { PERMISOS } from '../../../../utils/constants/permisos'
+import {
+    rutaElemento,
+    rutaListaDe,
+    rutaPestanaElemento,
+    rutaReporte,
+    rutaTareaPlan,
+} from '../../../../utils/constants/rutas'
 import { AvisosPlan } from '../../components/AvisosPlan/AvisosPlan'
 import { ComentariosPlan } from '../../components/ComentariosPlan/ComentariosPlan'
 import { FormulariosPlan, type FormularioPlan } from '../../components/FormulariosPlan/FormulariosPlan'
@@ -30,18 +42,20 @@ const opcionVersion = (version: PlanResumen): OpcionVersion => ({
 
 // Pagina propia del plan de accion del elemento (decidido por el usuario el 17/11), con sus versiones
 export const PlanElementoPage = () => {
-    const navegar = useNavigate()
     const id = Number(useParams().id)
     const conLider = useSesionStore((estado) => necesitaLiderDelEquipo(estado.usuario))
     const pagina = usePaginaPlan(id, conLider)
     const { ficha, plan } = pagina
+    const { origen, ir, volver: volverAtras } = useNavegacion()
+    usePublicarListaDelElemento(ficha ? rutaListaDe(ficha.tipo) : undefined)
     const [formulario, setFormulario] = useState<FormularioPlan>(null)
     // Ver una tarea abre su pagina; si el plan que se mira no es el vigente, el enlace lleva su id
     const verTarea = (tareaId: number) => {
         const vigente = pagina.versiones.find((version) => version.id === pagina.planElegidoId)?.vigente ?? true
-        void navegar(rutaTareaPlan(id, tareaId, vigente ? null : pagina.planElegidoId))
+        ir(rutaTareaPlan(id, tareaId, vigente ? null : pagina.planElegidoId))
     }
     const permisos = usePermisosPlan(ficha, plan, pagina.liderDelEquipo)
+    const veReportes = usePermiso(PERMISOS.reporteLeer)
 
     const alTerminar = () => {
         setFormulario(null)
@@ -49,10 +63,9 @@ export const PlanElementoPage = () => {
     }
     const acciones = useAccionesPlan(plan, pagina.recargar)
 
+    // Regresa a la pantalla de donde se llego (Aprobaciones, Mis tareas, el elemento…); sin origen, al elemento
     const volver = (
-        <Button variant="ghost" iconName="chevron_left" onClick={() => void navegar(rutaElemento(id))}>
-            Volver al elemento
-        </Button>
+        <EnlaceVolver texto={origen?.etiqueta ?? 'Volver al elemento'} onClick={() => volverAtras(rutaElemento(id))} />
     )
 
     if (pagina.cargando) {
@@ -67,6 +80,14 @@ export const PlanElementoPage = () => {
         )
     }
 
+    // El aviso solo es para quien podria armar o cambiar el plan; el resto lo ve igual, sin botones que explicar
+    const bloqueado =
+        permisos.vencido &&
+        (permisos.puedeCrearPlan ||
+            permisos.puedeEditarPlan ||
+            permisos.puedeNuevaVersion ||
+            permisos.puedeCrearTarea ||
+            permisos.muestraEditarTarea)
     const opcionesVersion = pagina.versiones.map(opcionVersion)
     const tituloVersion = plan ? ` (versión ${plan.version})` : ''
 
@@ -74,71 +95,86 @@ export const PlanElementoPage = () => {
         <>
             <Pantalla
                 titulo={`${ficha.codigo} - Plan de acción${tituloVersion}`}
-                descripcion="Objetivo, estrategia y tareas del plan, con sus versiones y comentarios."
+                descripcion="Plan para resolver el elemento."
+                volver={volver}
+                acciones={
+                    <AccionesPantalla
+                        principal={
+                            permisos.puedeResolver
+                                ? {
+                                      texto: 'Aprobar',
+                                      icono: 'vote_yea',
+                                      visible: true,
+                                      onClick: acciones.pedirAprobacion,
+                                  }
+                                : {
+                                      texto: 'Enviar a aprobación',
+                                      icono: 'share',
+                                      visible: permisos.puedeEnviar,
+                                      deshabilitada: !plan?.listoParaEnvio,
+                                      onClick: acciones.pedirEnvio,
+                                  }
+                        }
+                        directas={[
+                            {
+                                texto: 'Devolver',
+                                icono: 'vote_no',
+                                visible: permisos.puedeResolver,
+                                onClick: () => setFormulario({ tipo: 'devolver' }),
+                            },
+                        ]}
+                        secundarias={[
+                            {
+                                texto: 'Editar plan',
+                                icono: 'edit',
+                                visible: permisos.puedeEditarPlan,
+                                deshabilitada: permisos.vencido,
+                                onClick: () => setFormulario({ tipo: 'plan' }),
+                            },
+                            {
+                                texto: 'Nueva versión',
+                                icono: 'copy',
+                                visible: permisos.puedeNuevaVersion,
+                                deshabilitada: permisos.vencido,
+                                onClick: () => setFormulario({ tipo: 'version' }),
+                            },
+                            {
+                                // Abre la pantalla de reportes con REP-05 y este elemento ya elegidos
+                                texto: 'Reporte del plan',
+                                icono: 'file_excel',
+                                visible: veReportes && plan !== null,
+                                onClick: () => ir(rutaReporte('REP-05', { elemento: String(id) })),
+                            },
+                        ]}
+                    />
+                }
             >
                 <div style={columna(spacing.md)}>
-                    <div style={filaEntreExtremos}>
-                        <div style={fila(spacing.md)}>
-                            {volver}
-                            {opcionesVersion.length > 1 && (
-                                <div style={{ width: 260 }} aria-label="Versión del plan" role="group">
-                                    <Select
-                                        options={opcionesVersion}
-                                        value={opcionesVersion.find((opcion) => opcion.id === pagina.planElegidoId)}
-                                        getLabel={(opcion) => opcion.texto}
-                                        getValue={(opcion) => String(opcion.id)}
-                                        onChange={(opcion) => pagina.elegirVersion(opcion.id)}
-                                    />
-                                </div>
-                            )}
+                    {opcionesVersion.length > 1 && (
+                        <div style={{ width: 260 }} aria-label="Versión del plan" role="group">
+                            <Select
+                                options={opcionesVersion}
+                                value={opcionesVersion.find((opcion) => opcion.id === pagina.planElegidoId)}
+                                getLabel={(opcion) => opcion.texto}
+                                getValue={(opcion) => String(opcion.id)}
+                                onChange={(opcion) => pagina.elegirVersion(opcion.id)}
+                            />
                         </div>
-                        <div style={fila(spacing.sm)}>
-                            {permisos.puedeEditarPlan && (
-                                <Button
-                                    variant="outlined"
-                                    iconName="edit"
-                                    onClick={() => setFormulario({ tipo: 'plan' })}
-                                >
-                                    Editar plan
-                                </Button>
-                            )}
-                            {permisos.puedeNuevaVersion && (
-                                <Button
-                                    variant="outlined"
-                                    iconName="copy"
-                                    onClick={() => setFormulario({ tipo: 'version' })}
-                                >
-                                    Nueva versión
-                                </Button>
-                            )}
-                            {permisos.puedeResolver && (
-                                <>
-                                    <Button
-                                        variant="outlined"
-                                        iconName="vote_no"
-                                        onClick={() => setFormulario({ tipo: 'devolver' })}
-                                    >
-                                        Devolver
-                                    </Button>
-                                    <Button variant="primary" iconName="vote_yea" onClick={acciones.pedirAprobacion}>
-                                        Aprobar
-                                    </Button>
-                                </>
-                            )}
-                            {permisos.puedeEnviar && (
-                                <Button
-                                    variant="primary"
-                                    iconName="share"
-                                    disabled={!plan?.listoParaEnvio}
-                                    onClick={acciones.pedirEnvio}
-                                >
-                                    Enviar a aprobación
-                                </Button>
-                            )}
-                        </div>
-                    </div>
+                    )}
 
                     <FranjaElemento ficha={ficha} />
+
+                    {bloqueado && (
+                        <Banner
+                            variant="warning"
+                            title="Elemento vencido"
+                            description="No se puede crear ni editar el plan ni sus tareas hasta que se apruebe una prórroga y cambie la fecha compromiso."
+                            action={{
+                                label: 'Ir a prórrogas',
+                                onClick: () => ir(rutaPestanaElemento(id, 'prorrogas')),
+                            }}
+                        />
+                    )}
 
                     {pagina.cargandoVersion && <Loader />}
                     {!pagina.cargandoVersion && plan && (
@@ -153,6 +189,7 @@ export const PlanElementoPage = () => {
                                     <Button
                                         variant="primary"
                                         iconName="plus"
+                                        disabled={permisos.vencido}
                                         onClick={() => setFormulario({ tipo: 'tarea', tarea: null })}
                                     >
                                         Nueva tarea
@@ -169,6 +206,7 @@ export const PlanElementoPage = () => {
                                 }
                                 puedeAvance={permisos.puedeAvance}
                                 puedeCancelar={permisos.puedeCancelarTarea}
+                                edicionBloqueada={permisos.vencido}
                                 onEditar={
                                     permisos.muestraEditarTarea
                                         ? (tarea) => setFormulario({ tipo: 'tarea', tarea })
@@ -189,10 +227,12 @@ export const PlanElementoPage = () => {
                             title="El elemento no tiene plan de acción"
                             description={
                                 permisos.puedeCrearPlan
-                                    ? 'Cree el plan con su objetivo, estrategia y fechas; después agregue las tareas.'
+                                    ? permisos.vencido
+                                        ? 'El elemento está vencido: el plan se podrá crear cuando se apruebe una prórroga.'
+                                        : 'Cree el plan con su objetivo, estrategia y fechas; después agregue las tareas.'
                                     : 'Lo arma el líder del equipo del elemento.'
                             }
-                            actionLabel={permisos.puedeCrearPlan ? 'Crear plan' : undefined}
+                            actionLabel={permisos.puedeCrearPlan && !permisos.vencido ? 'Crear plan' : undefined}
                             onAction={() => setFormulario({ tipo: 'plan' })}
                         />
                     )}

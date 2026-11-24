@@ -71,10 +71,7 @@ export const AreasPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Áreas"
-                descripcion="Gerencias y áreas de la organización; un área puede depender de otra."
-            >
+            <Pantalla titulo="Áreas" descripcion="Gerencias y áreas de la organización.">
                 <div style={columna(spacing.md)}>
                     <BarraCatalogo
                         textos={TEXTOS.area}

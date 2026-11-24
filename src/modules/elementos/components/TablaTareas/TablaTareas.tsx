@@ -6,6 +6,7 @@ import { ESTADO_TAREA, textoNumero } from '../../textosPlan'
 import type { PlanResponse, TareaResponse } from '../../typesPlan'
 import { BarraAvance } from '../BarraAvance/BarraAvance'
 import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
+import { TextoSinCorte } from '../../../../components/common/TextoSinCorte/TextoSinCorte'
 
 interface TablaTareasProps {
     plan: PlanResponse
@@ -17,44 +18,49 @@ interface TablaTareasProps {
     onEditar?: (tarea: TareaResponse) => void
     onCancelar?: (tarea: TareaResponse) => void
     puedeCancelar: (tarea: TareaResponse) => boolean
+    // Elemento vencido: no se editan las tareas hasta que haya prorroga
+    edicionBloqueada?: boolean
 }
-
-const sinCorte = { whiteSpace: 'nowrap' } as const
 
 const apilado = { ...columna(spacing.xs), alignItems: 'center' }
 
-// Las tareas con un problema del plan (por ejemplo, termina despues del compromiso) llevan la marca "Revisar".
-// La dependencia va bajo el titulo, para que la tabla quepa a 1280 px
+// Cada dato va en su propia columna (titulo, dependencia, inicio y fin); los textos largos se cortan con puntos
+// suspensivos para que la tabla quepa a 1280 px. Las tareas con un problema del plan (por ejemplo, termina despues del
+// compromiso) llevan la marca "Revisar" bajo el titulo
 const columnas = (conProblema: Set<number>): TableColumn<TareaResponse>[] => [
     {
         id: 'titulo',
         header: 'Título',
         render: (tarea) => (
             <div style={{ ...columna(spacing.xs), alignItems: 'flex-start', minWidth: 110 }}>
-                <TextoCorto texto={tarea.titulo} ancho={260} />
-                {tarea.dependeDeTitulo && (
-                    <small style={textoSecundario}>
-                        <TextoCorto texto={`Depende de: ${tarea.dependeDeTitulo}`} ancho={260} />
-                    </small>
-                )}
+                <TextoCorto texto={tarea.titulo} ancho={220} />
                 {conProblema.has(tarea.id) && <Badge status="warning" label="Revisar" />}
             </div>
         ),
+    },
+    {
+        id: 'dependencia',
+        header: 'Depende de',
+        render: (tarea) => <TextoCorto texto={tarea.dependeDeTitulo} ancho={200} />,
     },
     {
         id: 'responsable',
         header: 'Responsable',
         render: (tarea) => <TextoCorto texto={tarea.responsableNombre} ancho={180} />,
     },
-    // Inicio y fin en una columna para que la tabla quepa a 1280 px
     {
-        id: 'fechas',
-        header: 'Fechas',
+        id: 'inicio',
+        header: 'Inicio',
+        align: 'center',
+        render: (tarea) => <TextoSinCorte>{formatearFecha(tarea.fechaInicio)}</TextoSinCorte>,
+    },
+    {
+        id: 'fin',
+        header: 'Fin',
         align: 'center',
         render: (tarea) => (
             <div style={apilado}>
-                <span style={sinCorte}>{formatearFecha(tarea.fechaInicio)}</span>
-                <span style={sinCorte}>al {formatearFecha(tarea.fechaFin)}</span>
+                <TextoSinCorte>{formatearFecha(tarea.fechaFin)}</TextoSinCorte>
                 {tarea.vencida && <Badge status="error" label="Vencida" />}
             </div>
         ),
@@ -99,6 +105,7 @@ export const TablaTareas = ({
     onEditar,
     onCancelar,
     puedeCancelar,
+    edicionBloqueada = false,
 }: TablaTareasProps) => {
     const conProblema = new Set(plan.problemas.flatMap((problema) => (problema.tareaId ? [problema.tareaId] : [])))
 
@@ -111,7 +118,7 @@ export const TablaTareas = ({
             rowActions={[
                 { id: 'ver', header: 'Ver', iconName: 'eye', variant: 'ghost', onClick: onVer },
                 ...accion('avance', 'Avance', 'chart_mixed_up_circle', onAvance, puedeAvance),
-                ...accion('editar', 'Editar', 'edit', onEditar, (tarea) => tarea.editable),
+                ...accion('editar', 'Editar', 'edit', onEditar, (tarea) => tarea.editable && !edicionBloqueada),
                 ...accion('cancelar', 'Cancelar', 'minus_circle', onCancelar, puedeCancelar),
             ]}
             emptyText="El plan todavía no tiene tareas"

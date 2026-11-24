@@ -1,8 +1,8 @@
 import { colors, spacing } from '@hnba/design-tokens'
 import { Button, Text } from '@hnba/react-ui'
 import type { CSSProperties } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { GraficoDona } from '../../../../components/common/GraficoDona/GraficoDona'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna, textoSecundario } from '../../../../styles/disposicion'
 import { enlaceListado } from '../../filtros'
 import { formatearPorcentaje } from '../../textos'
@@ -23,7 +23,7 @@ const filaLeyenda: CSSProperties = {
 
 // Proporcion de los abiertos de hoy por semaforo; cada fila lleva al listado con ese semaforo
 export const DonaSemaforo = ({ resumen }: DonaSemaforoProps) => {
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
     const tramos = [
         { nombre: 'Vencidos', valor: resumen.vencidos, color: colors.semantic.error[700], semaforo: 'VENCIDO' },
         { nombre: 'En riesgo', valor: resumen.enRiesgo, color: colors.semantic.warning[600], semaforo: 'EN_RIESGO' },
@@ -62,7 +62,7 @@ export const DonaSemaforo = ({ resumen }: DonaSemaforoProps) => {
                                 size="sm"
                                 iconName="eye"
                                 aria-label={`Ver ${tramo.nombre.toLowerCase()} en el listado`}
-                                onClick={() => void navegar(enlaceListado(tramo.semaforo))}
+                                onClick={() => ir(enlaceListado(tramo.semaforo))}
                             />
                         </div>
                     ))}

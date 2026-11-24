@@ -68,10 +68,7 @@ export const ParametrosPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Parámetros"
-                descripcion="Valores que ajustan el comportamiento del sistema sin cambiar el código."
-            >
+            <Pantalla titulo="Parámetros" descripcion="Valores de configuración del sistema.">
                 <div style={columna(spacing.lg)}>
                     <Buscador
                         valor={busqueda}

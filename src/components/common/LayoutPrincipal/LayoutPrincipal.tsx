@@ -5,6 +5,7 @@ import { ContenidoPrincipal } from '../ContenidoPrincipal/ContenidoPrincipal'
 import { Footer } from '../Footer/Footer'
 import { Header } from '../Header/Header'
 import { MenuMovil } from '../MenuMovil/MenuMovil'
+import { ProveedorListaDelElemento } from '../MigasDePan/ProveedorListaDelElemento'
 import { MigasDePan } from '../MigasDePan/MigasDePan'
 import { Sidebar } from '../Sidebar/Sidebar'
 
@@ -27,10 +28,12 @@ export const LayoutPrincipal = () => {
             <div style={estiloCuerpo}>
                 {!esCompacto && <Sidebar ancho={ANCHO_SIDEBAR} colapsable />}
                 <div style={estiloColumna}>
-                    <MigasDePan />
-                    <main style={estiloContenido}>
-                        <ContenidoPrincipal />
-                    </main>
+                    <ProveedorListaDelElemento>
+                        <MigasDePan />
+                        <main style={estiloContenido}>
+                            <ContenidoPrincipal />
+                        </main>
+                    </ProveedorListaDelElemento>
                     <Footer />
                 </div>
             </div>

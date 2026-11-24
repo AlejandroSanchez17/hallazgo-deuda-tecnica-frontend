@@ -38,7 +38,7 @@ export const TableroPage = () => {
     return (
         <Pantalla
             titulo={saludo}
-            descripcion="Te damos la bienvenida al tablero de hallazgos y deuda técnica."
+            descripcion="Resumen de hallazgos y deuda técnica."
             acciones={
                 <BarraTablero
                     filtros={filtros}
@@ -65,16 +65,22 @@ export const TableroPage = () => {
                         <TendenciaMensual meses={datos.tendencia} periodo={datos.periodo} />
                     </div>
 
-                    <div style={rejillaDe(esCompacto, 'minmax(0, 1.2fr) minmax(0, 1fr)', 'start')}>
+                    <div style={rejillaDe(esCompacto, 'minmax(0, 1.2fr) minmax(0, 1fr)', 'stretch')}>
                         <div style={columna(spacing.md)}>
                             <DonaEquipos equipos={datos.rankingEquipos} />
                             <AbiertosPorCriticidad filas={datos.abiertosPorTipoCriticidad} />
                         </div>
-                        <DeudaPorAplicacion
-                            filas={datos.deudaPendiente.porAplicacion}
-                            totalHoras={datos.deudaPendiente.totalHoras}
-                            elementos={datos.deudaPendiente.elementos}
-                        />
+                        {/* En pantalla compacta la tarjeta crece con su contenido; si no, ocupa el alto que marca la
+                            columna de la izquierda (que crece con los equipos vencidos) y muestra las aplicaciones que
+                            caben en ese alto */}
+                        <div style={esCompacto ? undefined : { position: 'relative', minHeight: 360 }}>
+                            <DeudaPorAplicacion
+                                filas={datos.deudaPendiente.porAplicacion}
+                                totalHoras={datos.deudaPendiente.totalHoras}
+                                elementos={datos.deudaPendiente.elementos}
+                                ajustarAlto={!esCompacto}
+                            />
+                        </div>
                     </div>
                 </div>
             )}

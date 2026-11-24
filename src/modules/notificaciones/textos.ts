@@ -13,6 +13,7 @@ const TIPOS: Record<TipoNotificacion, DatosTipo> = {
     VENCIMIENTO_PROXIMO: { nombre: 'Vencimiento', icono: 'calendar_clock' },
     RESUMEN_SEMANAL: { nombre: 'Resumen semanal', icono: 'chart_pie' },
     REPORTE_LISTO: { nombre: 'Reporte listo', icono: 'bell' },
+    PLAN_COMPLETADO: { nombre: 'Plan completado', icono: 'check_circle' },
 }
 
 // Un tipo que el backend agregue despues se muestra con la campana y sin nombre propio

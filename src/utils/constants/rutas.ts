@@ -9,6 +9,7 @@ export const RUTAS = {
     catalogosCriticidades: '/catalogos/criticidades',
     parametros: '/parametros',
     bitacora: '/bitacora',
+    bitacoraCambio: '/bitacora/:id',
     usuarios: '/usuarios',
     roles: '/roles',
     rolesListado: '/roles/listado',
@@ -37,6 +38,8 @@ export const rutaListaDe = (tipo: 'HALLAZGO' | 'DEUDA') => (tipo === 'HALLAZGO' 
 
 // La pestaña de permisos abre con el rol ya elegido
 export const rutaPermisosDeRol = (rolId: number) => `${RUTAS.rolesPermisos}?rol=${rolId}`
+
+export const rutaCambioBitacora = (cambioId: number) => `${RUTAS.bitacora}/${cambioId}`
 
 export const rutaEquipo = (equipoId: number) => `${RUTAS.equipos}/${equipoId}`
 

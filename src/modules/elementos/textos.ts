@@ -38,15 +38,14 @@ export const TEXTOS_LISTA: Record<
 > = {
     HALLAZGO: {
         titulo: 'Hallazgos',
-        descripcion:
-            'Hallazgos de auditoría registrados, con su equipo, su fecha compromiso y el semáforo de vencimiento.',
+        descripcion: 'Hallazgos de auditoría registrados.',
         botonNuevo: 'Nuevo hallazgo',
         tituloNuevo: 'Nuevo hallazgo',
         textoVacio: 'No hay hallazgos registrados',
     },
     DEUDA: {
         titulo: 'Deuda técnica',
-        descripcion: 'Deuda técnica registrada, con su equipo, su fecha compromiso y el semáforo de vencimiento.',
+        descripcion: 'Deuda técnica registrada.',
         botonNuevo: 'Nueva deuda técnica',
         tituloNuevo: 'Nueva deuda técnica',
         textoVacio: 'No hay deuda técnica registrada',
@@ -60,6 +59,20 @@ const formatoHoras = new Intl.NumberFormat('es', { maximumFractionDigits: 2 })
 // "XS · 4 horas"; sin la equivalencia (no se pudo leer el parametro) queda solo la talla
 export const textoTalla = (talla: Talla, horas?: number) =>
     horas === undefined ? talla : `${talla} · ${formatoHoras.format(horas)} ${horas === 1 ? 'hora' : 'horas'}`
+
+// Version corta de textoDias para la columna Plazo de las listas: el semaforo de al lado ya dice si vencio
+// ("En 22 días", "Hace 44 días", "Hoy")
+export const textoPlazo = (dias: number | null) => {
+    if (dias === null) {
+        return ''
+    }
+    if (dias === 0) {
+        return 'Hoy'
+    }
+    const cantidad = Math.abs(dias)
+    const texto = `${cantidad} ${cantidad === 1 ? 'día' : 'días'}`
+    return dias < 0 ? `Hace ${texto}` : `En ${texto}`
+}
 
 export const textoDias = (dias: number | null) => {
     if (dias === null) {

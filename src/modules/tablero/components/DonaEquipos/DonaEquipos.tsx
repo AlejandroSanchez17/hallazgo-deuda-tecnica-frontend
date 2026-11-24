@@ -1,8 +1,8 @@
 import { colors, spacing } from '@hnba/design-tokens'
 import { Button, Text } from '@hnba/react-ui'
 import type { CSSProperties } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { GraficoDona } from '../../../../components/common/GraficoDona/GraficoDona'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna, textoSecundario } from '../../../../styles/disposicion'
 import { enlaceListado } from '../../filtros'
 import { contar, formatearPorcentaje } from '../../textos'
@@ -65,7 +65,7 @@ const tramosDe = (equipos: EquipoRanking[]): Tramo[] => {
 
 // Como se reparten los vencidos de hoy entre los equipos; cada equipo lleva al listado con sus vencidos
 export const DonaEquipos = ({ equipos }: DonaEquiposProps) => {
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
     const tramos = tramosDe(equipos)
     const total = tramos.reduce((suma, tramo) => suma + tramo.vencidos, 0)
 
@@ -109,7 +109,9 @@ export const DonaEquipos = ({ equipos }: DonaEquiposProps) => {
                                     as="span"
                                     style={{ ...textoSecundario, textAlign: 'right' }}
                                 >
-                                    {formatearPorcentaje(total === 0 ? null : Math.round((tramo.vencidos / total) * 1000) / 10)}
+                                    {formatearPorcentaje(
+                                        total === 0 ? null : Math.round((tramo.vencidos / total) * 1000) / 10,
+                                    )}
                                 </Text>
                                 {tramo.equipoId === undefined ? (
                                     <span />
@@ -119,7 +121,7 @@ export const DonaEquipos = ({ equipos }: DonaEquiposProps) => {
                                         size="sm"
                                         iconName="eye"
                                         aria-label={`Ver vencidos de ${tramo.nombre} en el listado`}
-                                        onClick={() => void navegar(enlaceListado('VENCIDO', tramo.equipoId))}
+                                        onClick={() => ir(enlaceListado('VENCIDO', tramo.equipoId))}
                                     />
                                 )}
                             </div>

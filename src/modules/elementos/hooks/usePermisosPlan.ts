@@ -57,7 +57,12 @@ export const usePermisosPlan = (
     // que es unico: se compara por el
     const tieneElRol = usuario?.roles.some((rol) => rol.nombre === aprobacion?.rolRequeridoNombre) ?? false
 
+    // Un elemento vencido no admite armar ni cambiar el plan ni sus tareas hasta que una prorroga aprobada cambie la fecha
+    // compromiso. Las acciones se siguen dibujando, deshabilitadas, para que la pantalla explique por que
+    const vencido = ficha?.semaforo === 'VENCIDO'
+
     return {
+        vencido,
         // El backend solo crea el plan con el elemento Registrado
         puedeCrearPlan: plan === null && ficha?.estado === 'REGISTRADO' && puede(PERMISOS.planCrear),
         puedeEditarPlan: enElaboracion && puede(PERMISOS.planActualizar),

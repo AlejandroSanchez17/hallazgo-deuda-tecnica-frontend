@@ -98,3 +98,29 @@ table tbody td {
 #root > [aria-live='polite'] {
     z-index: 10000 !important;
 }
+
+/*
+ * Submenu del menu contraido (el Sidebar de la libreria): el panel con las pantallas del grupo sale a unos 32 px del
+ * icono, y ese espacio no es de ninguno de los dos; al cruzarlo el mouse "sale" del grupo y el panel se cierra antes de
+ * poder elegir una pantalla. Esta franja invisible, pegada al borde izquierdo del panel, une los dos (es parte del
+ * panel, asi que no cierra). Ajuste fragil: depende del id que la libreria pone al panel y de su separacion; revisar al
+ * actualizar @hnba/react-ui.
+ */
+[id^='sidebar-flyout-']::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -40px;
+    width: 40px;
+}
+
+/*
+ * Fichas (Card de la libreria): sin la sombra que trae. La pone en linea (shadows.cardRest, 0 14px 34px con 22 % de
+ * negro) y no hay prop para quitarla, por eso aqui hace falta !important. Solo la ficha en reposo (un div): las
+ * superficies flotantes (menus, tooltips, ventanas) usan otras sombras y la conservan. Para devolverla, borrar esta
+ * regla. Ajuste fragil: depende del valor del token; revisar al actualizar @hnba/react-ui.
+ */
+div[style*='rgba(0, 0, 0, 0.22) 0px 14px 34px'] {
+    box-shadow: none !important;
+}

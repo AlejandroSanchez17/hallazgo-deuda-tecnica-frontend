@@ -1,5 +1,5 @@
 import { spacing } from '@hnba/design-tokens'
-import { Badge, Card, Divider, Text } from '@hnba/react-ui'
+import { Badge, Card, Text } from '@hnba/react-ui'
 import type { ReactNode } from 'react'
 import { columna, fila } from '../../../../styles/disposicion'
 import { formatearFecha, formatearFechaHora } from '../../../../utils/formato'
@@ -28,7 +28,7 @@ export const DatosElemento = ({ ficha }: DatosElementoProps) => {
 
     return (
         <Card padding={24}>
-            <div style={columna(spacing.lg)}>
+            <div style={columna(spacing.xl)}>
                 {seccion(
                     'Descripción',
                     <>
@@ -46,17 +46,6 @@ export const DatosElemento = ({ ficha }: DatosElementoProps) => {
                         )}
                     </>,
                 )}
-                <Divider />
-                {seccion(
-                    'Equipo de trabajo',
-                    fichaTexto(
-                        'Participantes',
-                        ficha.participantes.length > 0
-                            ? ficha.participantes.map((participante) => participante.nombre).join(', ')
-                            : 'Los participantes se mostrarán cuando el plan esté aprobado.',
-                    ),
-                )}
-                <Divider />
                 {seccion(
                     'Fechas importantes',
                     <>
@@ -74,7 +63,6 @@ export const DatosElemento = ({ ficha }: DatosElementoProps) => {
                         {fechaCambiada && fichaTexto('Justificación de la fecha', ficha.justificacionFecha)}
                     </>,
                 )}
-                <Divider />
                 {hallazgo &&
                     seccion(
                         'Datos del hallazgo',

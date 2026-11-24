@@ -2,6 +2,7 @@ export type AccionBitacora =
     | 'CREAR'
     | 'MODIFICAR'
     | 'CAMBIAR_ESTADO'
+    | 'ELIMINAR'
     | 'APROBAR'
     | 'RECHAZAR'
     | 'ANULAR'
@@ -9,8 +10,8 @@ export type AccionBitacora =
     | 'DESCARGAR_PAQUETE'
     | 'INICIAR_SESION'
 
-// Los valores son objetos JSON libres: cada entidad guarda los campos que cambian
-export type ValorBitacora = Record<string, unknown> | null
+// Los valores son JSON libres: cada entidad guarda los campos que cambian (un objeto) o una lista (permisos de un rol)
+export type ValorBitacora = Record<string, unknown> | unknown[] | null
 
 export interface RegistroBitacora {
     id: number

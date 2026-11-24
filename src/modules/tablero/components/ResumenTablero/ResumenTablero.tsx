@@ -1,7 +1,7 @@
 import { spacing } from '@hnba/design-tokens'
 import { Badge, Card, Text, type BadgeStatus } from '@hnba/react-ui'
 import type { CSSProperties } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna, filaEntreExtremos, textoSecundario } from '../../../../styles/disposicion'
 import { enlaceListado } from '../../filtros'
 import type { ResumenTablero as Resumen } from '../../types'
@@ -25,7 +25,7 @@ const rejilla: CSSProperties = {
 }
 
 export const ResumenTablero = ({ resumen }: ResumenTableroProps) => {
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
 
     const cifras: Cifra[] = [
         { titulo: 'Abiertos', valor: resumen.abiertos, detalle: 'Sin cerrar ni anular, hoy' },
@@ -58,7 +58,7 @@ export const ResumenTablero = ({ resumen }: ResumenTableroProps) => {
                     <Card
                         key={titulo}
                         padding={spacing.md}
-                        onClick={enlace ? () => void navegar(enlace) : undefined}
+                        onClick={enlace ? () => ir(enlace) : undefined}
                         aria-label={enlace ? `${titulo}: ${valor}. Ver en el listado` : undefined}
                         style={{ textAlign: 'left', width: '100%' }}
                     >

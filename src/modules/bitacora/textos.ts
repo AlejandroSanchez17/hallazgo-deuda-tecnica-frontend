@@ -6,6 +6,7 @@ export const TEXTO_ACCION: Record<AccionBitacora, string> = {
     CREAR: 'Crear',
     MODIFICAR: 'Modificar',
     CAMBIAR_ESTADO: 'Cambiar estado',
+    ELIMINAR: 'Eliminar',
     APROBAR: 'Aprobar',
     RECHAZAR: 'Rechazar',
     ANULAR: 'Anular',
@@ -23,6 +24,7 @@ export const ESTADO_ACCION: Record<AccionBitacora, BadgeStatus> = {
     CREAR: 'success',
     MODIFICAR: 'info',
     CAMBIAR_ESTADO: 'info',
+    ELIMINAR: 'error',
     APROBAR: 'success',
     RECHAZAR: 'error',
     ANULAR: 'error',
@@ -69,8 +71,10 @@ export const textoEntidad = (entidad: string) => TEXTO_ENTIDAD.get(entidad) ?? l
 
 export const TEXTOS = {
     titulo: 'Bitácora',
-    descripcion: 'Quién hizo qué y cuándo en el sistema, con el valor anterior y el nuevo de cada cambio.',
+    descripcion: 'Registro de los cambios hechos en el sistema.',
     sinRegistros: 'No hay registros con estos filtros',
     sinCambios: 'Este registro no guardó valores.',
+    soloIguales: 'Ningún valor cambió.',
+    descripcionCambio: 'Detalle de un cambio registrado.',
     porDefecto: '—',
 }

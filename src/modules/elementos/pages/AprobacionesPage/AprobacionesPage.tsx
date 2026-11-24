@@ -1,9 +1,9 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, type TableRowAction } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna } from '../../../../styles/disposicion'
 import { rutaElemento, rutaPlanElemento } from '../../../../utils/constants/rutas'
 import { normalizar } from '../../../../utils/texto'
@@ -35,7 +35,7 @@ const aResoluble = (fila: PendienteResponse): Resoluble =>
 // Bandeja de lo que el usuario puede aprobar o validar, de lo mas antiguo a lo mas nuevo (el backend ya filtra por su
 // rol y sus permisos)
 export const AprobacionesPage = () => {
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
     const [busqueda, setBusqueda] = useState('')
     const [filtros, setFiltros] = useState<FiltrosAprobaciones>(SIN_FILTROS_APROBACIONES)
     const { registros, cargando, error, recargar } = useLista(aprobacionesApi.pendientes)
@@ -52,8 +52,8 @@ export const AprobacionesPage = () => {
             header: 'Ver',
             iconName: 'eye',
             variant: 'ghost',
-            onClick: (fila) =>
-                void navegar(esPlan(fila) ? rutaPlanElemento(fila.elementoId) : rutaElemento(fila.elementoId)),
+            // Con ir, el Volver de esas pantallas regresa a esta bandeja
+            onClick: (fila) => ir(esPlan(fila) ? rutaPlanElemento(fila.elementoId) : rutaElemento(fila.elementoId)),
         },
         {
             id: 'aprobar',
@@ -75,10 +75,7 @@ export const AprobacionesPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Aprobaciones"
-                descripcion="Planes, prórrogas y cierres que le toca resolver, del más antiguo al más nuevo. Los planes se revisan y aprueban en su página, con sus tareas."
-            >
+            <Pantalla titulo="Aprobaciones" descripcion="Planes, prórrogas y cierres que esperan su respuesta.">
                 <div style={columna(spacing.md)}>
                     <BarraAprobaciones
                         busqueda={busqueda}

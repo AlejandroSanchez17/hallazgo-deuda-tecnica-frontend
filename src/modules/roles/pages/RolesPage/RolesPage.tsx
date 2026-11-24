@@ -89,10 +89,7 @@ export const RolesPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Roles"
-                descripcion="Los roles se crean, se editan, se activan o desactivan y se borran si no están en uso. Lo que cada uno puede hacer depende de sus permisos."
-            >
+            <Pantalla titulo="Roles" descripcion="Roles del sistema y sus permisos.">
                 <div style={columna(spacing.md)}>
                     {puedeCrear && (
                         <div style={{ ...fila(spacing.md), justifyContent: 'flex-end' }}>

@@ -1,9 +1,9 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, Button, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna } from '../../../../styles/disposicion'
 import { rutaEquipo } from '../../../../utils/constants/rutas'
 import { coincide, normalizar } from '../../../../utils/texto'
@@ -19,7 +19,7 @@ import type { Edicion, EquipoResponse, FiltroEstado } from '../../types'
 import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
 
 export const EquiposPage = () => {
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
     const [filtro, setFiltro] = useState<FiltroEstado>('activos')
     const [busqueda, setBusqueda] = useState('')
     const [edicion, setEdicion] = useState<Edicion<EquipoResponse>>(undefined)
@@ -39,7 +39,7 @@ export const EquiposPage = () => {
         ...columnasActivar<EquipoResponse>(TEXTOS.equipo, puedeDesactivar ? cambiarEstado : undefined),
     ]
     const acciones = [
-        accionVer<EquipoResponse>((equipo) => void navegar(rutaEquipo(equipo.id))),
+        accionVer<EquipoResponse>((equipo) => ir(rutaEquipo(equipo.id))),
         ...accionesEditar<EquipoResponse>(puedeEditar ? setEdicion : undefined),
     ]
 
@@ -50,10 +50,7 @@ export const EquiposPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Equipos técnicos"
-                descripcion="Equipos que atienden los hallazgos y la deuda técnica, con su área, su líder y sus miembros."
-            >
+            <Pantalla titulo="Equipos técnicos" descripcion="Equipos que atienden hallazgos y deuda técnica.">
                 <div style={columna(spacing.md)}>
                     <BarraEquipos
                         busqueda={busqueda}

@@ -3,7 +3,7 @@ import { Badge, Button, Card, List, ListItem, Table, Text, type IconName, type T
 import type { ReactNode } from 'react'
 import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
 import { formatearFecha } from '../../../../utils/formato'
-import { COLUMNAS_PRORROGAS } from '../../columnasProrrogas'
+import { columnasProrrogas } from '../../columnasProrrogas'
 import { textoCantidad } from '../../textosProrroga'
 import type { ProrrogaResponse, ProrrogasDelElemento } from '../../typesProrroga'
 
@@ -65,7 +65,7 @@ export const ProrrogasElemento = ({
         <div style={columna(spacing.md)}>
             <Card padding={16}>
                 <div style={rejillaResumen}>
-                    <List dividers>
+                    <List>
                         {dato(
                             'calendar_alt',
                             'Fecha compromiso original',
@@ -77,7 +77,7 @@ export const ProrrogasElemento = ({
                             texto(formatearFecha(resumen.fechaCompromisoVigente)),
                         )}
                     </List>
-                    <List dividers>
+                    <List>
                         {dato(
                             'calendar_clock',
                             'Prórrogas aprobadas',
@@ -103,7 +103,7 @@ export const ProrrogasElemento = ({
                 )}
             </div>
             <Table
-                columns={COLUMNAS_PRORROGAS}
+                columns={columnasProrrogas(resumen.prorrogas)}
                 rows={resumen.prorrogas}
                 rowActions={acciones}
                 getRowLabel={(prorroga) => `Prórroga al ${formatearFecha(prorroga.fechaPropuesta)}`}

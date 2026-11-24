@@ -29,6 +29,8 @@ interface BarraElementosProps {
     accion?: ReactNode
     // En la lista de un solo tipo el filtro de tipo sobra
     ocultarTipo?: boolean
+    // Solo se ven los filtros puestos, sin poder cambiarlos ni quitarlos (la lista que abre el tablero)
+    filtrosFijos?: boolean
 }
 
 // Dos filas: el buscador arriba con el boton a la derecha, y los seis filtros abajo
@@ -42,8 +44,12 @@ export const BarraElementos = ({
     origenes,
     accion,
     ocultarTipo = false,
+    filtrosFijos = false,
 }: BarraElementosProps) => {
     const dibujar = ({ campo, todos, opciones, ancho }: FiltroConfig) => {
+        if (filtrosFijos && filtros[campo] === '') {
+            return null
+        }
         const conTodos = [{ valor: '', texto: todos }, ...opciones]
         return (
             <div key={campo} style={{ width: ancho }}>
@@ -53,6 +59,7 @@ export const BarraElementos = ({
                     getLabel={textoDeOpcion}
                     getValue={valorDeOpcion}
                     aria-label={todos}
+                    readOnly={filtrosFijos}
                     onChange={(opcion) => onFiltrar({ ...filtros, [campo]: opcion.valor })}
                 />
             </div>
@@ -78,7 +85,7 @@ export const BarraElementos = ({
                 {dibujar({ campo: 'criticidad', todos: 'Toda criticidad', opciones: criticidades, ancho: 170 })}
                 {dibujar({ campo: 'equipo', todos: 'Todo equipo', opciones: equipos, ancho: 180 })}
                 {dibujar({ campo: 'origen', todos: 'Todo origen', opciones: origenes, ancho: 170 })}
-                {hayFiltros(filtros) && (
+                {!filtrosFijos && hayFiltros(filtros) && (
                     <Button variant="ghost" iconName="x_clear" onClick={() => onFiltrar(SIN_FILTROS)}>
                         Limpiar filtros
                     </Button>

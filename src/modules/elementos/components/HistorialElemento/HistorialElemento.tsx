@@ -5,6 +5,7 @@ import { formatearFechaHora } from '../../../../utils/formato'
 import { TEXTO_ESTADO } from '../../textos'
 import type { CambioEstadoResponse, ReasignacionResponse } from '../../types'
 import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
+import { TextoSinCorte } from '../../../../components/common/TextoSinCorte/TextoSinCorte'
 
 interface HistorialElementoProps {
     reasignaciones: ReasignacionResponse[]
@@ -22,7 +23,7 @@ const cambio = (anterior: string | null, nuevo: string) =>
 const columnasReasignacion: TableColumn<ReasignacionResponse>[] = [
     {
         ...fecha,
-        render: (fila) => <span style={{ whiteSpace: 'nowrap' }}>{formatearFechaHora(fila.fecha)}</span>,
+        render: (fila) => <TextoSinCorte>{formatearFechaHora(fila.fecha)}</TextoSinCorte>,
     },
     {
         id: 'equipo',
@@ -41,7 +42,7 @@ const columnasReasignacion: TableColumn<ReasignacionResponse>[] = [
 const columnasEstado: TableColumn<CambioEstadoResponse>[] = [
     {
         ...fecha,
-        render: (fila) => <span style={{ whiteSpace: 'nowrap' }}>{formatearFechaHora(fila.fecha)}</span>,
+        render: (fila) => <TextoSinCorte>{formatearFechaHora(fila.fecha)}</TextoSinCorte>,
     },
     {
         id: 'estado',

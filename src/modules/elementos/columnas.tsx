@@ -1,7 +1,6 @@
-import { spacing } from '@hnba/design-tokens'
 import { Badge, type TableColumn, type TableRowAction } from '@hnba/react-ui'
-import { columna, textoSecundario } from '../../styles/disposicion'
-import { SEMAFORO, textoDias } from './textos'
+import { TextoSinCorte } from '../../components/common/TextoSinCorte/TextoSinCorte'
+import { SEMAFORO, textoPlazo } from './textos'
 import type { ElementoResponse } from './types'
 
 // El color lo decide el backend; en cerrados y anulados no hay semaforo
@@ -11,13 +10,21 @@ export const columnaSemaforo: TableColumn<ElementoResponse> = {
     align: 'center',
     render: (elemento) =>
         elemento.semaforo ? (
-            <div style={{ ...columna(spacing.xs), alignItems: 'center' }}>
-                <Badge status={SEMAFORO[elemento.semaforo].estado} label={SEMAFORO[elemento.semaforo].texto} />
-                <small style={textoSecundario}>{textoDias(elemento.diasRestantes)}</small>
-            </div>
+            <Badge status={SEMAFORO[elemento.semaforo].estado} label={SEMAFORO[elemento.semaforo].texto} />
         ) : (
             '—'
         ),
+}
+
+// Los dias para (o desde) el vencimiento, en su propia columna junto al semaforo; sin semaforo no hay plazo.
+// No se parte en dos lineas: las celdas saltan de linea por una regla global
+export const columnaPlazo: TableColumn<ElementoResponse> = {
+    id: 'plazo',
+    header: 'Plazo',
+    align: 'center',
+    render: (elemento) => (
+        <TextoSinCorte>{(elemento.semaforo && textoPlazo(elemento.diasRestantes)) || '—'}</TextoSinCorte>
+    ),
 }
 
 // La accion Ver abre el detalle del elemento; la pueden usar todos los que ven la lista

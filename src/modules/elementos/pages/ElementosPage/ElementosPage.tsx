@@ -1,18 +1,21 @@
 import { spacing } from '@hnba/design-tokens'
 import { Alert, Button, type TableColumn } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
+import { EnlaceVolver } from '../../../../components/common/EnlaceVolver/EnlaceVolver'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { TablaPaginada } from '../../../../components/common/TablaPaginada/TablaPaginada'
 import { TextoCorto } from '../../../../components/common/TextoCorto/TextoCorto'
+import { TextoSinCorte } from '../../../../components/common/TextoSinCorte/TextoSinCorte'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { columna, fila } from '../../../../styles/disposicion'
 import { PERMISOS } from '../../../../utils/constants/permisos'
-import { rutaElemento, rutaReporte } from '../../../../utils/constants/rutas'
+import { RUTAS, rutaElemento, rutaReporte } from '../../../../utils/constants/rutas'
 import { formatearFecha } from '../../../../utils/formato'
 import { normalizar } from '../../../../utils/texto'
 import { elementosApi } from '../../api'
-import { accionesEditar, accionVer, columnaSemaforo } from '../../columnas'
+import { accionesEditar, accionVer, columnaPlazo, columnaSemaforo } from '../../columnas'
 import { BarraElementos } from '../../components/BarraElementos/BarraElementos'
 import { ElementoForm } from '../../components/ElementoForm/ElementoForm'
 import { filtrarElementos, filtrosAUrl, filtrosDeUrl, hayFiltros, opcionesDeFiltro } from '../../filtros'
@@ -22,29 +25,32 @@ import { usePermisosElementos } from '../../hooks/usePermisosElementos'
 import { TEXTO_ESTADO, TEXTO_TIPO, TEXTOS_LISTA } from '../../textos'
 import type { ElementoResponse, FiltrosElementos, TipoElemento } from '../../types'
 
-// Codigo, tipo y fecha no se parten en dos lineas (las celdas saltan de linea por una regla global)
-const sinCortar = (texto: string) => <span style={{ whiteSpace: 'nowrap' }}>{texto}</span>
-
 const columnaTipo: TableColumn<ElementoResponse> = {
     id: 'tipo',
     header: 'Tipo',
-    render: (elemento) => sinCortar(TEXTO_TIPO[elemento.tipo]),
+    render: (elemento) => <TextoSinCorte>{TEXTO_TIPO[elemento.tipo]}</TextoSinCorte>,
 }
 
 const columnas: TableColumn<ElementoResponse>[] = [
-    { id: 'codigo', header: 'Código', render: (elemento) => sinCortar(elemento.codigo) },
+    { id: 'codigo', header: 'Código', render: (elemento) => <TextoSinCorte>{elemento.codigo}</TextoSinCorte> },
     columnaTipo,
-    { id: 'titulo', header: 'Título', render: (elemento) => <TextoCorto texto={elemento.titulo} ancho={320} /> },
+    { id: 'titulo', header: 'Título', render: (elemento) => <TextoCorto texto={elemento.titulo} ancho={220} /> },
     { id: 'criticidad', header: 'Criticidad', accessor: (elemento) => elemento.criticidadNombre },
-    { id: 'equipo', header: 'Equipo', render: (elemento) => <TextoCorto texto={elemento.equipoNombre} ancho={200} /> },
-    { id: 'estado', header: 'Estado', accessor: (elemento) => TEXTO_ESTADO[elemento.estado] },
+    { id: 'equipo', header: 'Equipo', render: (elemento) => <TextoCorto texto={elemento.equipoNombre} ancho={110} /> },
+    // Como titulo y equipo: una sola linea y, si no cabe, puntos suspensivos con el texto completo al pasar el mouse
+    {
+        id: 'estado',
+        header: 'Estado',
+        render: (elemento) => <TextoCorto texto={TEXTO_ESTADO[elemento.estado]} ancho={110} />,
+    },
     {
         id: 'compromiso',
         header: 'Compromiso',
         align: 'center',
-        render: (elemento) => sinCortar(formatearFecha(elemento.fechaCompromisoVigente)),
+        render: (elemento) => <TextoSinCorte>{formatearFecha(elemento.fechaCompromisoVigente)}</TextoSinCorte>,
     },
     columnaSemaforo,
+    columnaPlazo,
 ]
 
 // En la lista de un solo tipo todas las filas valen lo mismo: la columna Tipo sobra
@@ -56,12 +62,22 @@ interface ElementosPageProps {
 }
 
 export const ElementosPage = ({ tipo }: ElementosPageProps) => {
-    const navegar = useNavigate()
+    const { origen, ir, volver, reemplazar } = useNavegacion()
     const [busqueda, setBusqueda] = useState('')
     const [parametros, setParametros] = useSearchParams()
     // En la lista de un tipo, el tipo de la URL se ignora
     const filtros = tipo ? { ...filtrosDeUrl(parametros), tipo: '' } : filtrosDeUrl(parametros)
-    const setFiltros = (nuevos: FiltrosElementos) => setParametros(filtrosAUrl(nuevos), { replace: true })
+    // La lista combinada (sin tipo) solo existe para ver lo que filtra el tablero: sin filtros ni busqueda mezclaria
+    // hallazgos y deuda en una sola tabla, asi que al quitar el ultimo filtro se vuelve al tablero
+    const setFiltros = (nuevos: FiltrosElementos) => {
+        if (!tipo && !hayFiltros(nuevos) && normalizar(busqueda) === '') {
+            volver(RUTAS.tablero)
+            return
+        }
+        setParametros(filtrosAUrl(nuevos), reemplazar)
+    }
+    // Si se llego desde una cifra del tablero, los filtros son los de esa cifra y no se cambian
+    const desdeTablero = !tipo && hayFiltros(filtros) && origen?.ruta.split('?')[0] === RUTAS.tablero
     const { registros, cargando, error, recargar } = useLista(elementosApi.listar)
     const { edicion, abrirNuevo, abrirEdicion, cerrar } = useFichaElemento()
     const { puedeCrear, muestraEditar, puedeEditar } = usePermisosElementos()
@@ -73,7 +89,7 @@ export const ElementosPage = ({ tipo }: ElementosPageProps) => {
     const opciones = opcionesDeFiltro(delTipo)
     const textos = tipo ? TEXTOS_LISTA[tipo] : undefined
     const acciones = [
-        accionVer((elemento) => void navegar(rutaElemento(elemento.id))),
+        accionVer((elemento) => ir(rutaElemento(elemento.id))),
         ...accionesEditar(muestraEditar ? abrirEdicion : undefined, puedeEditar),
     ]
 
@@ -85,6 +101,12 @@ export const ElementosPage = ({ tipo }: ElementosPageProps) => {
         equipo: filtros.equipo,
         origen: filtros.origen,
     }
+    // El boton de exportar solo aparece si hay algun vencido entre lo que el reporte tomaria: los mismos filtros, sin la
+    // busqueda ni el semaforo (con el filtro de semaforo en "En tiempo" el reporte igual traeria los vencidos)
+    const hayVencidos = filtrarElementos(delTipo, '', { ...filtros, semaforo: '' }).some(
+        (elemento) => elemento.semaforo === 'VENCIDO',
+    )
+    const puedeExportar = veReportes && hayVencidos
 
     const alGuardar = () => {
         cerrar()
@@ -94,11 +116,10 @@ export const ElementosPage = ({ tipo }: ElementosPageProps) => {
     return (
         <>
             <Pantalla
+                // Solo si se llego desde otra pantalla
+                volver={origen && <EnlaceVolver texto={origen.etiqueta} onClick={() => volver(RUTAS.tablero)} />}
                 titulo={textos?.titulo ?? 'Hallazgos y deuda técnica'}
-                descripcion={
-                    textos?.descripcion ??
-                    'Hallazgos de auditoría y deuda técnica registrados, con su equipo, su fecha compromiso y el semáforo de vencimiento.'
-                }
+                descripcion={textos?.descripcion ?? 'Hallazgos y deuda técnica en una sola lista.'}
             >
                 <div style={columna(spacing.md)}>
                     <BarraElementos
@@ -110,15 +131,16 @@ export const ElementosPage = ({ tipo }: ElementosPageProps) => {
                         equipos={opciones.equipos}
                         origenes={opciones.origenes}
                         ocultarTipo={tipo !== undefined}
+                        filtrosFijos={desdeTablero}
                         accion={
-                            veReportes || puedeCrear ? (
+                            puedeExportar || puedeCrear ? (
                                 <div style={fila(spacing.sm)}>
-                                    {veReportes && (
+                                    {puedeExportar && (
                                         // Abre REP-03 (vencidos y proximos a vencer) con los filtros que tiene la lista
                                         <Button
                                             variant="outlined"
                                             iconName="download"
-                                            onClick={() => void navegar(rutaReporte('REP-03', filtrosDelReporte))}
+                                            onClick={() => ir(rutaReporte('REP-03', filtrosDelReporte))}
                                         >
                                             Exportar vencidos
                                         </Button>

@@ -1,16 +1,15 @@
 import { Badge, type TableColumn, type TableRowAction } from '@hnba/react-ui'
 import { TextoCorto } from '../../components/common/TextoCorto/TextoCorto'
+import { TextoSinCorte } from '../../components/common/TextoSinCorte/TextoSinCorte'
 import { formatearFechaHora } from '../../utils/formato'
 import { ESTADO_ACCION, TEXTO_ACCION, textoEntidad } from './textos'
 import type { RegistroBitacora } from './types'
-
-const sinCorte = { whiteSpace: 'nowrap' } as const
 
 export const columnasBitacora: TableColumn<RegistroBitacora>[] = [
     {
         id: 'fecha',
         header: 'Fecha',
-        render: (registro) => <span style={sinCorte}>{formatearFechaHora(registro.fecha)}</span>,
+        render: (registro) => <TextoSinCorte>{formatearFechaHora(registro.fecha)}</TextoSinCorte>,
     },
     {
         id: 'usuario',

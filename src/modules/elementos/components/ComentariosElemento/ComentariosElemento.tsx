@@ -1,8 +1,8 @@
 import { spacing } from '@hnba/design-tokens'
 import { Button, Text } from '@hnba/react-ui'
 import { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { fila, textoSecundario } from '../../../../styles/disposicion'
 import { PERMISOS } from '../../../../utils/constants/permisos'
 import { rutaPlanElemento } from '../../../../utils/constants/rutas'
@@ -15,7 +15,7 @@ interface ComentariosElementoProps {
 
 // Pestana Comentarios del detalle: solo los del elemento; los del plan estan en su pagina
 export const ComentariosElemento = ({ elementoId }: ComentariosElementoProps) => {
-    const navegar = useNavigate()
+    const { ir } = useNavegacion()
     const veElPlan = usePermiso(PERMISOS.planLeer)
     const fuente = useMemo(() => comentariosApi.delElemento(elementoId), [elementoId])
 
@@ -28,11 +28,7 @@ export const ComentariosElemento = ({ elementoId }: ComentariosElementoProps) =>
                         <Text variant="body-regular-medium" as="p" style={textoSecundario}>
                             Los comentarios del plan de acción están en su página.
                         </Text>
-                        <Button
-                            variant="ghost"
-                            iconName="square_list"
-                            onClick={() => void navegar(rutaPlanElemento(elementoId))}
-                        >
+                        <Button variant="ghost" iconName="square_list" onClick={() => ir(rutaPlanElemento(elementoId))}>
                             Ir al plan
                         </Button>
                     </div>

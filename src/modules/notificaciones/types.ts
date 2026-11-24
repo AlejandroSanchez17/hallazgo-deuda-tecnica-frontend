@@ -5,6 +5,7 @@ export type TipoNotificacion =
     | 'VENCIMIENTO_PROXIMO'
     | 'RESUMEN_SEMANAL'
     | 'REPORTE_LISTO'
+    | 'PLAN_COMPLETADO'
 
 export type DestinoNotificacion = 'ELEMENTO' | 'PLAN' | 'TAREA' | 'PRORROGA' | 'CIERRE'
 

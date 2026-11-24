@@ -5,12 +5,16 @@ export interface Miga {
     // Sin ruta, la miga no navega: es la pagina actual o un grupo del menu sin pantalla propia (Administración).
     // Puede llevar los parametros de la pagina actual (/elementos/:id): MigasDePan los completa
     ruta?: string
+    // En las pantallas de un elemento: la miga lleva a la lista de su tipo (Hallazgos o Deuda técnica), que publica la
+    // pantalla (components/common/MigasDePan/ListaDelElemento). Sin tipo todavía no navega. Va en lugar de ruta
+    listaDelElemento?: boolean
 }
 
 const inicio: Miga = { texto: 'Inicio', ruta: RUTAS.inicio }
 const administracion: Miga = { texto: 'Administración' }
 const catalogos: Miga = { texto: 'Catálogos', ruta: RUTAS.catalogos }
 const rolesYPermisos: Miga = { texto: 'Roles y permisos', ruta: RUTAS.roles }
+const bitacora: Miga = { texto: 'Bitácora', ruta: RUTAS.bitacora }
 const equipos: Miga = { texto: 'Equipos técnicos', ruta: RUTAS.equipos }
 
 // Migas de cada pantalla por su ruta (admite parametros, como /equipos/:id); Inicio y la pagina 404 no tienen.
@@ -21,18 +25,18 @@ export const MIGAS: Record<string, Miga[]> = {
     [RUTAS.elementos]: [inicio, { texto: 'Hallazgos y deuda' }],
     [RUTAS.elementoDetalle]: [
         inicio,
-        { texto: 'Hallazgos y deuda', ruta: RUTAS.elementos },
+        { texto: 'Hallazgos y deuda', listaDelElemento: true },
         { texto: 'Detalle del elemento' },
     ],
     [RUTAS.elementoPlan]: [
         inicio,
-        { texto: 'Hallazgos y deuda', ruta: RUTAS.elementos },
+        { texto: 'Hallazgos y deuda', listaDelElemento: true },
         { texto: 'Detalle del elemento', ruta: RUTAS.elementoDetalle },
         { texto: 'Plan de acción' },
     ],
     [RUTAS.elementoTarea]: [
         inicio,
-        { texto: 'Hallazgos y deuda', ruta: RUTAS.elementos },
+        { texto: 'Hallazgos y deuda', listaDelElemento: true },
         { texto: 'Detalle del elemento', ruta: RUTAS.elementoDetalle },
         { texto: 'Plan de acción', ruta: RUTAS.elementoPlan },
         { texto: 'Tarea' },
@@ -54,4 +58,5 @@ export const MIGAS: Record<string, Miga[]> = {
     [RUTAS.rolesPermisos]: [inicio, administracion, rolesYPermisos, { texto: 'Permisos' }],
     [RUTAS.parametros]: [inicio, administracion, { texto: 'Parámetros' }],
     [RUTAS.bitacora]: [inicio, administracion, { texto: 'Bitácora' }],
+    [RUTAS.bitacoraCambio]: [inicio, administracion, bitacora, { texto: 'Detalle del cambio' }],
 }

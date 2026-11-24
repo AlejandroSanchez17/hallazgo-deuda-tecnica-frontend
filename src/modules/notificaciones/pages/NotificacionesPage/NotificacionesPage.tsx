@@ -25,10 +25,7 @@ export const NotificacionesPage = () => {
     const hayNoLeidas = total > 0 || lista.notificaciones.some((notificacion) => !notificacion.leida)
 
     return (
-        <Pantalla
-            titulo="Notificaciones"
-            descripcion="Avisos de asignaciones, aprobaciones y vencimientos próximos. Al abrir uno se marca como leído."
-        >
+        <Pantalla titulo="Notificaciones" descripcion="Sus avisos del sistema.">
             <BarraNotificaciones
                 soloNoLeidas={soloNoLeidas}
                 onCambiarFiltro={(valor) => {

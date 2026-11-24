@@ -21,6 +21,29 @@ export const aUrl = (filtros: FiltrosBitacora): Record<string, string> =>
 
 export const hayFiltros = (filtros: FiltrosBitacora) => Object.values(filtros).some((valor) => valor !== '')
 
+export const TAMANOS_PAGINA = [10, 50, 100]
+
+export interface Paginacion {
+    pagina: number
+    tamano: number
+}
+
+// La pagina tambien vive en la URL: al volver del detalle de un cambio se regresa a ella. Un valor invalido se ignora
+export const paginacionDeUrl = (parametros: URLSearchParams): Paginacion => {
+    const pagina = Number(parametros.get('pagina'))
+    const tamano = Number(parametros.get('tamano'))
+    return {
+        pagina: Number.isInteger(pagina) && pagina > 0 ? pagina : 1,
+        tamano: TAMANOS_PAGINA.includes(tamano) ? tamano : TAMANOS_PAGINA[0],
+    }
+}
+
+// Los valores de siempre no se ponen en la URL
+export const paginacionAUrl = ({ pagina, tamano }: Paginacion): Record<string, string> => ({
+    ...(pagina > 1 && { pagina: String(pagina) }),
+    ...(tamano !== TAMANOS_PAGINA[0] && { tamano: String(tamano) }),
+})
+
 // Lo que se manda al backend: el usuario se llama usuarioId, y un id que no sea un numero no se manda (daria 400)
 export const aConsulta = (filtros: FiltrosBitacora): Record<string, string> => {
     const { usuario, entidadId, ...resto } = filtros

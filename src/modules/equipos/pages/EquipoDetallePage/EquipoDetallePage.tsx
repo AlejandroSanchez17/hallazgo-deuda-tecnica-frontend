@@ -1,9 +1,12 @@
 import { spacing } from '@hnba/design-tokens'
-import { Alert, Button, Loader, Tabs } from '@hnba/react-ui'
+import { Alert, Loader, Tabs } from '@hnba/react-ui'
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { EnlaceVolver } from '../../../../components/common/EnlaceVolver/EnlaceVolver'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
-import { columna, fila, filaEntreExtremos } from '../../../../styles/disposicion'
+import { AccionesPantalla, type AccionPantalla } from '../../../../components/common/AccionesPantalla/AccionesPantalla'
+import { columna } from '../../../../styles/disposicion'
+import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { RUTAS } from '../../../../utils/constants/rutas'
 import { EquipoForm } from '../../components/EquipoForm/EquipoForm'
 import { LiderForm } from '../../components/LiderForm/LiderForm'
@@ -24,7 +27,7 @@ const PESTANAS: { id: Pestana; label: string }[] = [
 ]
 
 export const EquipoDetallePage = () => {
-    const navegar = useNavigate()
+    const { origen, volver: volverAtras } = useNavegacion()
     const id = Number(useParams().id)
     const [pestana, setPestana] = useState<Pestana>('miembros')
     const [formulario, setFormulario] = useState<Formulario>(null)
@@ -35,9 +38,7 @@ export const EquipoDetallePage = () => {
     )
 
     const volver = (
-        <Button variant="ghost" iconName="chevron_left" onClick={() => void navegar(RUTAS.equipos)}>
-            Volver a equipos
-        </Button>
+        <EnlaceVolver texto={origen?.etiqueta ?? 'Volver a equipos'} onClick={() => volverAtras(RUTAS.equipos)} />
     )
 
     if (cargando) {
@@ -58,39 +59,43 @@ export const EquipoDetallePage = () => {
     }
     // En un equipo inactivo no se agregan miembros ni se cambia el lider
     const activo = detalle.activo
+    // Sin lider, asignarlo se queda a la vista (lo pide el aviso); con lider, cambiarlo va en el menu
+    const sinLider = detalle.liderId === null
+    const accionLider: AccionPantalla = {
+        texto: sinLider ? 'Asignar líder' : 'Cambiar líder',
+        icono: 'user_shield_solid',
+        visible: puedeCambiarLider && activo,
+        onClick: () => setFormulario('lider'),
+    }
 
     return (
         <>
             <Pantalla
                 titulo={detalle.nombre}
-                descripcion="Área, líder y miembros del equipo. El historial conserva a quienes ya salieron."
+                descripcion="Datos y miembros del equipo."
+                volver={volver}
+                acciones={
+                    <AccionesPantalla
+                        principal={{
+                            texto: 'Agregar miembro',
+                            icono: 'user_plus',
+                            visible: puedeAgregarMiembro && activo,
+                            onClick: () => setFormulario('miembro'),
+                        }}
+                        directas={sinLider ? [accionLider] : []}
+                        secundarias={[
+                            {
+                                texto: 'Editar',
+                                icono: 'edit',
+                                visible: puedeEditar,
+                                onClick: () => setFormulario('editar'),
+                            },
+                            ...(sinLider ? [] : [accionLider]),
+                        ]}
+                    />
+                }
             >
                 <div style={columna(spacing.md)}>
-                    <div style={filaEntreExtremos}>
-                        {volver}
-                        <div style={fila(spacing.sm)}>
-                            {puedeEditar && (
-                                <Button variant="outlined" iconName="edit" onClick={() => setFormulario('editar')}>
-                                    Editar
-                                </Button>
-                            )}
-                            {puedeCambiarLider && activo && (
-                                <Button
-                                    variant="outlined"
-                                    iconName="user_shield_solid"
-                                    onClick={() => setFormulario('lider')}
-                                >
-                                    {detalle.liderId === null ? 'Asignar líder' : 'Cambiar líder'}
-                                </Button>
-                            )}
-                            {puedeAgregarMiembro && activo && (
-                                <Button variant="primary" iconName="user_plus" onClick={() => setFormulario('miembro')}>
-                                    Agregar miembro
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-
                     {!activo && (
                         <Alert
                             variant="info"

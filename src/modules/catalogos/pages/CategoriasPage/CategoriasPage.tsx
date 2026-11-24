@@ -57,10 +57,7 @@ export const CategoriasPage = () => {
 
     return (
         <>
-            <Pantalla
-                titulo="Categorías de deuda"
-                descripcion="Clasificación de la deuda técnica. Las categorías restringidas solo las ven los roles con permiso."
-            >
+            <Pantalla titulo="Categorías de deuda" descripcion="Clasificación de la deuda técnica.">
                 <div style={columna(spacing.md)}>
                     <BarraCatalogo
                         textos={TEXTOS.categoria}
