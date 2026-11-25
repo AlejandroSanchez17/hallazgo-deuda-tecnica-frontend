@@ -1,6 +1,7 @@
 import { FieldInput, FormModal, LargeTextArea, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
 import { anchoCompleto, rejillaFormulario } from '../../../../styles/disposicion'
+import { textoArea } from '../../../../utils/areas'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
 import { areasApi, equiposApi } from '../../api'
 import { useCandidatos } from '../../hooks/useCandidatos'
@@ -35,7 +36,8 @@ export const EquipoForm = ({ equipo, onCerrar, onGuardado }: EquipoFormProps) =>
         areaId: equipo?.areaId.toString() ?? '',
         liderId: '',
     })
-    const { registros: areasActivas } = useLista(areasApi.listar, 'activos')
+    // Con las gerencias activas incluidas: un equipo antiguo puede estar en una gerencia, y eso no es "inactiva"
+    const { registros: activas, cargando } = useLista(areasApi.listar, 'activos')
     // Al editar no hace falta la lista de lideres
     const lideres = useCandidatos('NUEVO_EQUIPO', undefined, equipo === null)
     const { guardar, errores, guardando } = useGuardar({
@@ -46,10 +48,15 @@ export const EquipoForm = ({ equipo, onCerrar, onGuardado }: EquipoFormProps) =>
         onGuardado,
     })
 
-    const opcionesArea: Opcion[] = areasActivas.map((area) => ({ valor: String(area.id), texto: area.nombre }))
-    // Si el area actual esta inactiva no viene en la lista; se muestra para no perderla al editar
+    // Areas y subareas; una gerencia no se ofrece
+    const opcionesArea: Opcion[] = activas
+        .filter((area) => area.tipo === 'AREA')
+        .map((area) => ({ valor: String(area.id), texto: textoArea(area) }))
+    // El valor actual que no viene en la lista se muestra para no perderlo al editar: inactivo, o una gerencia activa
     if (equipo && !opcionesArea.some((opcion) => opcion.valor === String(equipo.areaId))) {
-        opcionesArea.push({ valor: String(equipo.areaId), texto: `${equipo.areaNombre} (inactiva)` })
+        const actual = activas.find((area) => area.id === equipo.areaId)
+        const texto = actual ? textoArea(actual) : cargando ? equipo.areaNombre : `${equipo.areaNombre} (inactiva)`
+        opcionesArea.push({ valor: String(equipo.areaId), texto })
     }
 
     return (
@@ -68,7 +75,7 @@ export const EquipoForm = ({ equipo, onCerrar, onGuardado }: EquipoFormProps) =>
                 <FieldInput
                     label="Área"
                     errorText={errores.areaId}
-                    helperText="Área a la que pertenece el equipo. Solo se listan las áreas activas."
+                    helperText="Área o subárea a la que pertenece el equipo. Solo se listan las activas."
                 >
                     <Select
                         options={opcionesArea}

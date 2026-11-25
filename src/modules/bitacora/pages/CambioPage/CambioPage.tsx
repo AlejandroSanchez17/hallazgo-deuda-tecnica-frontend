@@ -68,7 +68,7 @@ export const CambioPage = () => {
 
     return (
         <Pantalla
-            titulo={`${textoEntidad(registro.entidad)} - Cambio ${registro.id}`}
+            titulo={`${textoEntidad(registro.entidad, registro)} - Cambio ${registro.id}`}
             descripcion={TEXTOS.descripcionCambio}
             volver={enlace}
         >
@@ -81,7 +81,7 @@ export const CambioPage = () => {
                             'Acción',
                             <Badge status={ESTADO_ACCION[registro.accion]} label={TEXTO_ACCION[registro.accion]} />,
                         )}
-                        {dato('Entidad', textoEntidad(registro.entidad))}
+                        {dato('Entidad', textoEntidad(registro.entidad, registro))}
                         {dato('Id del registro', registro.entidadId === 0 ? TEXTOS.porDefecto : registro.entidadId)}
                         {dato('IP', registro.ip ?? TEXTOS.porDefecto)}
                     </div>

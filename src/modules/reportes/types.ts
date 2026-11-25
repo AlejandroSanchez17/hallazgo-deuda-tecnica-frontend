@@ -1,3 +1,5 @@
+import type { AreaJerarquia } from '../../utils/areas'
+
 export type CodigoReporte =
     'REP-01' | 'REP-02' | 'REP-03' | 'REP-04' | 'REP-05' | 'REP-06' | 'REP-07' | 'REP-08' | 'REP-10'
 
@@ -34,6 +36,9 @@ export interface RegistroCombo {
     nombre: string
     activo?: boolean
 }
+
+// Gerencia, area o subarea del filtro "Gerencia o area"
+export type AreaCombo = RegistroCombo & AreaJerarquia
 
 export interface EquipoCombo extends RegistroCombo {
     liderId: number | null

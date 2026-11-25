@@ -12,6 +12,7 @@ import type {
     OrigenRequest,
     OrigenResponse,
     RolResumen,
+    TipoArea,
 } from './types'
 
 // Los catalogos con CRUD + estado comparten las mismas cuatro operaciones
@@ -34,7 +35,24 @@ const apiCatalogo = <R, S>(ruta: string) => ({
     },
 })
 
-export const areasApi = apiCatalogo<AreaResponse, AreaRequest>('/catalogos/areas')
+// Gerencias, areas y subareas son la misma tabla y la misma ruta; el filtro tipo separa las dos pantallas
+const RUTA_AREAS = '/catalogos/areas'
+const crudAreas = apiCatalogo<AreaResponse, AreaRequest>(RUTA_AREAS)
+
+const listarAreas =
+    (tipo?: TipoArea) =>
+    async (activo?: boolean): Promise<AreaResponse[]> => {
+        const { data } = await api.get<ApiResponse<AreaResponse[]>>(RUTA_AREAS, { params: { activo, tipo } })
+        return data.datos
+    }
+
+// Areas y subareas (tipo AREA)
+export const areasApi = { ...crudAreas, listar: listarAreas('AREA') }
+
+export const gerenciasApi = { ...crudAreas, listar: listarAreas('GERENCIA') }
+
+// Los tres niveles juntos, para saber de que tipo es el area que ya tiene un registro
+export const areasYGerenciasApi = { listar: listarAreas() }
 
 export const origenesApi = apiCatalogo<OrigenResponse, OrigenRequest>('/catalogos/origenes')
 

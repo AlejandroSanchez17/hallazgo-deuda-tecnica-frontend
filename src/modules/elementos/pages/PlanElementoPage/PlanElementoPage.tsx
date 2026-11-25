@@ -1,11 +1,12 @@
 import { spacing } from '@hnba/design-tokens'
-import { Alert, Banner, Button, EmptyState, Loader, Select, Text } from '@hnba/react-ui'
+import { Alert, Button, EmptyState, Loader, Select, Text } from '@hnba/react-ui'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { usePublicarListaDelElemento } from '../../../../components/common/MigasDePan/listaDelElemento'
 import { EnlaceVolver } from '../../../../components/common/EnlaceVolver/EnlaceVolver'
 import { Pantalla } from '../../../../components/common/Pantalla/Pantalla'
 import { AccionesPantalla } from '../../../../components/common/AccionesPantalla/AccionesPantalla'
+import { AvisoConAccion } from '../../../../components/common/AvisoConAccion/AvisoConAccion'
 import { usePermiso } from '../../../../hooks/auth/usePermiso'
 import { useNavegacion } from '../../../../hooks/useNavegacion'
 import { useSesionStore } from '../../../../store/sesionStore'
@@ -165,14 +166,12 @@ export const PlanElementoPage = () => {
                     <FranjaElemento ficha={ficha} />
 
                     {bloqueado && (
-                        <Banner
+                        <AvisoConAccion
                             variant="warning"
                             title="Elemento vencido"
                             description="No se puede crear ni editar el plan ni sus tareas hasta que se apruebe una prórroga y cambie la fecha compromiso."
-                            action={{
-                                label: 'Ir a prórrogas',
-                                onClick: () => ir(rutaPestanaElemento(id, 'prorrogas')),
-                            }}
+                            textoAccion="Ir a prórrogas"
+                            onAccion={() => ir(rutaPestanaElemento(id, 'prorrogas'))}
                         />
                     )}
 

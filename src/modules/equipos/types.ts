@@ -1,3 +1,5 @@
+import type { AreaJerarquia } from '../../utils/areas'
+
 export type FiltroEstado = 'activos' | 'inactivos' | 'todos'
 
 // undefined: formulario cerrado; null: registro nuevo
@@ -83,11 +85,8 @@ export interface UsuarioFechaFormulario {
     reasignarElementos?: boolean
 }
 
-// Area que se ofrece en el combo (GET /catalogos/areas?activo=true)
-export interface AreaDisponible {
-    id: number
-    nombre: string
-}
+// Gerencia, area o subarea que trae el combo (GET /catalogos/areas?activo=true); solo se ofrecen las areas y subareas
+export type AreaDisponible = AreaJerarquia
 
 // Usuario que se puede elegir como miembro o lider; el backend ya quita a los que tienen otro equipo y, para lider,
 // solo manda a quienes tienen el permiso de liderar equipos (los roles se cambian en Usuarios)

@@ -8,6 +8,7 @@ import { AplicacionesPage } from '../modules/catalogos/pages/AplicacionesPage/Ap
 import { AreasPage } from '../modules/catalogos/pages/AreasPage/AreasPage'
 import { CategoriasPage } from '../modules/catalogos/pages/CategoriasPage/CategoriasPage'
 import { CriticidadesPage } from '../modules/catalogos/pages/CriticidadesPage/CriticidadesPage'
+import { GerenciasPage } from '../modules/catalogos/pages/GerenciasPage/GerenciasPage'
 import { BitacoraPage } from '../modules/bitacora/pages/BitacoraPage/BitacoraPage'
 import { CambioPage } from '../modules/bitacora/pages/CambioPage/CambioPage'
 import { ElementoDetallePage } from '../modules/elementos/pages/ElementoDetallePage/ElementoDetallePage'
@@ -57,7 +58,8 @@ export const router = createBrowserRouter([
                     </RutaProtegida>
                 ),
                 children: [
-                    { index: true, element: <Navigate to={RUTAS.catalogosAreas} replace /> },
+                    { index: true, element: <Navigate to={RUTAS.catalogosGerencias} replace /> },
+                    { path: RUTAS.catalogosGerencias, element: <GerenciasPage /> },
                     { path: RUTAS.catalogosAreas, element: <AreasPage /> },
                     { path: RUTAS.catalogosOrigenes, element: <OrigenesPage /> },
                     { path: RUTAS.catalogosCategorias, element: <CategoriasPage /> },

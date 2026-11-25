@@ -59,7 +59,11 @@ export const ResumenEquipo = ({ equipo }: ResumenEquipoProps) => {
     ]
     const derecha = [
         dato('people_group', 'Miembros vigentes', <Text variant="body-bold-medium">{equipo.miembros.length}</Text>),
-        dato('square_list', 'Tareas pendientes', <Text variant="body-bold-medium">{equipo.tareasPendientes ?? 0}</Text>),
+        dato(
+            'square_list',
+            'Tareas pendientes',
+            <Text variant="body-bold-medium">{equipo.tareasPendientes ?? 0}</Text>,
+        ),
         dato(
             'clock',
             'Tareas vencidas',

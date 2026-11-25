@@ -108,7 +108,7 @@ export const ETIQUETA_FILTRO: Record<CampoFiltro, string> = {
     estado: 'Estado',
     criticidad: 'Criticidad',
     origen: 'Origen',
-    area: 'Área',
+    area: 'Gerencia o área',
     equipo: 'Equipo',
     lider: 'Líder técnico',
     aplicacion: 'Aplicación',

@@ -18,7 +18,7 @@ interface FiltrosDelReporteProps {
 
 const AYUDA: Partial<Record<CampoFiltro, string>> = {
     estado: 'Sin elegir, no se incluyen los anulados.',
-    area: 'Incluye sus sub-áreas.',
+    area: 'Incluye las áreas y subáreas que dependen de ella.',
 }
 
 const CAMPO_ERROR: Partial<Record<CampoFiltro, string>> = { elemento: 'elementoId' }

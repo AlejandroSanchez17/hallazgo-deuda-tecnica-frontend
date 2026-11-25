@@ -47,6 +47,7 @@ export const OPCIONES_MENU: OpcionMenu[] = [
                 texto: 'Catálogos',
                 permiso: PERMISOS.catalogoLeer,
                 hijos: [
+                    { ruta: RUTAS.catalogosGerencias, texto: 'Gerencias' },
                     { ruta: RUTAS.catalogosAreas, texto: 'Áreas' },
                     { ruta: RUTAS.catalogosOrigenes, texto: 'Orígenes' },
                     { ruta: RUTAS.catalogosCategorias, texto: 'Categorías de deuda' },

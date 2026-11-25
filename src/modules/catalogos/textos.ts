@@ -1,6 +1,7 @@
 import type { TextosCatalogo } from './types'
 
 export const TEXTOS = {
+    gerencia: { sustantivo: 'gerencia', articulo: 'la', femenino: true },
     area: { sustantivo: 'área', articulo: 'el', femenino: true },
     origen: { sustantivo: 'origen', articulo: 'el', femenino: false },
     categoria: { sustantivo: 'categoría', articulo: 'la', femenino: true },

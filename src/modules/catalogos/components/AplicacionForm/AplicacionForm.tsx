@@ -1,7 +1,8 @@
 import { FieldInput, FormModal, LargeTextArea, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
-import { aplicacionesApi, areasApi } from '../../api'
+import { textoArea } from '../../../../utils/areas'
+import { aplicacionesApi, areasYGerenciasApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
 import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { TEXTOS } from '../../textos'
@@ -25,7 +26,8 @@ export const AplicacionForm = ({ aplicacion, onCerrar, onGuardado }: AplicacionF
         descripcion: aplicacion?.descripcion ?? '',
         areaId: aplicacion?.areaId.toString() ?? '',
     })
-    const { registros: areasActivas } = useListaCatalogo(areasApi.listar, 'activos')
+    // Con las gerencias activas incluidas: una aplicacion antigua puede estar en una gerencia, y eso no es "inactiva"
+    const { registros: activas, cargando } = useListaCatalogo(areasYGerenciasApi.listar, 'activos')
     const { guardar, errores, guardando } = useGuardarCatalogo({
         aSolicitud,
         crear: aplicacionesApi.crear,
@@ -34,10 +36,19 @@ export const AplicacionForm = ({ aplicacion, onCerrar, onGuardado }: AplicacionF
         onGuardado,
     })
 
-    const opcionesArea: Opcion[] = areasActivas.map((area) => ({ valor: String(area.id), texto: area.nombre }))
-    // Si el area actual esta inactiva no viene en la lista; se muestra para no perderla al editar
+    // Areas y subareas; una gerencia no se ofrece
+    const opcionesArea: Opcion[] = activas
+        .filter((area) => area.tipo === 'AREA')
+        .map((area) => ({ valor: String(area.id), texto: textoArea(area) }))
+    // El valor actual que no viene en la lista se muestra para no perderlo al editar: inactivo, o una gerencia activa
     if (aplicacion && !opcionesArea.some((opcion) => opcion.valor === String(aplicacion.areaId))) {
-        opcionesArea.push({ valor: String(aplicacion.areaId), texto: `${aplicacion.areaNombre} (inactiva)` })
+        const actual = activas.find((area) => area.id === aplicacion.areaId)
+        const texto = actual
+            ? textoArea(actual)
+            : cargando
+              ? aplicacion.areaNombre
+              : `${aplicacion.areaNombre} (inactiva)`
+        opcionesArea.push({ valor: String(aplicacion.areaId), texto })
     }
 
     return (
@@ -56,7 +67,7 @@ export const AplicacionForm = ({ aplicacion, onCerrar, onGuardado }: AplicacionF
             <FieldInput
                 label="Área"
                 errorText={errores.areaId}
-                helperText="Área responsable de la aplicación. Solo se listan las áreas activas."
+                helperText="Área o subárea responsable de la aplicación. Solo se listan las activas."
             >
                 <Select
                     options={opcionesArea}

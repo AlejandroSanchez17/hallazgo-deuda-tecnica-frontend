@@ -1,22 +1,17 @@
 import { FieldInput, FormModal, Select, TextInput } from '@hnba/react-ui'
 import { useFormulario } from '../../../../hooks/useFormulario'
 import { opcionDe, textoDeOpcion, valorDeOpcion, type Opcion } from '../../../../utils/opciones'
-import { areasApi } from '../../api'
+import { areasApi, gerenciasApi } from '../../api'
 import { useGuardarCatalogo } from '../../hooks/useGuardarCatalogo'
 import { useListaCatalogo } from '../../hooks/useListaCatalogo'
 import { TEXTOS } from '../../textos'
-import type { AreaFormulario, AreaRequest, AreaResponse, TipoArea } from '../../types'
+import type { AreaFormulario, AreaRequest, AreaResponse } from '../../types'
 
-const tiposArea: Opcion[] = [
-    { valor: 'GERENCIA', texto: 'Gerencia' },
-    { valor: 'AREA', texto: 'Área' },
-]
-
-const aSolicitud = (formulario: AreaFormulario): AreaRequest => ({
-    nombre: formulario.nombre.trim(),
-    tipo: formulario.tipo === '' ? null : (formulario.tipo as TipoArea),
-    areaPadreId: formulario.areaPadreId === '' ? null : Number(formulario.areaPadreId),
-})
+// El area depende de su area superior y, si no tiene, directamente de su gerencia
+const aSolicitud = (formulario: AreaFormulario): AreaRequest => {
+    const padre = formulario.areaSuperiorId !== '' ? formulario.areaSuperiorId : formulario.gerenciaId
+    return { nombre: formulario.nombre.trim(), tipo: 'AREA', areaPadreId: padre === '' ? null : Number(padre) }
+}
 
 interface AreaFormProps {
     area: AreaResponse | null
@@ -25,12 +20,20 @@ interface AreaFormProps {
 }
 
 export const AreaForm = ({ area, onCerrar, onGuardado }: AreaFormProps) => {
+    // Un area antigua sin gerencia (o colgada de otra area sin gerencia) empieza sin ninguna: hay que elegir un padre valido
+    const gerenciaActual = area?.gerenciaId ?? null
+    const superiorActual =
+        area !== null && gerenciaActual !== null && area.areaPadreId !== null && area.areaPadreId !== gerenciaActual
+            ? String(area.areaPadreId)
+            : ''
     const { formulario, cambiar, asignar } = useFormulario<AreaFormulario>({
         nombre: area?.nombre ?? '',
-        tipo: area?.tipo ?? '',
-        areaPadreId: area?.areaPadreId?.toString() ?? '',
+        gerenciaId: gerenciaActual === null ? '' : String(gerenciaActual),
+        areaSuperiorId: superiorActual,
     })
-    const { registros: areasActivas } = useListaCatalogo(areasApi.listar, 'activos')
+    const { registros: gerencias } = useListaCatalogo(gerenciasApi.listar, 'activos')
+    // De todos los estados: sirve para las areas que se pueden elegir y para saber si esta tiene subareas, activas o no
+    const { registros: areas } = useListaCatalogo(areasApi.listar, 'todos')
     const { guardar, errores, guardando } = useGuardarCatalogo({
         aSolicitud,
         crear: areasApi.crear,
@@ -39,16 +42,45 @@ export const AreaForm = ({ area, onCerrar, onGuardado }: AreaFormProps) => {
         onGuardado,
     })
 
-    const opcionesPadre: Opcion[] = [
-        { valor: '', texto: 'Sin área padre' },
-        ...areasActivas
-            .filter((areaActiva) => areaActiva.id !== area?.id)
-            .map((areaActiva) => ({ valor: String(areaActiva.id), texto: areaActiva.nombre })),
-    ]
-    // Si el padre actual esta inactivo no viene en la lista; se muestra para no perderlo al editar
-    if (area?.areaPadreId && !opcionesPadre.some((opcion) => opcion.valor === String(area.areaPadreId))) {
-        opcionesPadre.push({ valor: String(area.areaPadreId), texto: `${area.areaPadreNombre ?? ''} (inactiva)` })
+    const opcionesGerencia: Opcion[] = gerencias.map((gerencia) => ({
+        valor: String(gerencia.id),
+        texto: gerencia.nombre,
+    }))
+    // Si la gerencia actual esta inactiva no viene en la lista; se muestra para no perderla al editar
+    if (gerenciaActual !== null && !opcionesGerencia.some((opcion) => opcion.valor === String(gerenciaActual))) {
+        opcionesGerencia.push({
+            valor: String(gerenciaActual),
+            texto: `${area?.gerenciaNombre ?? ''} (inactiva)`,
+        })
     }
+
+    // Solo areas activas de primer nivel de la gerencia elegida (una subarea no puede tener otra), sin ella misma
+    const opcionesSuperior: Opcion[] = [
+        { valor: '', texto: 'Ninguna' },
+        ...areas
+            .filter(
+                (candidata) =>
+                    candidata.activo &&
+                    candidata.id !== area?.id &&
+                    candidata.gerenciaId !== null &&
+                    String(candidata.gerenciaId) === formulario.gerenciaId &&
+                    candidata.areaPadreId === candidata.gerenciaId,
+            )
+            .map((candidata) => ({ valor: String(candidata.id), texto: candidata.nombre })),
+    ]
+    // Si el area superior actual esta inactiva no viene en la lista; se muestra mientras no se cambie la gerencia
+    if (
+        superiorActual !== '' &&
+        formulario.areaSuperiorId === superiorActual &&
+        !opcionesSuperior.some((opcion) => opcion.valor === superiorActual)
+    ) {
+        opcionesSuperior.push({ valor: superiorActual, texto: `${area?.areaPadreNombre ?? ''} (inactiva)` })
+    }
+
+    const tieneSubareas = area !== null && areas.some((otra) => otra.areaPadreId === area.id)
+    // El error de areaPadreId es del campo que se uso para elegir el padre
+    const errorPadre = errores.areaPadreId
+    const superiorElegida = formulario.areaSuperiorId !== ''
 
     return (
         <FormModal
@@ -63,30 +95,43 @@ export const AreaForm = ({ area, onCerrar, onGuardado }: AreaFormProps) => {
             <FieldInput label="Nombre" errorText={errores.nombre}>
                 <TextInput maxLength={120} value={formulario.nombre} onChange={cambiar('nombre')} />
             </FieldInput>
-            <FieldInput label="Tipo" errorText={errores.tipo}>
-                <Select
-                    options={tiposArea}
-                    value={opcionDe(tiposArea, formulario.tipo)}
-                    getLabel={textoDeOpcion}
-                    getValue={valorDeOpcion}
-                    placeholder="Seleccione…"
-                    onChange={(opcion) => asignar('tipo', opcion.valor)}
-                />
-            </FieldInput>
             <FieldInput
-                label="Área padre"
-                optional
-                errorText={errores.areaPadreId}
-                helperText="Opcional. Solo se listan las áreas activas."
+                label="Gerencia"
+                errorText={superiorElegida ? undefined : errorPadre}
+                helperText="Solo se listan las gerencias activas."
             >
                 <Select
-                    options={opcionesPadre}
-                    value={opcionDe(opcionesPadre, formulario.areaPadreId)}
+                    options={opcionesGerencia}
+                    value={opcionDe(opcionesGerencia, formulario.gerenciaId)}
                     getLabel={textoDeOpcion}
                     getValue={valorDeOpcion}
                     searchable
-                    placeholder="Sin área padre"
-                    onChange={(opcion) => asignar('areaPadreId', opcion.valor)}
+                    placeholder="Seleccione…"
+                    onChange={(opcion) => {
+                        asignar('gerenciaId', opcion.valor)
+                        asignar('areaSuperiorId', '')
+                    }}
+                />
+            </FieldInput>
+            <FieldInput
+                label="Área superior"
+                optional
+                errorText={superiorElegida ? errorPadre : undefined}
+                helperText={
+                    tieneSubareas
+                        ? 'Esta área tiene subáreas, por eso no puede depender de otra.'
+                        : 'Solo para una subárea. Se listan las áreas activas de la gerencia elegida.'
+                }
+            >
+                <Select
+                    options={opcionesSuperior}
+                    value={opcionDe(opcionesSuperior, formulario.areaSuperiorId)}
+                    getLabel={textoDeOpcion}
+                    getValue={valorDeOpcion}
+                    searchable
+                    disabled={tieneSubareas}
+                    placeholder="Ninguna"
+                    onChange={(opcion) => asignar('areaSuperiorId', opcion.valor)}
                 />
             </FieldInput>
         </FormModal>

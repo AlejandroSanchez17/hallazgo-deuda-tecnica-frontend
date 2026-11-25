@@ -1,27 +1,23 @@
-import { borders, colors, radius, spacing } from '@hnba/design-tokens'
+import { spacing } from '@hnba/design-tokens'
 import { Text } from '@hnba/react-ui'
 import type { CSSProperties, ReactNode } from 'react'
 import { columna, rejillaFormulario, textoSecundario } from '../../../../styles/disposicion'
 
-// Piezas para mostrar datos en solo lectura: fichas para los datos cortos, bloques con barra roja para los textos
-// largos y una rejilla que las acomoda. Las usa la pestana Datos del elemento
+// Piezas para mostrar datos en solo lectura: los datos cortos y los textos largos, sin cuadro ni lineas, con la
+// etiqueta arriba y el valor abajo, y una rejilla que los acomoda. Las usa la pestana Datos del elemento. Las fichas de
+// una fila tienen el mismo alto, asi que los valores quedan alineados
 
 // Valor de 16 px (body large) y etiqueta de 14 px; el valor conserva los saltos de linea de los textos largos
 const estiloValor: CSSProperties = { margin: 0, whiteSpace: 'pre-wrap' }
 
+// Etiqueta arriba y valor abajo, sin cuadro ni linea
+const estiloDato: CSSProperties = columna(spacing.xs)
+
 const vacio = (valor: ReactNode) => (valor === null || valor === '' ? '—' : valor)
 
-// Dato corto (categoria, fecha, talla…): una ficha con su etiqueta y su valor, facil de recorrer con la vista
+// Dato corto (categoria, fecha, talla…): su etiqueta y su valor
 export const fichaDato = (etiqueta: string, valor: ReactNode) => (
-    <div
-        style={{
-            ...columna(spacing.xs),
-            padding: spacing.md,
-            borderRadius: radius.sm,
-            border: `${borders.width.thin}px solid ${colors.brand.gray[200]}`,
-            background: colors.brand.gray[50],
-        }}
-    >
+    <div style={estiloDato}>
         <Text variant="label-semibold-medium" style={textoSecundario}>
             {etiqueta}
         </Text>
@@ -32,15 +28,9 @@ export const fichaDato = (etiqueta: string, valor: ReactNode) => (
     </div>
 )
 
-// Texto largo (causa, impacto, objetivo…): con una barra roja a la izquierda para separarlo del siguiente
+// Texto largo (causa, impacto, objetivo…): con el mismo estilo que un dato corto
 export const fichaTexto = (etiqueta: string, valor: ReactNode) => (
-    <div
-        style={{
-            ...columna(spacing.xs),
-            paddingLeft: spacing.md,
-            borderLeft: `${borders.width.thick}px solid ${colors.brand.red[700]}`,
-        }}
-    >
+    <div style={estiloDato}>
         <Text variant="label-semibold-medium" style={textoSecundario}>
             {etiqueta}
         </Text>

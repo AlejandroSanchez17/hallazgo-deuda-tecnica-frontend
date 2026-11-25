@@ -17,23 +17,32 @@ export interface TextosCatalogo {
 
 export type TipoArea = 'GERENCIA' | 'AREA'
 
+// Una gerencia no tiene padre; un area depende de una gerencia; una subarea, de un area. gerenciaId y gerenciaNombre los
+// calcula el backend (nulos en una gerencia y en un area antigua sin gerencia)
 export interface AreaResponse extends RegistroCatalogo {
     tipo: TipoArea
     areaPadreId: number | null
     areaPadreNombre: string | null
+    gerenciaId: number | null
+    gerenciaNombre: string | null
 }
 
 export interface AreaRequest {
     nombre: string
-    tipo: TipoArea | null
+    tipo: TipoArea
     areaPadreId: number | null
 }
 
 // Los formularios guardan texto; se convierte al tipo de la API al enviar
 export interface AreaFormulario {
     nombre: string
-    tipo: string
-    areaPadreId: string
+    gerenciaId: string
+    // Vacio: el area depende directamente de su gerencia
+    areaSuperiorId: string
+}
+
+export interface GerenciaFormulario {
+    nombre: string
 }
 
 export interface OrigenResponse extends RegistroCatalogo {

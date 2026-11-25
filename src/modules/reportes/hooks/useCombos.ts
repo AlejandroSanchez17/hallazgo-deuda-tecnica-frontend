@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { aErrorApi, avisarSiNoSeAviso } from '../../../services/api'
+import { textoArea } from '../../../utils/areas'
 import type { Opcion } from '../../../utils/opciones'
 import { combosApi } from '../api'
-import type { ElementoCombo, EquipoCombo, RegistroCombo } from '../types'
+import type { AreaCombo, ElementoCombo, EquipoCombo, RegistroCombo } from '../types'
 
 export interface CombosReporte {
     criticidades: Opcion[]
@@ -28,6 +29,10 @@ const porNombre = (a: Opcion, b: Opcion) => a.texto.localeCompare(b.texto, 'es')
 
 const deRegistros = (registros: RegistroCombo[]): Opcion[] =>
     registros.map(({ id, nombre }) => ({ valor: String(id), texto: nombre })).sort(porNombre)
+
+// Gerencias, areas y subareas ("Area › Subarea")
+const deAreas = (areas: AreaCombo[]): Opcion[] =>
+    areas.map((area) => ({ valor: String(area.id), texto: textoArea(area) })).sort(porNombre)
 
 // Los lideres salen de los equipos: Lider y Miembro no tienen USUARIO:LEER, y con alcance PROPIO /equipos ya trae solo
 // los suyos. Un lider se repite si dirige varios equipos
@@ -67,7 +72,7 @@ export const useCombos = (pedirElementos: boolean) => {
 
         void pedir(combosApi.criticidades(), (datos) => ({ criticidades: deRegistros(datos) }))
         void pedir(combosApi.origenes(), (datos) => ({ origenes: deRegistros(datos) }))
-        void pedir(combosApi.areas(), (datos) => ({ areas: deRegistros(datos) }))
+        void pedir(combosApi.areas(), (datos) => ({ areas: deAreas(datos) }))
         void pedir(combosApi.aplicaciones(), (datos) => ({ aplicaciones: deRegistros(datos) }))
         void pedir(combosApi.equipos(), (datos) => ({ equipos: deRegistros(datos), lideres: lideresDe(datos) }))
         return () => {

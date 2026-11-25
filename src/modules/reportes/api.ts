@@ -2,7 +2,7 @@ import { api } from '../../services/api'
 import type { ApiResponse } from '../../types/api.types'
 import { nombreDeDescarga } from '../../utils/descarga'
 import { aFechaApi } from '../../utils/formato'
-import type { CodigoReporte, ElementoCombo, EquipoCombo, FormatoReporte, RegistroCombo } from './types'
+import type { AreaCombo, CodigoReporte, ElementoCombo, EquipoCombo, FormatoReporte, RegistroCombo } from './types'
 
 // Generar el archivo puede tardar mas que el limite general de 15 s
 const TIEMPO_REPORTE = 5 * 60 * 1000
@@ -46,7 +46,8 @@ export const combosApi = {
     criticidades: async (): Promise<RegistroCombo[]> =>
         (await listar<RegistroCombo>('/catalogos/criticidades')()).filter((criticidad) => criticidad.activo !== false),
     origenes: listar<RegistroCombo>('/catalogos/origenes', { activo: true }),
-    areas: listar<RegistroCombo>('/catalogos/areas', { activo: true }),
+    // Los tres niveles: el reporte por una gerencia o un area incluye lo que depende de ella
+    areas: listar<AreaCombo>('/catalogos/areas', { activo: true }),
     aplicaciones: listar<RegistroCombo>('/aplicaciones', { activo: true }),
     // Todos los equipos, activos o no: un reporte puede ser de un equipo que ya se desactivo
     equipos: listar<EquipoCombo>('/equipos'),

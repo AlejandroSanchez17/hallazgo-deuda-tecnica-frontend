@@ -1,6 +1,6 @@
 import type { BadgeStatus } from '@hnba/react-ui'
 import type { Opcion } from '../../utils/opciones'
-import type { AccionBitacora } from './types'
+import type { AccionBitacora, RegistroBitacora, ValorBitacora } from './types'
 
 export const TEXTO_ACCION: Record<AccionBitacora, string> = {
     CREAR: 'Crear',
@@ -37,7 +37,7 @@ export const ESTADO_ACCION: Record<AccionBitacora, BadgeStatus> = {
 const TEXTO_ENTIDAD = new Map([
     ['aplicacion', 'Aplicación'],
     ['aprobacion', 'Aprobación'],
-    ['area', 'Área'],
+    ['area', 'Gerencia o área'],
     ['categoria_deuda', 'Categoría de deuda'],
     ['comentario', 'Comentario'],
     ['criticidad', 'Criticidad'],
@@ -66,8 +66,19 @@ export const legible = (clave: string) =>
             .toLowerCase(),
     )
 
-// Una entidad que la tabla no conoce (una nueva del backend) se muestra legible, sin romper
-export const textoEntidad = (entidad: string) => TEXTO_ENTIDAD.get(entidad) ?? legible(entidad)
+const tipoGuardado = (valor: ValorBitacora | undefined) =>
+    valor !== null && valor !== undefined && !Array.isArray(valor) ? valor.tipo : undefined
+
+// Una entidad que la tabla no conoce (una nueva del backend) se muestra legible, sin romper. Gerencias y areas se
+// guardan en la misma entidad: con el registro, su tipo (el del valor nuevo o, si falta, el del anterior) dice cual es;
+// los cambios de estado antiguos no lo guardaban y, sin registro (el filtro), se dice "Gerencia o área"
+export const textoEntidad = (entidad: string, registro?: Pick<RegistroBitacora, 'valorAnterior' | 'valorNuevo'>) => {
+    if (entidad === 'area') {
+        const tipo = tipoGuardado(registro?.valorNuevo) ?? tipoGuardado(registro?.valorAnterior)
+        return tipo === 'GERENCIA' ? 'Gerencia' : tipo === 'AREA' ? 'Área' : 'Gerencia o área'
+    }
+    return TEXTO_ENTIDAD.get(entidad) ?? legible(entidad)
+}
 
 export const TEXTOS = {
     titulo: 'Bitácora',

@@ -16,7 +16,7 @@ export const columnasBitacora: TableColumn<RegistroBitacora>[] = [
         header: 'Usuario',
         render: (registro) => <TextoCorto texto={registro.usuarioNombre} ancho={200} />,
     },
-    { id: 'entidad', header: 'Entidad', render: (registro) => textoEntidad(registro.entidad) },
+    { id: 'entidad', header: 'Entidad', render: (registro) => textoEntidad(registro.entidad, registro) },
     // Los parametros se guardan con id 0: su clave va dentro del valor (se ve en el detalle)
     {
         id: 'registro',

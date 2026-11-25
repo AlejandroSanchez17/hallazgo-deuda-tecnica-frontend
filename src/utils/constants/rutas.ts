@@ -2,6 +2,7 @@ export const RUTAS = {
     inicio: '/',
     tablero: '/tablero',
     catalogos: '/catalogos',
+    catalogosGerencias: '/catalogos/gerencias',
     catalogosAreas: '/catalogos/areas',
     catalogosOrigenes: '/catalogos/origenes',
     catalogosCategorias: '/catalogos/categorias-deuda',

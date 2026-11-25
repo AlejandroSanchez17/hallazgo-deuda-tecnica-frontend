@@ -1,5 +1,5 @@
 import { spacing } from '@hnba/design-tokens'
-import { Banner } from '@hnba/react-ui'
+import { AvisoConAccion } from '../../../../components/common/AvisoConAccion/AvisoConAccion'
 import { columna } from '../../../../styles/disposicion'
 import { formatearFecha } from '../../../../utils/formato'
 import type { CierreResponse, ProrrogasDelElemento } from '../../typesProrroga'
@@ -11,8 +11,7 @@ interface AvisosElementoProps {
     onVerCierre: () => void
 }
 
-// Lo que espera una resolucion, sobre las pestanas: la prorroga pendiente y el cierre por validar. Banner y no
-// Alert porque la libreria solo le da boton de accion al Banner
+// Lo que espera una resolucion, sobre las pestanas: la prorroga pendiente y el cierre por validar
 export const AvisosElemento = ({ resumen, cierres, onVerProrrogas, onVerCierre }: AvisosElementoProps) => {
     const prorroga = resumen?.prorrogas.find((p) => p.estado === 'PENDIENTE')
     const cierre = cierres.find((c) => c.resultado === 'PENDIENTE')
@@ -23,19 +22,21 @@ export const AvisosElemento = ({ resumen, cierres, onVerProrrogas, onVerCierre }
     return (
         <div style={columna(spacing.sm)}>
             {prorroga && (
-                <Banner
+                <AvisoConAccion
                     variant="info"
                     title={prorroga.esAdicional ? 'Prórroga adicional pendiente' : 'Prórroga pendiente'}
                     description={`${prorroga.solicitanteNombre} propone pasar la fecha compromiso del ${formatearFecha(prorroga.fechaAnterior)} al ${formatearFecha(prorroga.fechaPropuesta)}. La resuelve quien puede aprobar prórrogas.`}
-                    action={{ label: 'Ver prórroga', onClick: onVerProrrogas }}
+                    textoAccion="Ver prórroga"
+                    onAccion={onVerProrrogas}
                 />
             )}
             {cierre && (
-                <Banner
+                <AvisoConAccion
                     variant="info"
                     title="Cierre solicitado"
                     description={`${cierre.solicitanteNombre} pidió el cierre; lo valida el rol ${cierre.rolRequeridoNombre}.`}
-                    action={{ label: 'Ver cierre', onClick: onVerCierre }}
+                    textoAccion="Ver cierre"
+                    onAccion={onVerCierre}
                 />
             )}
         </div>
