@@ -63,6 +63,27 @@ export const alcanceDeFila = (grupo: GrupoRecurso, marcados: MapaPermisos): Alca
     return asignados.every((permiso) => marcados[permiso.id] === 'PROPIO') ? 'PROPIO' : 'TODO'
 }
 
+// Un rol es de equipo si puede ser miembro o lider; solo entonces aplica el alcance PROPIO
+const PERMISOS_DE_EQUIPO = ['EQUIPO:PARTICIPAR', 'EQUIPO:LIDERAR']
+
+const esDeEquipo = (permisos: Permiso[], marcados: MapaPermisos) =>
+    permisos.some((permiso) => PERMISOS_DE_EQUIPO.includes(permiso.codigo) && marcados[permiso.id] !== undefined)
+
+// Los recursos en los que el rol puede usar PROPIO (admitePropio es igual en todos los permisos de un recurso)
+export const recursosConPropio = (permisos: Permiso[], marcados: MapaPermisos): Set<string> =>
+    new Set(
+        esDeEquipo(permisos, marcados)
+            ? permisos.filter((permiso) => permiso.admitePropio).map((permiso) => permiso.recurso)
+            : [],
+    )
+
+// Pasa a TODO lo que el backend rechazaria con PROPIO; va permiso por permiso porque una fila puede venir mezclada
+export const ajustarAlcances = (permisos: Permiso[], marcados: MapaPermisos): MapaPermisos => {
+    const conPropio = recursosConPropio(permisos, marcados)
+    const invalidos = permisos.filter((permiso) => marcados[permiso.id] === 'PROPIO' && !conPropio.has(permiso.recurso))
+    return { ...marcados, ...Object.fromEntries(invalidos.map((permiso) => [permiso.id, 'TODO' as const])) }
+}
+
 export const aMapa = (permisos: PermisoDeRol[]): MapaPermisos =>
     Object.fromEntries(permisos.map((permiso) => [permiso.id, permiso.alcance]))
 

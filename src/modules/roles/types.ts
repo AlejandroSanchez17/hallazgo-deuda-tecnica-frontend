@@ -31,6 +31,7 @@ export interface PermisoDeRol {
     recurso: string
     accion: string
     descripcion: string | null
+    admitePropio: boolean
     alcance: Alcance
 }
 
@@ -57,6 +58,8 @@ export interface Permiso {
     recurso: string
     accion: string
     descripcion: string | null
+    // false: el recurso no filtra por equipo, asi que sus permisos solo valen con alcance TODO
+    admitePropio: boolean
 }
 
 export interface PermisoAsignado {

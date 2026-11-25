@@ -116,8 +116,14 @@ export interface CriticidadRequest {
     rolValidaCierreId: number | null
 }
 
+// El nivel solo se define al crear: el PUT no lo cambia
+export interface NuevaCriticidadRequest extends CriticidadRequest {
+    nivel: number | null
+}
+
 export interface CriticidadFormulario {
     nombre: string
+    nivel: string
     plazoMeses: string
     maxProrrogas: string
     rolApruebaPlanId: string

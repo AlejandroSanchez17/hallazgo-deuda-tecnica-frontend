@@ -9,6 +9,7 @@ import type {
     CategoriaResponse,
     CriticidadRequest,
     CriticidadResponse,
+    NuevaCriticidadRequest,
     OrigenRequest,
     OrigenResponse,
     RolResumen,
@@ -60,7 +61,7 @@ export const categoriasApi = apiCatalogo<CategoriaResponse, CategoriaRequest>('/
 
 export const aplicacionesApi = apiCatalogo<AplicacionResponse, AplicacionRequest>('/aplicaciones')
 
-// Roles para los combos de criticidades (GET /roles?activo=true acepta CATALOGO:ACTUALIZAR)
+// Roles para los combos de criticidades (GET /roles?activo=true pide USUARIO:LEER o CATALOGO:ACTUALIZAR)
 export const rolesApi = {
     listar: async (activo?: boolean): Promise<RolResumen[]> => {
         const { data } = await api.get<ApiResponse<RolResumen[]>>('/roles', { params: { activo } })
@@ -70,9 +71,20 @@ export const rolesApi = {
 
 const RUTA_CRITICIDADES = '/catalogos/criticidades'
 
+// El GET no filtra por activo: la pantalla pide todas y filtra en el navegador
 export const criticidadesApi = {
     listar: async (): Promise<CriticidadResponse[]> => {
         const { data } = await api.get<ApiResponse<CriticidadResponse[]>>(RUTA_CRITICIDADES)
+        return data.datos
+    },
+    crear: async (solicitud: NuevaCriticidadRequest): Promise<CriticidadResponse> => {
+        const { data } = await api.post<ApiResponse<CriticidadResponse>>(RUTA_CRITICIDADES, solicitud)
+        return data.datos
+    },
+    cambiarEstado: async (id: number, activo: boolean): Promise<CriticidadResponse> => {
+        const { data } = await api.patch<ApiResponse<CriticidadResponse>>(`${RUTA_CRITICIDADES}/${id}/estado`, {
+            activo,
+        })
         return data.datos
     },
     actualizar: async (id: number, solicitud: CriticidadRequest): Promise<CriticidadResponse> => {

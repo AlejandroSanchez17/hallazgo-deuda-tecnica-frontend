@@ -12,5 +12,7 @@ export const registrarAvisos = (funcion: MostrarAviso | null) => {
 
 export const avisarExito = (mensaje: string) => mostrarAviso?.({ variant: 'success', title: mensaje, durationMs: 3000 })
 
+export const avisarInfo = (mensaje: string) => mostrarAviso?.({ variant: 'info', title: mensaje, durationMs: 6000 })
+
 export const avisarError = (mensaje: string) =>
     mostrarAviso?.({ variant: 'error', layout: 'card', title: mensaje, durationMs: 8000 })

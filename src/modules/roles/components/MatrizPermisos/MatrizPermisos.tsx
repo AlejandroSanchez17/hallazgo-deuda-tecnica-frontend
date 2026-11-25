@@ -15,6 +15,7 @@ const SIN_VALOR = '—'
 interface MatrizPermisosProps {
     grupos: GrupoRecurso[]
     marcados: MapaPermisos
+    conPropio: Set<string>
     soloLectura: boolean
     onAlternar: (grupo: GrupoRecurso, permisoId: number) => void
     onCambiarSoloPropio: (grupo: GrupoRecurso, soloPropio: boolean) => void
@@ -25,6 +26,7 @@ interface MatrizPermisosProps {
 export const MatrizPermisos = ({
     grupos,
     marcados,
+    conPropio,
     soloLectura,
     onAlternar,
     onCambiarSoloPropio,
@@ -72,7 +74,7 @@ export const MatrizPermisos = ({
         align: 'center',
         render: (grupo) => {
             const alcance = alcanceDeFila(grupo, marcados)
-            if (alcance === undefined) {
+            if (alcance === undefined || !conPropio.has(grupo.recurso)) {
                 return SIN_VALOR
             }
             if (soloLectura) {

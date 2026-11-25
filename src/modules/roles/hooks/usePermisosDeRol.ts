@@ -2,15 +2,17 @@ import { useEffect, useMemo, useState } from 'react'
 import { useActualizarUsuarioActual } from '../../../hooks/auth/useActualizarUsuarioActual'
 import { aErrorApi, avisarSiNoSeAviso, type ErrorApi } from '../../../services/api'
 import { recargarUsuariosSimulables } from '../../../services/api/auth'
-import { avisarExito } from '../../../utils/alertas'
+import { avisarExito, avisarInfo } from '../../../utils/alertas'
 import { permisosApi, rolesApi } from '../api'
 import {
     agruparPorRecurso,
+    ajustarAlcances,
     alternarPermiso,
     aMapa,
     aPermisosAsignados,
     asignarAlcanceDeFila,
     contarCambios,
+    recursosConPropio,
     type GrupoRecurso,
     type MapaPermisos,
 } from '../permisosRol'
@@ -69,15 +71,24 @@ export const usePermisosDeRol = (rolId: number | undefined) => {
     const delRol = resultado?.rolId === rolId ? resultado : null
     const rol = delRol?.rol ?? null
     const original = useMemo(() => aMapa(rol?.permisos ?? []), [rol])
-    const marcados = edicion !== null && edicion.rolId === rolId ? edicion.marcados : original
     const permisos = useMemo(() => catalogo?.permisos ?? [], [catalogo])
+    // Los PROPIO guardados que ya no son validos se abren en TODO; quedan como cambios sin guardar
+    const inicial = useMemo(() => ajustarAlcances(permisos, original), [permisos, original])
+    const marcados = edicion !== null && edicion.rolId === rolId ? edicion.marcados : inicial
+    const conPropio = useMemo(() => recursosConPropio(permisos, marcados), [permisos, marcados])
     const grupos = useMemo(() => agruparPorRecurso(permisos), [permisos])
 
     const alternar = (grupo: GrupoRecurso, permisoId: number) => {
         if (rolId === undefined || rol === null) {
             return
         }
-        setEdicion({ rolId, marcados: alternarPermiso(marcados, grupo, permisoId) })
+        const alternados = alternarPermiso(marcados, grupo, permisoId)
+        const ajustados = ajustarAlcances(permisos, alternados)
+        setEdicion({ rolId, marcados: ajustados })
+        // Lo demas ya era valido: solo cambia algo al quitar el ultimo permiso de equipo
+        if (contarCambios(alternados, ajustados) > 0) {
+            avisarInfo('Las filas en Propio pasaron a Todo: el rol ya no tiene Participar ni Liderar en Equipos')
+        }
     }
 
     const cambiarSoloPropio = (grupo: GrupoRecurso, soloPropio: boolean) => {
@@ -107,8 +118,10 @@ export const usePermisosDeRol = (rolId: number | undefined) => {
         } catch (error) {
             const errorApi = aErrorApi(error)
             if (errorApi.estado === 400 || errorApi.estado === 422) {
-                // El mensaje nombra el permiso o la regla, asi que queda fijo en la pantalla
-                setErrorGuardado(errorApi.errores.find((e) => e.campo === 'permisos')?.mensaje ?? errorApi.mensaje)
+                // El 422 nombra el permiso o la regla en el mensaje general (el del campo es solo un resumen);
+                // en el 400 el detalle viene en el campo. Queda fijo en la pantalla
+                const delCampo = errorApi.errores.find((e) => e.campo === 'permisos')?.mensaje
+                setErrorGuardado(errorApi.estado === 400 ? (delCampo ?? errorApi.mensaje) : errorApi.mensaje)
             } else {
                 avisarSiNoSeAviso(errorApi)
             }
@@ -122,9 +135,13 @@ export const usePermisosDeRol = (rolId: number | undefined) => {
         grupos,
         totalPermisos: permisos.length,
         marcados,
+        conPropio,
         cargando: catalogo === null || (rolId !== undefined && delRol === null),
         error: catalogo?.error ?? delRol?.error ?? null,
         cambios: contarCambios(original, marcados),
+        // Los que hizo el usuario, sin contar los ajustes al abrir el rol
+        cambiosDelUsuario: contarCambios(inicial, marcados),
+        ajustes: contarCambios(original, inicial),
         guardando,
         errorGuardado,
         cerrarError: () => setErrorGuardado(null),

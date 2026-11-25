@@ -19,46 +19,69 @@ const aSolicitud = (formulario: CriticidadFormulario): CriticidadRequest => ({
 })
 
 interface CriticidadFormProps {
-    criticidad: CriticidadResponse
+    // null: criticidad nueva
+    criticidad: CriticidadResponse | null
+    // Los niveles que todavia no existen; solo se ofrecen al crear
+    nivelesLibres: number[]
     onCerrar: () => void
     onGuardado: () => void
 }
 
-// Las criticidades no se crean ni se desactivan, y su nivel no se edita
-export const CriticidadForm = ({ criticidad, onCerrar, onGuardado }: CriticidadFormProps) => {
+// El nivel se elige al crear; despues se muestra pero no se edita
+export const CriticidadForm = ({ criticidad, nivelesLibres, onCerrar, onGuardado }: CriticidadFormProps) => {
     const { formulario, cambiar, asignar } = useFormulario<CriticidadFormulario>({
-        nombre: criticidad.nombre,
-        plazoMeses: criticidad.plazoMeses.toString(),
-        maxProrrogas: criticidad.maxProrrogas.toString(),
-        rolApruebaPlanId: criticidad.rolApruebaPlan.id.toString(),
-        rolValidaCierreId: criticidad.rolValidaCierre.id.toString(),
+        nombre: criticidad?.nombre ?? '',
+        nivel: criticidad?.nivel.toString() ?? '',
+        plazoMeses: criticidad?.plazoMeses.toString() ?? '',
+        maxProrrogas: criticidad?.maxProrrogas.toString() ?? '',
+        rolApruebaPlanId: criticidad?.rolApruebaPlan.id.toString() ?? '',
+        rolValidaCierreId: criticidad?.rolValidaCierre.id.toString() ?? '',
     })
     const { guardar, errores, guardando } = useGuardarCatalogo({
         aSolicitud,
+        crear: (solicitud) => criticidadesApi.crear({ ...solicitud, nivel: aNumero(formulario.nivel) }),
         actualizar: criticidadesApi.actualizar,
         textos: TEXTOS.criticidad,
         onGuardado,
     })
     const { registros: rolesActivos } = useListaCatalogo(rolesApi.listar, 'activos')
+    const rolesActuales = criticidad ? [criticidad.rolApruebaPlan, criticidad.rolValidaCierre] : []
     // Los roles actuales van siempre en la lista, aunque los roles aun no hayan cargado
-    const roles = new Map<number, RolResumen>(
-        [...rolesActivos, criticidad.rolApruebaPlan, criticidad.rolValidaCierre].map((rol) => [rol.id, rol]),
-    )
+    const roles = new Map<number, RolResumen>([...rolesActivos, ...rolesActuales].map((rol) => [rol.id, rol]))
     const opcionesRol: Opcion[] = [...roles.values()].map((rol) => ({ valor: String(rol.id), texto: rol.nombre }))
+    const niveles = criticidad ? [criticidad.nivel] : nivelesLibres
+    const opcionesNivel: Opcion[] = niveles.map((nivel) => ({ valor: String(nivel), texto: `Nivel ${nivel}` }))
 
     return (
         <FormModal
             open
             position="right"
-            title={`Editar criticidad (nivel ${criticidad.nivel})`}
+            title={criticidad ? 'Editar criticidad' : 'Nueva criticidad'}
             loading={guardando}
             onClose={onCerrar}
-            onSubmit={() => void guardar(formulario, criticidad.id)}
+            onSubmit={() => void guardar(formulario, criticidad?.id)}
         >
             <div style={rejillaFormulario}>
                 <div style={anchoCompleto}>
                     <FieldInput label="Nombre" errorText={errores.nombre}>
                         <TextInput maxLength={30} value={formulario.nombre} onChange={cambiar('nombre')} />
+                    </FieldInput>
+                </div>
+                <div style={anchoCompleto}>
+                    <FieldInput
+                        label="Nivel"
+                        errorText={errores.nivel}
+                        helperText={criticidad ? 'El nivel no cambia.' : 'Solo los niveles que aún no existen.'}
+                    >
+                        <Select
+                            options={opcionesNivel}
+                            value={opcionDe(opcionesNivel, formulario.nivel)}
+                            getLabel={textoDeOpcion}
+                            getValue={valorDeOpcion}
+                            disabled={criticidad !== null}
+                            placeholder="Seleccione…"
+                            onChange={(opcion) => asignar('nivel', opcion.valor)}
+                        />
                     </FieldInput>
                 </div>
                 <FieldInput label="Plazo (meses)" errorText={errores.plazoMeses} helperText="Mínimo 1">

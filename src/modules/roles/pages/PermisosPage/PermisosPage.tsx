@@ -37,7 +37,7 @@ export const PermisosPage = () => {
             return
         }
         // Cambiar de rol descarta lo que no se guardó
-        if (edicion.cambios > 0) {
+        if (edicion.cambiosDelUsuario > 0) {
             setRolPendiente(id)
         } else {
             irARol(id)
@@ -55,7 +55,7 @@ export const PermisosPage = () => {
                     {textoCambios}
                 </Text>
             )}
-            <Button variant="outlined" disabled={edicion.cambios === 0} onClick={edicion.descartar}>
+            <Button variant="outlined" disabled={edicion.cambiosDelUsuario === 0} onClick={edicion.descartar}>
                 Descartar
             </Button>
             <Button
@@ -105,6 +105,13 @@ export const PermisosPage = () => {
                         <Alert variant="error" description={edicion.errorGuardado} onDismiss={edicion.cerrarError} />
                     )}
 
+                    {puedeActualizar && edicion.ajustes > 0 && (
+                        <Alert
+                            variant="info"
+                            description="Este rol tenía permisos en Propio donde no aplica: se muestran en Todo. Guarde para aplicar el cambio."
+                        />
+                    )}
+
                     {error ? (
                         <Alert variant="error" description={error.mensaje} />
                     ) : edicion.cargando ? (
@@ -113,6 +120,7 @@ export const PermisosPage = () => {
                         <MatrizPermisos
                             grupos={edicion.grupos}
                             marcados={edicion.marcados}
+                            conPropio={edicion.conPropio}
                             soloLectura={!puedeActualizar}
                             onAlternar={edicion.alternar}
                             onCambiarSoloPropio={edicion.cambiarSoloPropio}
